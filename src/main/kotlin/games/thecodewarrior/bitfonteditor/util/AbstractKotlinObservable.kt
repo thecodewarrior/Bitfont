@@ -1,6 +1,8 @@
 package games.thecodewarrior.bitfonteditor.util
 
 import griffon.core.Observable
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import org.codehaus.griffon.runtime.core.AbstractObservable
 import java.lang.reflect.Method
 import kotlin.properties.ReadWriteProperty

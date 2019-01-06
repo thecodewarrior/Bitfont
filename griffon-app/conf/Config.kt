@@ -13,6 +13,11 @@ class Config : AbstractMapResourceBundle() {
                 "view" to "games.thecodewarrior.bitfonteditor.ContainerView",
                 "controller" to "games.thecodewarrior.bitfonteditor.ContainerController"
             ),
+            "overview" to hashMapOf(
+                "model" to "games.thecodewarrior.bitfonteditor.OverviewModel",
+                "view" to "games.thecodewarrior.bitfonteditor.OverviewView",
+                "controller" to "games.thecodewarrior.bitfonteditor.OverviewController"
+            ),
             "editor" to hashMapOf(
                 "model" to "games.thecodewarrior.bitfonteditor.EditorModel",
                 "view" to "games.thecodewarrior.bitfonteditor.EditorView",

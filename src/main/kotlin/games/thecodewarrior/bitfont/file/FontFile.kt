@@ -102,23 +102,23 @@ class FontFile @JvmOverloads constructor(
         /**
          * The minimum codepoint (inclusive)
          */
-        var min: ULong = 0u,
+        var min: UInt = 0u,
         /**
          * The maximum codepoint (inclusive)
          */
-        var max: ULong = 0u
+        var max: UInt = 0u
     ): BinarySerializable {
 
         constructor(stream: ReadStream) : this() {
             filename = stream.readString(IndexSize.BYTE)
-            min = stream.readULong()
-            max = stream.readULong()
+            min = stream.readUInt()
+            max = stream.readUInt()
         }
 
         override fun write(stream: WriteStream) {
             stream.writeString(filename, IndexSize.BYTE)
-            stream.writeULong(min)
-            stream.writeULong(max)
+            stream.writeUInt(min)
+            stream.writeUInt(max)
         }
 
         override fun equals(other: Any?): Boolean {

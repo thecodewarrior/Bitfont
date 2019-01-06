@@ -17,12 +17,12 @@ class UCDFile(
 ): BinarySerializable {
     constructor(stream: ReadStream) : this() {
         blocks = stream.readObjectList(IndexSize.SHORT)
-        codepoints = stream.readObjectList(IndexSize.SHORT)
+        codepoints = stream.readObjectList(IndexSize.INT)
     }
 
     override fun write(stream: WriteStream) {
         stream.writeObjectList(blocks, IndexSize.SHORT)
-        stream.writeObjectList(codepoints, IndexSize.SHORT)
+        stream.writeObjectList(codepoints, IndexSize.INT)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -53,24 +53,24 @@ class UCDFile(
         /**
          * The minimum codepoint in this block (inclusive)
          */
-        var min: ULong = 0u,
+        var min: UInt = 0u,
         /**
          * The maximum codepoint in this block (inclusive)
          */
-        var max: ULong = 0u
+        var max: UInt = 0u
     ): BinarySerializable {
         constructor(stream: ReadStream) : this() {
             filename = stream.readString(IndexSize.BYTE)
             name = stream.readString(IndexSize.BYTE)
-            min = stream.readULong()
-            max = stream.readULong()
+            min = stream.readUInt()
+            max = stream.readUInt()
         }
 
         override fun write(stream: WriteStream) {
             stream.writeString(filename, IndexSize.BYTE)
             stream.writeString(name, IndexSize.BYTE)
-            stream.writeULong(min)
-            stream.writeULong(max)
+            stream.writeUInt(min)
+            stream.writeUInt(max)
         }
 
         override fun equals(other: Any?): Boolean {
@@ -98,19 +98,19 @@ class UCDFile(
         /**
          * The codepoint number
          */
-        var codepoint: ULong = 0u,
+        var codepoint: UInt = 0u,
         /**
          * The human-readable name of the codepoint
          */
         var name: String = ""
     ): BinarySerializable {
         constructor(stream: ReadStream) : this() {
-            codepoint = stream.readULong()
+            codepoint = stream.readUInt()
             name = stream.readString(IndexSize.BYTE)
         }
 
         override fun write(stream: WriteStream) {
-            stream.writeULong(codepoint)
+            stream.writeUInt(codepoint)
             stream.writeString(name, IndexSize.BYTE)
         }
 

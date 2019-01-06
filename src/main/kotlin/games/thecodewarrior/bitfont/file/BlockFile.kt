@@ -39,15 +39,15 @@ class BlockFile(
         /**
          * The codepoint number
          */
-        var codepoint: ULong = 0u,
+        var codepoint: UInt = 0u,
         /**
          * The distance between the cursor and the leading edge of this glyph's image
          */
-        var bearingX: UShort = 0u,
+        var bearingX: Short = 0,
         /**
          * The distance between the baseline and the top of this glyph's image
          */
-        var bearingY: UShort = 0u,
+        var bearingY: Short = 0,
         /**
          * The distance the cursor moves along the baseline after placing this glyph
          */
@@ -59,9 +59,9 @@ class BlockFile(
     ): BinarySerializable {
 
         constructor(stream: ReadStream) : this() {
-            codepoint = stream.readULong()
-            bearingX = stream.readUShort()
-            bearingY = stream.readUShort()
+            codepoint = stream.readUInt()
+            bearingX = stream.readShort()
+            bearingY = stream.readShort()
             advance = stream.readUShort()
             val width = stream.readUShort().toInt()
             val height = stream.readUShort().toInt()
@@ -70,9 +70,9 @@ class BlockFile(
         }
 
         override fun write(stream: WriteStream) {
-            stream.writeULong(codepoint)
-            stream.writeUShort(bearingX)
-            stream.writeUShort(bearingY)
+            stream.writeUInt(codepoint)
+            stream.writeShort(bearingX)
+            stream.writeShort(bearingY)
             stream.writeUShort(advance)
             stream.writeUShort(image.width.toUShort())
             stream.writeUShort(image.height.toUShort())

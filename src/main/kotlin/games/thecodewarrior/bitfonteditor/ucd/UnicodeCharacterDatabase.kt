@@ -16,7 +16,7 @@ class UnicodeCharacterDatabase(val path: Path) {
         val file = UCDFile(path.resolve("UnicodeData.txt"))
         file.load()
 
-        val tree = TreeMap<ULong, UCDCodepoint>()
+        val tree = TreeMap<UInt, UCDCodepoint>()
         file.data.map {
             UCDCodepoint.create(it.key.start, it.value)
         }.associateByTo(tree) { it.codepoint }
@@ -25,7 +25,7 @@ class UnicodeCharacterDatabase(val path: Path) {
     }
 
     class UCDFile(val path: Path) {
-        val data = mutableMapOf<ClosedRange<ULong>, List<String>>()
+        val data = mutableMapOf<ClosedRange<UInt>, List<String>>()
 
         fun load() {
             val lines = Files.readAllLines(path)
@@ -34,16 +34,16 @@ class UnicodeCharacterDatabase(val path: Path) {
                 if(line.isBlank())
                     return@forEach
                 val columns = line.split(';').map { it.trim() }
-                val codepoints = columns[0].split("..").map { it.toULong(16) }
+                val codepoints = columns[0].split("..").map { it.toUInt(16) }
                 val codepointRange = codepoints[0]..codepoints.getOrElse(1) { codepoints[0] }
                 data[codepointRange] = columns.drop(1)
             }
         }
     }
 
-    data class UCDCodepoint(val codepoint: ULong, val name: String) {
+    data class UCDCodepoint(val codepoint: UInt, val name: String) {
         companion object {
-            fun create(codepoint: ULong, data: List<String>): UCDCodepoint {
+            fun create(codepoint: UInt, data: List<String>): UCDCodepoint {
                 val name = data[0]
                 val generalCategory = data[1]
                 val canonicalCombiningClass = data[2]
