@@ -11,6 +11,7 @@ import org.codehaus.griffon.runtime.core.artifact.AbstractGriffonController
 import griffon.core.controller.ControllerAction
 import javafx.scene.input.MouseButton
 import kotlin.math.max
+import kotlin.math.min
 
 @ArtifactProviderFor(GriffonController::class)
 class EditorController: AbstractGriffonController() {
@@ -35,6 +36,7 @@ class EditorController: AbstractGriffonController() {
         val glyphPos = pos + vec(-model.glyph.bearingX, model.glyph.bearingY)
         val newPos = expandToFit(glyphPos)
         model.glyph.image[newPos] = !model.glyph.image[newPos]
+        cropToFit()
         model.glyph.imageObservable.fire()
     }
 
@@ -64,6 +66,42 @@ class EditorController: AbstractGriffonController() {
             return pos + expandMin
         }
         return pos
+    }
+
+    /**
+     * Crops the glyph's image to fit only its contents
+     */
+    private fun cropToFit() {
+        val image = model.glyph.image
+
+        var minX = image.width
+        var minY = image.height
+        var maxX = 0
+        var maxY = 0
+
+        for(x in 0 until image.width) {
+            for(y in 0 until image.height) {
+                if(image[vec(x, y)]) {
+                    minX = min(minX, x)
+                    minY = min(minY, y)
+                    maxX = max(maxX, x+1)
+                    maxY = max(maxY, y+1)
+                }
+            }
+        }
+
+        if(minX > maxX) { // values were never changed, no pixels
+            model.glyph.image = BitGrid(0, 0)
+            model.glyph.bearingX = 0
+            model.glyph.bearingY = 0
+        } else if(minX > 0 || minY > 0 || maxX < image.width || maxY < image.height) {
+            val minOffset = vec(minX, minY)
+            val newGrid = BitGrid(maxX-minX, maxY-minY)
+            newGrid.draw(image, -minOffset)
+            model.glyph.image = newGrid
+            model.glyph.bearingX = (model.glyph.bearingX + minX).toShort()
+            model.glyph.bearingY = (model.glyph.bearingY - minY).toShort()
+        }
     }
 
     @ControllerAction

@@ -50,8 +50,8 @@ class BitGrid(val width: Int, val height: Int) {
             for(y in 0 until grid.height) {
                 val src = Vec2(x, y)
                 val dest = pos + src
-                if(pos in this)
-                    this[pos] = grid[src]
+                if(dest in this)
+                    this[dest] = grid[src]
             }
         }
     }

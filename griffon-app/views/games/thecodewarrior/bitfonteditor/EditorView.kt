@@ -4,6 +4,7 @@ package games.thecodewarrior.bitfonteditor
 import games.thecodewarrior.bitfont.utils.BitGrid
 import games.thecodewarrior.bitfont.utils.Color
 import games.thecodewarrior.bitfont.utils.Vec2
+import games.thecodewarrior.bitfont.utils.vec
 import games.thecodewarrior.bitfonteditor.observablefiles.ObservableGlyph
 import games.thecodewarrior.bitfonteditor.util.CanvasWrapper
 import games.thecodewarrior.bitfonteditor.util.listen
@@ -23,6 +24,9 @@ import javafx.stage.Stage
 import org.codehaus.griffon.runtime.javafx.artifact.AbstractJavaFXGriffonView
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.roundToInt
 
 @ArtifactProviderFor(GriffonView::class)
 class EditorView: AbstractJavaFXGriffonView() {
@@ -47,6 +51,8 @@ class EditorView: AbstractJavaFXGriffonView() {
 
     var origin: Vec2 = Vec2(0, 0)
     var scale: Int = 20
+    var pos = vec(0, 0)
+    var pixelPos = vec(0, 0)
 
     override fun initUI() {
         val stage = getApplication().createApplicationContainer(emptyMap()) as Stage
@@ -121,7 +127,10 @@ class EditorView: AbstractJavaFXGriffonView() {
     }
 
     fun pixel(canvasPos: Vec2): Vec2 {
-        return (canvasPos - origin) / scale
+        pos = canvasPos
+        pixelPos = (canvasPos - origin).map { floor(it / scale.toDouble()).toInt() }
+        metricsLayer.redraw()
+        return pixelPos
     }
 
     fun drawGlyph(l: CanvasWrapper.Layer) {
@@ -137,6 +146,8 @@ class EditorView: AbstractJavaFXGriffonView() {
         l.g.strokeWidth = 2f
         l.g.drawLine(0, origin.y, l.width, origin.y)
         l.g.drawLine(origin.x, 0, origin.x, l.height)
+        l.g.drawLine(origin.x, origin.y, pos.x, pos.y)
+        l.g.drawLine(pos.x, pos.y, origin.x + pixelPos.x * scale, origin.y + pixelPos.y * scale)
     }
 
     @FXML fun canvasMousePressed(e: MouseEvent) {
@@ -164,7 +175,7 @@ class EditorView: AbstractJavaFXGriffonView() {
 
     companion object {
         val backgroundColor = Color("f4f4f4")
-        val glyphBG = Color(1f, 1f, 1f, 0f)
+        val glyphBG = Color(1f, 0f, 0f, 0.1f)
         val glyphFG = Color(0, 0, 0)
     }
 }
