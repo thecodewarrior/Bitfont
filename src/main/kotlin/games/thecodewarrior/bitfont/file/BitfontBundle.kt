@@ -3,17 +3,8 @@ package games.thecodewarrior.bitfont.file
 import games.thecodewarrior.bitfont.stream.BinarySerializable
 import games.thecodewarrior.bitfont.stream.ReadStream
 import games.thecodewarrior.bitfont.stream.WriteStream
-import java.io.File
-import java.io.FileNotFoundException
-import java.util.zip.ZipFile
-import java.nio.file.Files.delete
-import java.io.IOException
 import java.nio.file.FileSystems
 import java.nio.file.Path
-import java.nio.file.StandardCopyOption
-import java.nio.file.Files.createDirectories
-import java.nio.file.Files.notExists
-import java.util.HashMap
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.util.zip.ZipOutputStream

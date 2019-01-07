@@ -1,10 +1,12 @@
 package games.thecodewarrior.bitfonteditor
 
 
+import games.thecodewarrior.bitfont.utils.BitGrid
 import games.thecodewarrior.bitfont.utils.Color
-import games.thecodewarrior.bitfont.utils.Pos
+import games.thecodewarrior.bitfont.utils.Vec2
+import games.thecodewarrior.bitfonteditor.observablefiles.ObservableGlyph
 import games.thecodewarrior.bitfonteditor.util.CanvasWrapper
-import games.thecodewarrior.bitfonteditor.util.drawPolyline
+import games.thecodewarrior.bitfonteditor.util.listen
 import games.thecodewarrior.bitfonteditor.util.strokeWidth
 import griffon.core.artifact.GriffonView
 import griffon.inject.MVCMember
@@ -13,17 +15,14 @@ import javafx.fxml.FXML
 import javafx.scene.Group
 import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
-import javafx.scene.control.ScrollPane
-import javafx.scene.control.Tab
-import javafx.scene.control.TextArea
+import javafx.scene.input.MouseEvent
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Pane
 import java.awt.Color
 import javafx.stage.Stage
 import org.codehaus.griffon.runtime.javafx.artifact.AbstractJavaFXGriffonView
-
-import javax.annotation.Nonnull
-import java.util.Objects
+import java.awt.RenderingHints
+import java.awt.image.BufferedImage
 
 @ArtifactProviderFor(GriffonView::class)
 class EditorView: AbstractJavaFXGriffonView() {
@@ -41,7 +40,13 @@ class EditorView: AbstractJavaFXGriffonView() {
     lateinit var editorCanvas: Canvas
 
     lateinit var canvasWrapper: CanvasWrapper
-    var origin: Pos = Pos(0, 0)
+    lateinit var guideLayer: CanvasWrapper.Layer
+    lateinit var glyphLayer: CanvasWrapper.Layer
+    lateinit var metricsLayer: CanvasWrapper.Layer
+    lateinit var glyphImage: BufferedImage
+
+    var origin: Vec2 = Vec2(0, 0)
+    var scale: Int = 20
 
     override fun initUI() {
         val stage = getApplication().createApplicationContainer(emptyMap()) as Stage
@@ -66,11 +71,27 @@ class EditorView: AbstractJavaFXGriffonView() {
 
     // build the UI
     private fun init() {
+        canvasWrapper = CanvasWrapper(editorCanvas)
+
+        guideLayer = canvasWrapper.layer(0, ::drawGuides)
+        guideLayer.opacity = 0.5f
+        glyphLayer = canvasWrapper.layer(1, ::drawGlyph)
+        metricsLayer = canvasWrapper.layer(2, ::drawMetrics)
+
         scene.heightProperty().addListener { _ -> resize() }
         scene.widthProperty().addListener { _ -> resize() }
 
-        canvasWrapper = CanvasWrapper(editorCanvas)
-
+        glyphImage = model.glyph.image.getImage(glyphBG, glyphFG)
+        model.glyph.imageObservable.addListener { _ ->
+            glyphImage = model.glyph.image.getImage(glyphBG, glyphFG)
+            glyphLayer.redraw()
+        }
+        model.glyph.listen(ObservableGlyph::bearingX) { old, new ->
+            glyphLayer.redraw()
+        }
+        model.glyph.listen(ObservableGlyph::bearingY) { old, new ->
+            glyphLayer.redraw()
+        }
         resize()
     }
 
@@ -80,30 +101,70 @@ class EditorView: AbstractJavaFXGriffonView() {
 
         editorCanvas.width = editorPane.width
         editorCanvas.height = editorPane.height
+        origin = Vec2(editorPane.width.toInt()/2, editorPane.height.toInt()/2)
 
-        redrawCanvas()
+        canvasWrapper.redrawAll()
     }
 
-    fun redrawCanvas() {
-        val c = canvasWrapper
-        c.redraw {
-            drawBackgroundGuides(c)
+    fun drawGuides(l: CanvasWrapper.Layer) {
+        l.g.translate(origin.x, origin.y)
+        l.g.color = Color("7f7f7f")
+        l.g.strokeWidth = 1f
+        val pixelsX = -((origin.x + scale - 1)/scale) .. ((l.width - origin.x + scale - 1)/scale)
+        val pixelsY = -((origin.y + scale - 1)/scale) .. ((l.height - origin.y + scale - 1)/scale)
+        pixelsX.forEach { x ->
+            l.g.drawLine(scale * x, -origin.y, scale * x, l.height-origin.y)
+        }
+        pixelsY.forEach { y ->
+            l.g.drawLine(-origin.x, scale * y, l.width-origin.x, scale * y)
         }
     }
 
-    fun drawBackgroundGuides(c: CanvasWrapper) {
-        c.g.color = Color.BLACK
-        c.g.strokeWidth = 3f
-        c.g.drawPolyline(
-            10, 10,
-            10, c.height-10,
-            c.width-10, c.height-10,
-            c.width-10, 10,
-            10, 10
-        )
+    fun pixel(canvasPos: Vec2): Vec2 {
+        return (canvasPos - origin) / scale
+    }
+
+    fun drawGlyph(l: CanvasWrapper.Layer) {
+        l.g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF)
+        l.g.translate(origin.x, origin.y)
+
+        l.g.scale(scale.toDouble(), scale.toDouble())
+        l.g.drawImage(glyphImage, model.glyph.bearingX.toInt(), -model.glyph.bearingY.toInt(), null)
+    }
+
+    fun drawMetrics(l: CanvasWrapper.Layer) {
+        l.g.color = Color.BLACK
+        l.g.strokeWidth = 2f
+        l.g.drawLine(0, origin.y, l.width, origin.y)
+        l.g.drawLine(origin.x, 0, origin.x, l.height)
+    }
+
+    @FXML fun canvasMousePressed(e: MouseEvent) {
+        controller.mouseDown(e.button, pixel(Vec2(e.x.toInt(), e.y.toInt())))
+    }
+
+    @FXML fun canvasMouseReleased(e: MouseEvent) {
+        controller.mouseUp(e.button, pixel(Vec2(e.x.toInt(), e.y.toInt())))
+    }
+
+    var lastPixel: Vec2? = null
+    @FXML fun canvasMouseMoved(e: MouseEvent) {
+        val pixel = pixel(Vec2(e.x.toInt(), e.y.toInt()))
+        if(pixel != lastPixel) {
+            lastPixel?.also { controller.mouseExitedPixel(it) }
+            controller.mouseEnteredPixel(pixel)
+            lastPixel = pixel
+        }
+    }
+
+    @FXML fun canvasMouseExited(e: MouseEvent) {
+        lastPixel?.also { controller.mouseExitedPixel(it) }
+        lastPixel = null
     }
 
     companion object {
         val backgroundColor = Color("f4f4f4")
+        val glyphBG = Color(1f, 1f, 1f, 0f)
+        val glyphFG = Color(0, 0, 0)
     }
 }
