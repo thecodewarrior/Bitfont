@@ -37,7 +37,7 @@
    <center>
       <Pane fx:id="editorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="300.0" prefWidth="300.0" BorderPane.alignment="CENTER">
          <children>
-            <Canvas fx:id="editorCanvas" height="200.0" onMouseExited="#canvasMouseExited" onMouseMoved="#canvasMouseMoved" onMousePressed="#canvasMousePressed" onMouseReleased="#canvasMouseReleased" width="200.0" />
+            <Canvas fx:id="editorCanvas" height="200.0" onMouseDragged="#canvasMouseMoved" onMouseExited="#canvasMouseExited" onMouseMoved="#canvasMouseMoved" onMousePressed="#canvasMousePressed" onMouseReleased="#canvasMouseReleased" width="200.0" />
          </children>
       </Pane>
    </center>

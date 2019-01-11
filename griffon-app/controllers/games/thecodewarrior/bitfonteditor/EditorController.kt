@@ -20,6 +20,10 @@ class EditorController: AbstractGriffonController() {
     @MVCMember
     lateinit var view: EditorView
 
+    var last: Vec2? = null
+    var mode: Boolean = true
+    var drawing: Boolean = false
+
     override fun mvcGroupInit(args: Map<String, Any>) {
 //        model.document = args["document"] as Document
         runOutsideUI {
@@ -33,21 +37,34 @@ class EditorController: AbstractGriffonController() {
     }
 
     fun mouseDown(button: MouseButton, pos: Vec2) {
-        val glyphPos = pos + vec(-model.glyph.bearingX, model.glyph.bearingY)
-        val newPos = expandToFit(glyphPos)
-        model.glyph.image[newPos] = !model.glyph.image[newPos]
+        val newPos = screenToGlyph(pos)
+        drawing = true
+        mode = !model.glyph.image[newPos]
+        model.glyph.image[newPos] = mode
         cropToFit()
         model.glyph.imageObservable.fire()
     }
 
     fun mouseUp(button: MouseButton, pos: Vec2) {
+        drawing = false
+        last = pos
     }
 
     fun mouseEnteredPixel(pos: Vec2) {
-
+        if(drawing) {
+            val newPos = screenToGlyph(pos)
+            model.glyph.image[newPos] = mode
+            cropToFit()
+            model.glyph.imageObservable.fire()
+        }
     }
 
     fun mouseExitedPixel(pos: Vec2) {
+    }
+
+    private fun screenToGlyph(pos: Vec2): Vec2 {
+        val glyphPos = pos + vec(-model.glyph.bearingX, model.glyph.bearingY)
+        return expandToFit(glyphPos)
     }
 
     /**

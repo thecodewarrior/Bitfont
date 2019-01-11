@@ -7,9 +7,13 @@ import griffon.metadata.ArtifactProviderFor
 import javafx.scene.Group
 import javafx.scene.Scene
 import javafx.scene.paint.Color
+import javafx.stage.DirectoryChooser
+import javafx.stage.FileChooser
 import javafx.stage.Stage
+import javafx.stage.Window
 import jdk.nashorn.tools.ShellFunctions.input
 import org.codehaus.griffon.runtime.javafx.artifact.AbstractJavaFXGriffonView
+import java.io.File
 import java.util.Collections.emptyMap
 
 @ArtifactProviderFor(GriffonView::class)
@@ -19,13 +23,19 @@ class OverviewView: AbstractJavaFXGriffonView() {
     @MVCMember
     lateinit var controller: OverviewController
 
+    lateinit var fileChooser: DirectoryChooser
+    lateinit var stage: Stage
+
     override fun initUI() {
-        val stage = getApplication().createApplicationContainer(emptyMap()) as Stage
+        stage = getApplication().createApplicationContainer(emptyMap()) as Stage
         stage.title = getApplication().configuration.getAsString("application.title")
         stage.width = 400.0
         stage.height = 120.0
         stage.scene = init()
         stage.show()
+
+        fileChooser = DirectoryChooser()
+        fileChooser.title = getApplication().configuration.getAsString("application.title", "Save File")
     }
 
     // build the UI
@@ -41,5 +51,9 @@ class OverviewView: AbstractJavaFXGriffonView() {
         connectActions(node, controller)
 
         return scene
+    }
+
+    fun selectFile(): File? {
+        return fileChooser.showDialog(stage)
     }
 }

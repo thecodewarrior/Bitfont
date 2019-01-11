@@ -13,6 +13,10 @@ import java.nio.file.Files
 import java.nio.file.Path
 import javax.inject.Singleton
 
+import java.awt.Font
+import java.awt.Graphics2D
+import java.awt.image.BufferedImage
+
 @Singleton
 @ArtifactProviderFor(GriffonService::class)
 class UpdateUCDService: AbstractGriffonService() {

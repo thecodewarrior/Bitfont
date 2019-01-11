@@ -22,6 +22,7 @@ import javafx.scene.layout.Pane
 import java.awt.Color
 import javafx.stage.Stage
 import org.codehaus.griffon.runtime.javafx.artifact.AbstractJavaFXGriffonView
+import java.awt.Font
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import kotlin.math.ceil
@@ -124,6 +125,10 @@ class EditorView: AbstractJavaFXGriffonView() {
         pixelsY.forEach { y ->
             l.g.drawLine(-origin.x, scale * y, l.width-origin.x, scale * y)
         }
+
+        l.g.font = l.g.font.deriveFont(8f*scale)
+        val glyph = l.g.font.createGlyphVector(l.g.fontRenderContext, String(Character.toChars(model.codepoint.toInt())))
+        l.g.draw(glyph.outline)
     }
 
     fun pixel(canvasPos: Vec2): Vec2 {
@@ -146,8 +151,6 @@ class EditorView: AbstractJavaFXGriffonView() {
         l.g.strokeWidth = 2f
         l.g.drawLine(0, origin.y, l.width, origin.y)
         l.g.drawLine(origin.x, 0, origin.x, l.height)
-        l.g.drawLine(origin.x, origin.y, pos.x, pos.y)
-        l.g.drawLine(pos.x, pos.y, origin.x + pixelPos.x * scale, origin.y + pixelPos.y * scale)
     }
 
     @FXML fun canvasMousePressed(e: MouseEvent) {

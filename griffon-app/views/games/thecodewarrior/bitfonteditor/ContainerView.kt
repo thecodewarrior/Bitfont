@@ -1,5 +1,6 @@
 package games.thecodewarrior.bitfonteditor
 
+import games.thecodewarrior.bitfont.file.BitfontBundle
 import griffon.core.artifact.GriffonView
 import griffon.core.controller.Action
 import griffon.inject.MVCMember
@@ -10,6 +11,7 @@ import javafx.scene.Node
 import javafx.scene.Scene
 import javafx.scene.control.TabPane
 import javafx.scene.paint.Color
+import javafx.stage.DirectoryChooser
 import javafx.stage.FileChooser
 import javafx.stage.Stage
 import javafx.stage.Window
@@ -27,18 +29,19 @@ class ContainerView: AbstractJavaFXGriffonView() {
     @set:MVCMember
     lateinit var model: ContainerModel
 
-    lateinit var fileChooser: FileChooser
+    lateinit var fileChooser: DirectoryChooser
+    lateinit var stage: Stage
 
     @Override
     override fun initUI() {
-        val stage = getApplication().createApplicationContainer(Collections.emptyMap()) as Stage
+        stage = getApplication().createApplicationContainer(Collections.emptyMap()) as Stage
         stage.title = getApplication().configuration.getAsString("application.title")
         stage.width = 480.0
         stage.height = 320.0
         stage.scene = init()
         getApplication().getWindowManager<Any>().attach("mainWindow", stage)
 
-        fileChooser = FileChooser()
+        fileChooser = DirectoryChooser()
         fileChooser.title = getApplication().configuration.getAsString("application.title", "Open File")
     }
 
@@ -52,16 +55,10 @@ class ContainerView: AbstractJavaFXGriffonView() {
         (scene.root as Group).children.addAll(node)
         connectActions(node, controller)
 
-        val saveAction = actionFor(controller, "save")!!
-//        model.documentModel.addPropertyChangeListener("dirty") { e ->
-//            saveAction.isEnabled = e.newValue as Boolean
-//        }
-
         return scene
     }
 
     fun selectFile(): File? {
-        val window = getApplication().getWindowManager<Any>().startingWindow as Window
-        return fileChooser.showOpenDialog(window)
+        return fileChooser.showDialog(stage)
     }
 }

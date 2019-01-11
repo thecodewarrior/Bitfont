@@ -6,6 +6,7 @@ import griffon.metadata.ArtifactProviderFor
 import org.codehaus.griffon.runtime.core.artifact.AbstractGriffonController
 
 import griffon.core.controller.ControllerAction
+import griffon.transform.Threading
 
 @ArtifactProviderFor(GriffonController::class)
 class OverviewController: AbstractGriffonController() {
@@ -29,6 +30,13 @@ class OverviewController: AbstractGriffonController() {
     fun edit() {
         val mvcIdentifier = "" + System.currentTimeMillis()
         application.mvcGroupManager.createMVC("editor", mvcIdentifier, mapOf("bundle" to model.bundle))
+    }
+
+    @ControllerAction
+    @Threading(Threading.Policy.SKIP)
+    fun save() {
+        val file = view.selectFile() ?: return
+        model.bundle.save(file.toPath(), false)
     }
 
     @ControllerAction

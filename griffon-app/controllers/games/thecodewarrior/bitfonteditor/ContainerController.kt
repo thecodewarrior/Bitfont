@@ -1,5 +1,6 @@
 package games.thecodewarrior.bitfonteditor
 
+import games.thecodewarrior.bitfont.file.BitfontBundle
 import griffon.core.artifact.GriffonController
 import griffon.core.controller.ControllerAction
 import griffon.inject.MVCMember
@@ -21,17 +22,23 @@ class ContainerController: AbstractGriffonController() {
     @ControllerAction
     @Threading(Threading.Policy.SKIP)
     fun open() {
+        val bundle = BitfontBundle()
+        val file = view.selectFile() ?: return
+        bundle.open(file.toPath())
+
+        val mvcIdentifier = "" + System.currentTimeMillis()
+        application.mvcGroupManager.createMVC("overview", mvcIdentifier, mapOf("bundle" to bundle))
     }
 
     @ControllerAction
     fun new() {
-//        val bundle = BitfontBundle()
+        val bundle = BitfontBundle()
 
-//        updateUCDService.updateUCD(bundle.ucd)
+        updateUCDService.updateUCD(bundle.ucd)
 
         val mvcIdentifier = "" + System.currentTimeMillis()
-//        application.mvcGroupManager.createMVC("overview", mvcIdentifier, mapOf("bundle" to bundle))
-        application.mvcGroupManager.createMVC("editor", mvcIdentifier, mapOf())
+        application.mvcGroupManager.createMVC("overview", mvcIdentifier, mapOf("bundle" to bundle))
+//        application.mvcGroupManager.createMVC("editor", mvcIdentifier, mapOf())
     }
 
     @ControllerAction
