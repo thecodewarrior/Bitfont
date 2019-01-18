@@ -3,6 +3,7 @@ package games.thecodewarrior.bitfont
 import glm_.func.common.clamp
 import glm_.vec4.Vec4
 import imgui.ImGui
+import imgui.functionalProgramming.button
 
 object App {
 
@@ -39,6 +40,8 @@ object App {
             field = value.clamp(0, 65535)
         }
 
+    var glyphWindow = GlyphEditor()
+
     fun mainLoop() = with(ImGui) {
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (showDemo)
@@ -58,15 +61,19 @@ object App {
             sameLine(); showHelpMarker("The height of descenders (the bottom of p, g, etc.) below the baseline")
 
             inputInt("Cap height", ::capHeight)
-            sameLine(); showHelpMarker("The height of capital letters (X, N, etc.) above the baseline, " +
-            "ignoring letters like A or O which may overshoot this line")
+            sameLine(); showHelpMarker("The height of capital letters (X, N, etc.) above the baseline, ignoring letters like A or O which may overshoot this line")
             inputInt("x height", ::xHeight)
-            sameLine(); showHelpMarker("The height of the short lowercase letters (x, , etc.) above the baseline, " +
-            "ignoring letters like d or l which overshoot this line")
+            sameLine(); showHelpMarker("The height of the short lowercase letters (x, n, etc.) above the baseline, ignoring letters like d or l which overshoot this line")
+
+            button("Edit") {
+                glyphWindow = GlyphEditor()
+                glyphWindow.visible = true
+            }
 
             end()
         }
 
+        glyphWindow.push()
     }
 
     private fun showHelpMarker(desc: String) = with(ImGui) {
