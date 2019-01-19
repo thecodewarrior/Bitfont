@@ -1,5 +1,6 @@
 package games.thecodewarrior.bitfont
 
+import games.thecodewarrior.bitfont.utils.Colors
 import games.thecodewarrior.bitfont.utils.contours
 import games.thecodewarrior.bitfont.utils.extensions.lineTo
 import games.thecodewarrior.bitfont.utils.extensions.u32
@@ -19,7 +20,10 @@ class GlyphEditor: IMWindow() {
     override val title: String
         get() = "U+%04X".format(codepoint)
 
-    val granularity = 25
+    var granularity = 25
+    set(value) {
+        field = max(value, 1)
+    }
     val brush = BrushTool()
     val marquee: MarqueeTool = MarqueeTool()
     val nudge: NudgeTool = NudgeTool()
@@ -27,12 +31,21 @@ class GlyphEditor: IMWindow() {
     var tool: EditorTool = brush
 
     var canvas = Rect()
-    var origin = Vec2i(10, 10)
+    var originX = 10
+    var originY = 10
+    val origin: Vec2i
+        get() = Vec2i(originX, originY)
 
     val enabledCells = mutableSetOf<Vec2i>()
 
     override fun main() = with(ImGui) {
-        canvas = win.contentsRegionRect//Rect(win.dc.cursorPos, win.dc.cursorPos + win.cont)
+        val contentRect = win.contentsRegionRect
+
+        inputInt("Zoom", ::granularity)
+        inputInt("Origin X", ::originX)
+        inputInt("Origin Y", ::originY)
+
+        canvas = Rect(contentRect.min + cursorPos - Vec2(0, win.dc.prevLineHeight), contentRect.max)
         itemSize(canvas, style.framePadding.y)
         itemHoverable(canvas, "editor".hashCode())
         pushClipRect(canvas.min, canvas.max, true)
@@ -55,6 +68,9 @@ class GlyphEditor: IMWindow() {
     }
 
     fun drawGrid() = with(ImGui) {
+
+        drawList.addRectFilled(canvas.min, canvas.max, Colors.editorBackground)
+
         val newTool = when {
             isKeyPressed(GLFW.GLFW_KEY_B) -> brush.apply { eraser = false }
             isKeyPressed(GLFW.GLFW_KEY_E) -> brush.apply { eraser = true }
@@ -70,12 +86,12 @@ class GlyphEditor: IMWindow() {
 
         for(i in 0 .. (canvas.height / granularity).toInt()) {
             val col = when(i) {
-                origin.y -> Color(255, 0, 0).u32
-                origin.y - App.xHeight -> Col.FrameBgHovered.u32
-                origin.y - App.capHeight -> Col.FrameBgHovered.u32
-                origin.y - App.ascender -> Col.FrameBgHovered.u32
-                origin.y + App.descender -> Col.FrameBgHovered.u32
-                else -> Col.Separator.u32
+                origin.y -> Colors.editorAxes
+                origin.y - App.xHeight -> Colors.editorGuides
+                origin.y - App.capHeight -> Colors.editorGuides
+                origin.y - App.ascender -> Colors.editorGuides
+                origin.y + App.descender -> Colors.editorGuides
+                else -> Colors.editorGrid
             }
             drawList.addLine(
                 Vec2(canvas.min.x, canvas.min.y + i*granularity),
@@ -89,7 +105,7 @@ class GlyphEditor: IMWindow() {
             drawList.addLine(
                 Vec2(canvas.min.x + i*granularity, canvas.min.y),
                 Vec2(canvas.min.x + i*granularity, canvas.max.y),
-                if(i == origin.x) Col.PlotLinesHovered.u32 else Col.Separator.u32,
+                if(i == origin.x) Colors.editorAxes else Colors.editorGrid,
                 1f
             )
         }
@@ -143,7 +159,7 @@ class GlyphEditor: IMWindow() {
             moving.contours().forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
                     canvas.min + Vec2(it) * granularity
-                }), Col.PlotHistogram.u32, true, 2f)
+                }), Colors.editorSelection, true, 2f)
             }
         }
 
@@ -195,6 +211,12 @@ class GlyphEditor: IMWindow() {
             if(isKeyPressed(GLFW.GLFW_KEY_ESCAPE)) {
                 selected.clear()
             }
+            when {
+                isKeyPressed(GLFW.GLFW_KEY_LEFT) -> offset(Vec2i(-1, 0))
+                isKeyPressed(GLFW.GLFW_KEY_RIGHT) -> offset(Vec2i(1, 0))
+                isKeyPressed(GLFW.GLFW_KEY_UP) -> offset(Vec2i(0, -1))
+                isKeyPressed(GLFW.GLFW_KEY_DOWN) -> offset(Vec2i(0, 1))
+            }
 
             val start = start
             selecting.clear()
@@ -214,13 +236,13 @@ class GlyphEditor: IMWindow() {
             selected.contours().forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
                     canvas.min + Vec2(it) * granularity
-                }), Col.PlotHistogram.u32, true, 2f)
+                }), Colors.editorSelection, true, 2f)
             }
 
             selecting.contours().forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
                     canvas.min + Vec2(it) * granularity
-                }), Col.PlotHistogram.u32, true, 2f)
+                }), Colors.editorSelection, true, 2f)
             }
         }
 
@@ -236,6 +258,12 @@ class GlyphEditor: IMWindow() {
                 }
             }
             selecting.clear()
+        }
+
+        fun offset(off: Vec2i) {
+            val offsetPoints = selected.map { it + off }
+            selected.clear()
+            selected.addAll(offsetPoints)
         }
     }
 
@@ -270,9 +298,16 @@ class GlyphEditor: IMWindow() {
             }
         }
 
-        override fun draw() = with(ImGui) {
+        override fun draw(): Unit = with(ImGui) {
             val mouseCell = cell(io.mousePos - canvas.min)
             drawCell(mouseCell, Col.PlotLinesHovered)
+            mouseReleasedPos?.also {
+                if(io.keyShift) {
+                    val startPos = canvas.min + it * granularity + Vec2(granularity/2, granularity/2)
+                    val endPos = canvas.min + mouseCell * granularity + Vec2(granularity/2, granularity/2)
+                    drawList.addLine(startPos, endPos, Col.PlotLinesHovered.u32, 2f)
+                }
+            }
         }
 
         override fun stop() {

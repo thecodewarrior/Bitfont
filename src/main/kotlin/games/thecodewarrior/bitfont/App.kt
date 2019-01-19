@@ -9,11 +9,7 @@ object App {
 
     var f = 0f
     val clearColor = Vec4(0.45f, 0.55f, 0.6f, 1f)
-    var showAnotherWindow = false
     var showDemo = true
-    var counter = 0
-
-    val name = CharArray(100)
 
     var lineHeight = 16
         set(value) {
