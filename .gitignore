@@ -130,3 +130,7 @@ gradle-app.setting
 **/build/
 
 # End of https://www.gitignore.io/api/macos,gradle,intellij+all
+
+imgui.ini
+hs_err*.log
+replay_pid*.log
