@@ -5,6 +5,7 @@ import games.thecodewarrior.bitfont.utils.contours
 import games.thecodewarrior.bitfont.utils.extensions.lineTo
 import games.thecodewarrior.bitfont.utils.extensions.primaryModifier
 import games.thecodewarrior.bitfont.utils.extensions.u32
+import games.thecodewarrior.bitfont.utils.keys
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import imgui.Col
@@ -72,27 +73,26 @@ class GlyphEditor: IMWindow() {
 
         drawList.addRectFilled(canvas.min, canvas.max, Colors.editorBackground)
 
-        val newTool = when {
-            isKeyPressed(GLFW.GLFW_KEY_B) -> brush.apply { eraser = false }
-            isKeyPressed(GLFW.GLFW_KEY_E) -> brush.apply { eraser = true }
-            isKeyPressed(GLFW.GLFW_KEY_M) -> marquee
-            io.primaryModifier && isKeyPressed(GLFW.GLFW_KEY_V) -> {
-                nudge.stop()
-                if(marquee.clipboard.isEmpty()) {
-                    tool
-                } else {
-                    nudge.moving.addAll(marquee.clipboard)
-                    nudge
+        keys {
+            val newTool = when {
+                "b".pressed() -> brush.apply { eraser = false }
+                "e".pressed() -> brush.apply { eraser = true }
+                "m".pressed() -> marquee
+                "prim+v".pressed() -> {
+                    nudge.stop()
+                    if (marquee.clipboard.isEmpty()) {
+                        tool
+                    } else {
+                        nudge.moving.addAll(marquee.clipboard)
+                        nudge
+                    }
                 }
-//                clipboard.clear()
-//                clipboard.addAll(selected.intersect(enabledCells))
-//                selected.clear()
+                else -> tool
             }
-            else -> tool
-        }
-        if(newTool != tool) {
-            tool.stop()
-            tool = newTool
+            if (newTool != tool) {
+                tool.stop()
+                tool = newTool
+            }
         }
 
         tool.update()
@@ -180,29 +180,30 @@ class GlyphEditor: IMWindow() {
                 }
             }
 
-            when {
-                isKeyPressed(GLFW.GLFW_KEY_LEFT) -> offset(Vec2i(-1, 0))
-                isKeyPressed(GLFW.GLFW_KEY_RIGHT) -> offset(Vec2i(1, 0))
-                isKeyPressed(GLFW.GLFW_KEY_UP) -> offset(Vec2i(0, -1))
-                isKeyPressed(GLFW.GLFW_KEY_DOWN) -> offset(Vec2i(0, 1))
+            keys {
+                "left" pressed { offset(Vec2i(-1, 0)) }
+                "right" pressed { offset(Vec2i(1, 0)) }
+                "up" pressed { offset(Vec2i(0, -1)) }
+                "down" pressed { offset(Vec2i(0, 1)) }
+
+                if(moving.isNotEmpty()) {
+                    "prim+c" pressed {
+                        marquee.clipboard.clear()
+                        marquee.clipboard.addAll(moving)
+                    }
+                    "prim+x" pressed {
+                        marquee.clipboard.clear()
+                        marquee.clipboard.addAll(moving)
+                        moving.clear()
+                        tool = marquee
+                    }
+                    "backspace" pressed {
+                        moving.clear()
+                        tool = marquee
+                    }
+                }
             }
 
-            if(moving.isNotEmpty()) {
-                if (io.primaryModifier && isKeyPressed(GLFW.GLFW_KEY_C)) {
-                    marquee.clipboard.clear()
-                    marquee.clipboard.addAll(moving)
-                }
-                if (io.primaryModifier && isKeyPressed(GLFW.GLFW_KEY_X)) {
-                    marquee.clipboard.clear()
-                    marquee.clipboard.addAll(moving)
-                    moving.clear()
-                    tool = marquee
-                }
-                if(isKeyPressed(GLFW.GLFW_KEY_BACKSPACE)) {
-                    moving.clear()
-                    tool = marquee
-                }
-            }
         }
 
         override fun draw() = with(ImGui) {
@@ -241,7 +242,7 @@ class GlyphEditor: IMWindow() {
             val mouseCell = cell(io.mousePos - canvas.min)
             if(isMouseHoveringRect(canvas)) {
                 if (isMouseClicked(0)) {
-                    if(mouseCell in enabledCells && mouseCell in selected && io.primaryModifier) {
+                    if(mouseCell in selected && io.primaryModifier) {
                         tool = nudge
                         nudge.start(selected)
                         selected.clear()
@@ -268,40 +269,36 @@ class GlyphEditor: IMWindow() {
                     }
                 }
             } else {
-
-                if ((isKeyPressed(GLFW.GLFW_KEY_LEFT) ||
-                        isKeyPressed(GLFW.GLFW_KEY_RIGHT) ||
-                        isKeyPressed(GLFW.GLFW_KEY_UP) ||
-                        isKeyPressed(GLFW.GLFW_KEY_DOWN)) && io.primaryModifier) {
-                    tool = nudge
-                    nudge.start(selected)
-                    selected.clear()
-                    nudge.update()
-                    return
-                }
-                if (isKeyPressed(GLFW.GLFW_KEY_BACKSPACE)) {
-                    enabledCells.removeAll(selected)
-                    selected.clear()
-                }
-                if (isKeyPressed(GLFW.GLFW_KEY_ESCAPE)) {
-                    selected.clear()
-                }
-                if (selected.isNotEmpty() && io.primaryModifier && isKeyPressed(GLFW.GLFW_KEY_C)) {
-                    clipboard.clear()
-                    clipboard.addAll(selected.intersect(enabledCells))
-                    selected.clear()
-                }
-                if (selected.isNotEmpty() && io.primaryModifier && isKeyPressed(GLFW.GLFW_KEY_X)) {
-                    clipboard.clear()
-                    clipboard.addAll(selected.intersect(enabledCells))
-                    enabledCells.removeAll(clipboard)
-                    selected.clear()
-                }
-                when {
-                    isKeyPressed(GLFW.GLFW_KEY_LEFT) -> offset(Vec2i(-1, 0))
-                    isKeyPressed(GLFW.GLFW_KEY_RIGHT) -> offset(Vec2i(1, 0))
-                    isKeyPressed(GLFW.GLFW_KEY_UP) -> offset(Vec2i(0, -1))
-                    isKeyPressed(GLFW.GLFW_KEY_DOWN) -> offset(Vec2i(0, 1))
+                keys {
+                    "prim+(left|right|up|down)" pressed {
+                        tool = nudge
+                        nudge.start(selected)
+                        selected.clear()
+                        nudge.update()
+                        return
+                    }
+                    "backspace" pressed {
+                        enabledCells.removeAll(selected)
+                        selected.clear()
+                    }
+                    "escape" pressed {
+                        selected.clear()
+                    }
+                    (selected.isNotEmpty() && io.primaryModifier) and "c" pressed {
+                        clipboard.clear()
+                        clipboard.addAll(selected.intersect(enabledCells))
+                        selected.clear()
+                    }
+                    (selected.isNotEmpty() && io.primaryModifier) and "x" pressed {
+                        clipboard.clear()
+                        clipboard.addAll(selected.intersect(enabledCells))
+                        enabledCells.removeAll(clipboard)
+                        selected.clear()
+                    }
+                    "left" pressed { offset(Vec2i(-1, 0)) }
+                    "right" pressed { offset(Vec2i(1, 0)) }
+                    "up" pressed { offset(Vec2i(0, -1)) }
+                    "down" pressed { offset(Vec2i(0, 1)) }
                 }
             }
         }
