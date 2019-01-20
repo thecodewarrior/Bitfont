@@ -1,5 +1,6 @@
 package games.thecodewarrior.bitfont
 
+import games.thecodewarrior.bitfont.utils.ifMac
 import glm_.vec4.Vec4
 import gln.checkError
 import gln.glClearColor
@@ -29,7 +30,7 @@ private class HelloWorld_lwjgl {
 
 
     init {
-        glfw.init(if (Platform.get() == Platform.MACOSX) "3.2" else "3.0")
+        glfw.init(ifMac("3.2", "3.0"))
         if(Platform.get() == Platform.MACOSX) {
             glfw.windowHint {
                 windowHint.profile = windowHint.Profile.core
