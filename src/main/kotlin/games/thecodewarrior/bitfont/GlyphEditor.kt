@@ -61,8 +61,8 @@ class GlyphEditor: IMWindow() {
 
     fun drawCell(cell: Vec2i, col: Col) {
         drawList.addRectFilled(
-            canvas.min + cell * granularity,
-            canvas.min + cell * granularity + Vec2(granularity, granularity),
+            canvas.min + pos(cell),
+            canvas.min + pos(cell + Vec2i(1, 1)),
             col.u32
         )
     }
@@ -119,7 +119,11 @@ class GlyphEditor: IMWindow() {
 
     fun cell(relativeMouse: Vec2): Vec2i {
         val gridScaled = relativeMouse / granularity
-        return Vec2i(floor(gridScaled.x).toInt(), floor(gridScaled.y).toInt())
+        return Vec2i(floor(gridScaled.x).toInt(), floor(gridScaled.y).toInt()) - origin
+    }
+
+    fun pos(cell: Vec2i): Vec2 {
+        return Vec2((cell + origin) * granularity)
     }
 
     interface EditorTool {
@@ -130,8 +134,10 @@ class GlyphEditor: IMWindow() {
 
     inner class NudgeTool: EditorTool {
         val moving = mutableSetOf<Vec2i>()
+        var draggingGripPoint: Vec2i? = null
 
         override fun update() = with(ImGui) {
+            val mousePos = cell(io.mousePos - canvas.min)
             if(isKeyPressed(GLFW.GLFW_KEY_ESCAPE)) {
                 stop()
                 tool = marquee
@@ -140,10 +146,24 @@ class GlyphEditor: IMWindow() {
             }
             if(isMouseHoveringRect(canvas)) {
                 if(isMouseClicked(0)) {
-                    stop()
-                    tool = marquee
-                    marquee.update()
-                    return
+                    if(mousePos in moving) {
+                        draggingGripPoint = mousePos
+                    } else {
+                        stop()
+                        tool = marquee
+                        marquee.update()
+                        return
+                    }
+                }
+            }
+            if(isMouseReleased(0)) {
+                draggingGripPoint = null
+            }
+
+            draggingGripPoint?.also { grip ->
+                if(mousePos != grip) {
+                    offset(mousePos - grip)
+                    draggingGripPoint = mousePos
                 }
             }
 
@@ -158,7 +178,7 @@ class GlyphEditor: IMWindow() {
         override fun draw() = with(ImGui) {
             moving.contours().forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
-                    canvas.min + Vec2(it) * granularity
+                    canvas.min + pos(it)
                 }), Colors.editorSelection, true, 2f)
             }
         }
@@ -190,8 +210,16 @@ class GlyphEditor: IMWindow() {
             val mouseCell = cell(io.mousePos - canvas.min)
             if(isMouseHoveringRect(canvas)) {
                 if (isMouseClicked(0)) {
-                    downPos = Vec2(io.mousePos)
-                    start = mouseCell
+                    if(mouseCell in enabledCells && io.keySuper) {
+                        tool = nudge
+                        nudge.start(selected)
+                        selected.clear()
+                        nudge.draggingGripPoint = mouseCell
+                        nudge.update()
+                    } else {
+                        downPos = Vec2(io.mousePos)
+                        start = mouseCell
+                    }
                 }
             }
             if((isKeyPressed(GLFW.GLFW_KEY_LEFT) ||
@@ -235,13 +263,13 @@ class GlyphEditor: IMWindow() {
         override fun draw() = with(ImGui) {
             selected.contours().forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
-                    canvas.min + Vec2(it) * granularity
+                    canvas.min + pos(it)
                 }), Colors.editorSelection, true, 2f)
             }
 
             selecting.contours().forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
-                    canvas.min + Vec2(it) * granularity
+                    canvas.min + pos(it)
                 }), Colors.editorSelection, true, 2f)
             }
         }
@@ -303,8 +331,8 @@ class GlyphEditor: IMWindow() {
             drawCell(mouseCell, Col.PlotLinesHovered)
             mouseReleasedPos?.also {
                 if(io.keyShift) {
-                    val startPos = canvas.min + it * granularity + Vec2(granularity/2, granularity/2)
-                    val endPos = canvas.min + mouseCell * granularity + Vec2(granularity/2, granularity/2)
+                    val startPos = canvas.min + pos(it) + Vec2(granularity/2, granularity/2)
+                    val endPos = canvas.min + pos(mouseCell) + Vec2(granularity/2, granularity/2)
                     drawList.addLine(startPos, endPos, Col.PlotLinesHovered.u32, 2f)
                 }
             }
