@@ -4,12 +4,11 @@ import games.thecodewarrior.bitfont.utils.Colors
 import games.thecodewarrior.bitfont.utils.contours
 import games.thecodewarrior.bitfont.utils.extensions.lineTo
 import games.thecodewarrior.bitfont.utils.extensions.primaryModifier
-import games.thecodewarrior.bitfont.utils.extensions.u32
+import games.thecodewarrior.bitfont.utils.ifMac
 import games.thecodewarrior.bitfont.utils.keys
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import imgui.Col
-import imgui.Color
 import imgui.ImGui
 import imgui.internal.Rect
 import org.lwjgl.glfw.GLFW
@@ -40,6 +39,38 @@ class GlyphEditor: IMWindow() {
 
     val enabledCells = mutableSetOf<Vec2i>()
 
+    var historyIndex = 0
+    var undoDepth = 0
+    var redoDepth = 0
+    val history = MutableList<Set<Vec2i>>(100) { emptySet() }
+
+    fun pushHistory() {
+        historyIndex++
+        undoDepth = min(99, undoDepth + 1)
+        redoDepth = 0
+        history[historyIndex % history.size] = enabledCells.toSet()
+    }
+
+    fun undo() {
+        if(undoDepth != 0) {
+            undoDepth--
+            historyIndex--
+            redoDepth++
+        }
+        enabledCells.clear()
+        enabledCells.addAll(history[historyIndex % history.size])
+    }
+
+    fun redo() {
+        if(redoDepth != 0) {
+            undoDepth++
+            historyIndex++
+            redoDepth--
+        }
+        enabledCells.clear()
+        enabledCells.addAll(history[historyIndex % history.size])
+    }
+
     override fun main() = with(ImGui) {
         val contentRect = win.contentsRegionRect
 
@@ -54,11 +85,6 @@ class GlyphEditor: IMWindow() {
         if (!itemAdd(canvas, "editor".hashCode())) return
         drawGrid()
         popClipRect()
-//        val borderSize = style.frameBorderSize
-//        if (border && borderSize > 0f) {
-//            window.drawList.addRect(pMin + 1, pMax + 1, Col.BorderShadow.u32, rounding, Dcf.All.i, borderSize)
-//            window.drawList.addRect(pMin, pMax, Col.Border.u32, rounding, 0.inv(), borderSize)
-//        }
     }
 
     fun drawCell(cell: Vec2i, col: Col) {
@@ -74,6 +100,11 @@ class GlyphEditor: IMWindow() {
         drawList.addRectFilled(canvas.min, canvas.max, Colors.editorBackground)
 
         keys {
+            if(ifMac("shift+cmd+z", "ctrl+y").pressed()) {
+                redo()
+            } else if(ifMac("cmd+z", "ctrl+z").pressed()) {
+                undo()
+            }
             val newTool = when {
                 "b".pressed() -> brush.apply { eraser = false }
                 "e".pressed() -> brush.apply { eraser = true }
@@ -216,11 +247,11 @@ class GlyphEditor: IMWindow() {
 
         fun start(selected: Collection<Vec2i>) {
             moving.addAll(selected.intersect(enabledCells))
-            enabledCells.removeAll(moving)
+            if(enabledCells.removeAll(moving)) pushHistory()
         }
 
         override fun stop() {
-            enabledCells.addAll(moving)
+            if(enabledCells.addAll(moving)) pushHistory()
             moving.clear()
         }
 
@@ -278,7 +309,7 @@ class GlyphEditor: IMWindow() {
                         return
                     }
                     "backspace" pressed {
-                        enabledCells.removeAll(selected)
+                        if(enabledCells.removeAll(selected)) pushHistory()
                         selected.clear()
                     }
                     "escape" pressed {
@@ -292,7 +323,7 @@ class GlyphEditor: IMWindow() {
                     (selected.isNotEmpty() && io.primaryModifier) and "x" pressed {
                         clipboard.clear()
                         clipboard.addAll(selected.intersect(enabledCells))
-                        enabledCells.removeAll(clipboard)
+                        if(enabledCells.removeAll(clipboard)) pushHistory()
                         selected.clear()
                     }
                     "left" pressed { offset(Vec2i(-1, 0)) }
@@ -342,6 +373,7 @@ class GlyphEditor: IMWindow() {
         var eraser: Boolean = false
         var drawingState: Boolean? = null
         var mouseReleasedPos: Vec2i? = null
+        var modified = false
 
         override fun update() = with(ImGui) {
             val mouseCell = cell(io.mousePos - canvas.min)
@@ -352,20 +384,21 @@ class GlyphEditor: IMWindow() {
                     drawingState = !eraser
                     if (io.keyShift)
                         mouseCellPrev = mouseReleasedPos ?: mouseCellPrev
+                    modified = false
                 }
             }
             if (isMouseReleased(0)) {
                 drawingState = null
+                if(modified) pushHistory()
             }
 
             if(drawingState != null)
                 mouseReleasedPos = mouseCell
-            mouseCellPrev.lineTo(mouseCell).forEach {
-                if (drawingState == true) {
-                    enabledCells.add(it)
-                } else if (drawingState == false) {
-                    enabledCells.remove(it)
-                }
+            val cells = mouseCellPrev.lineTo(mouseCell)
+            if (drawingState == true) {
+                modified = enabledCells.addAll(cells) || modified
+            } else if (drawingState == false) {
+                modified = enabledCells.removeAll(cells) || modified
             }
         }
 

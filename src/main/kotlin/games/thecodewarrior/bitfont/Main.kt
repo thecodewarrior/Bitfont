@@ -47,6 +47,7 @@ private class HelloWorld_lwjgl {
         // Setup ImGui binding
 //         glslVersion = 330 // set here your desidered glsl version
         ctx = Context()
+        ImGui.io.iniFilename = null
         //io.configFlags = io.configFlags or ConfigFlag.NavEnableKeyboard  // Enable Keyboard Controls
         //io.configFlags = io.configFlags or ConfigFlag.NavEnableGamepad   // Enable Gamepad Controls
         LwjglGlfw.init(window, true, GlfwClientApi.OpenGL)
