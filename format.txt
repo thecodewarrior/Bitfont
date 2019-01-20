@@ -1,0 +1,52 @@
+String<u8/u16/u32>: 
+    count           u8/u16/u32 
+    string          [u8; count] as utf8 string
+[T: u8/u16/u32]:
+    count           u8/u16/u32
+    string          [T; count]
+
+FontFile:
+    name            String<u8>
+    license         String<u32>
+    lineHeight      u16
+    ascender        u16
+    capHeight       u16
+    xHeight         u16
+    descender       u16
+    blocks          [FontBlock; u16]
+
+FontBlock:
+    filename        String<u8>
+    min             u32
+    max             u32
+
+UCDFile:
+    blocks          [UCDBlock; u16]
+    codepoints      [UCDCodepoint; u32]
+
+UCDBlock:
+    filename        String<u8>
+    name            String<u8>
+    min             u32
+    max             u32
+
+UCDCodepoint:
+    codepoint       u32
+    name            String<u8>
+
+BlockFile:
+    glyphs          [Glyph; u16]
+
+Glyph:
+    codepoint       u32
+    bearingX        i16
+    bearingY        i16
+    advance         u16
+    image           BitGrid
+
+BitGrid:
+    width           u16
+    height          u16
+    data            [u8; ceil(width*height / 8)]
+    // data is left->right, top->bottom bits. 
+    // bit i = data[i / 8] & 1 << (i % 8) != 0

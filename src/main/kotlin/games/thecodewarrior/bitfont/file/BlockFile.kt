@@ -5,21 +5,22 @@ import games.thecodewarrior.bitfont.stream.IndexSize
 import games.thecodewarrior.bitfont.stream.ReadStream
 import games.thecodewarrior.bitfont.stream.WriteStream
 import games.thecodewarrior.bitfont.utils.BitGrid
+import java.util.TreeMap
 
 class BlockFile(
     /**
      * The list of defined glyphs in this block. This list is sparse. For the full list of defined codepoints look in
      * [UCDFile].
      */
-    var glyphs: MutableList<Glyph> = mutableListOf()
+    var glyphs: TreeMap<UInt, Glyph> = TreeMap()
 ): BinarySerializable {
 
     constructor(stream: ReadStream) : this() {
-        glyphs = stream.readObjectList(IndexSize.SHORT)
+        glyphs = stream.readObjectList<Glyph>(IndexSize.SHORT).associateByTo(TreeMap()) { it.codepoint }
     }
 
     override fun write(stream: WriteStream) {
-        stream.writeObjectList(glyphs, IndexSize.SHORT)
+        stream.writeObjectList(glyphs.values.toList(), IndexSize.SHORT)
     }
 
     override fun equals(other: Any?): Boolean {

@@ -13,6 +13,7 @@ import javafx.scene.control.ScrollPane
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.FlowPane
+import javafx.scene.layout.Pane
 import java.awt.Color
 import javafx.stage.DirectoryChooser
 import javafx.stage.Stage
@@ -34,15 +35,17 @@ class OverviewView: AbstractJavaFXGriffonView() {
     @FXML
     lateinit var rootPane: BorderPane
     @FXML
-    lateinit var scrollPane: ScrollPane
-    @FXML
-    lateinit var anchorPane: AnchorPane
-    @FXML
-    lateinit var flowPane: FlowPane
+    lateinit var contentPane: FlowPane
+
+    var glyphItems = listOf<GlyphItem>()
 
     lateinit var fileChooser: DirectoryChooser
     lateinit var stage: Stage
     lateinit var scene: Scene
+
+    fun selectFile(): File? {
+        return fileChooser.showDialog(stage)
+    }
 
     override fun initUI() {
         stage = getApplication().createApplicationContainer(emptyMap()) as Stage
@@ -71,71 +74,18 @@ class OverviewView: AbstractJavaFXGriffonView() {
         scene.heightProperty().addListener { _ -> resize() }
         scene.widthProperty().addListener { _ -> resize() }
 
-        anchorPane.prefHeight = GlyphItem.ITEM_HEIGHT * 1000.0
-        scrollPane.vvalueProperty().addListener { _ ->
-            updateScroll()
-        }
-        scrollPane.widthProperty().addListener { _ ->
-            anchorPane.prefWidth = scrollPane.width
-            updateSize()
-        }
-        scrollPane.heightProperty().addListener { _ ->
-            updateSize()
-        }
-//        updateSize()
-//        currentStart = -1 // to force a refresh on the glyph items
-//        updateScroll()
+        contentPane.prefHeight = GlyphItem.ITEM_HEIGHT * 8.0
+        contentPane.prefWidth = GlyphItem.ITEM_WIDTH * 8.0
         return scene
     }
 
-    fun selectFile(): File? {
-        return fileChooser.showDialog(stage)
+    fun updateItems() {
+        glyphItems.forEachIndexed { i, it -> it.glyphInfo = model.getInfo((prefix + i).toUInt()) }
     }
-
 
     private fun resize() {
         rootPane.prefHeight = scene.height
         rootPane.prefWidth = scene.width
-    }
-
-    var currentStart = 0
-    var columns = 1
-    var glyphItems = listOf<GlyphItem>()
-
-    fun updateScroll() {
-        val viewportTop = scrollPane.vvalue * (anchorPane.height - scrollPane.viewportBounds.height)
-        val topRow = max(0, floor(viewportTop / GlyphItem.ITEM_HEIGHT).toInt() - 1)
-        val start = topRow * columns
-        if(start != currentStart) {
-            AnchorPane.setTopAnchor(flowPane, GlyphItem.ITEM_HEIGHT.toDouble() * topRow)
-            currentStart = start
-            updateItems()
-        }
-    }
-
-    fun updateItems() {
-        glyphItems.forEachIndexed { i, it -> it.glyphInfo = model.getInfo((currentStart + i).toUInt()) }
-    }
-
-    fun updateSize() {
-        val viewport = scrollPane.viewportBounds
-        val columns = floor(flowPane.width / GlyphItem.ITEM_WIDTH).toInt()
-        val visibleRows = ceil(viewport.height / GlyphItem.ITEM_HEIGHT).toInt() + 4
-        if(columns == 0) return
-
-        if(glyphItems.size != columns * visibleRows) {
-            flowPane.children.clear()
-            glyphItems = List(columns * visibleRows) { GlyphItem(OverviewModel.GlyphInfo.NULL) }
-            flowPane.children.addAll(glyphItems)
-            updateItems()
-        }
-
-        if(columns != this.columns) {
-            this.columns = columns
-            val newRow = currentStart / columns
-
-            scrollPane.vvalue = (newRow * GlyphItem.ITEM_HEIGHT) / (anchorPane.height - viewport.height)
-        }
     }
 
     class GlyphItem(glyphInfo: OverviewModel.GlyphInfo): Canvas(ITEM_WIDTH.toDouble(), ITEM_HEIGHT.toDouble()) {

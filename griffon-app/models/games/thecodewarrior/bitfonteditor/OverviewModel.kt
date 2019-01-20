@@ -13,20 +13,4 @@ import java.util.TreeMap
 class OverviewModel: AbstractGriffonModel() {
     @MVCMember
     lateinit var bundle: BitfontBundle
-
-    private val codepointMap: Map<UInt, UCDFile.Codepoint> by lazy {
-        bundle.ucd.codepoints.associateByTo(TreeMap()) {
-            it.codepoint
-        }
-    }
-
-    fun getInfo(codepoint: UInt): GlyphInfo {
-        return GlyphInfo(codepoint, null)// codepointMap[codepoint]
-    }
-
-    data class GlyphInfo(val codepoint: UInt, val glyph: BlockFile.Glyph?) {
-        companion object {
-            val NULL = GlyphInfo(0u, null)
-        }
-    }
 }
