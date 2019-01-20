@@ -9,6 +9,7 @@ object Colors {
     val editorSelection = col("ff_ff7a64")
     val editorGrid = col("ff_3b3b46")
     val editorGuides = col("ff_3d73ad")
+    val editorKernProfile = col("ff_861813")
 
     fun col(hex: String): Int {
         val int = hex.replace("_", "").toUInt(16)

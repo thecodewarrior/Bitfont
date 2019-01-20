@@ -1,5 +1,7 @@
 package games.thecodewarrior.bitfont
 
+import games.thecodewarrior.bitfont.data.BitGrid
+import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.utils.Colors
 import games.thecodewarrior.bitfont.utils.contours
 import games.thecodewarrior.bitfont.utils.extensions.lineTo
@@ -9,9 +11,11 @@ import games.thecodewarrior.bitfont.utils.keys
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import imgui.Col
+import imgui.Dir
 import imgui.ImGui
 import imgui.InputTextFlag
 import imgui.InputTextFlags
+import imgui.functionalProgramming.withItemWidth
 import imgui.internal.Rect
 import org.lwjgl.glfw.GLFW
 import kotlin.math.floor
@@ -42,9 +46,10 @@ class GlyphEditor: IMWindow() {
     val dataMap = mutableMapOf<Int, Data>()
 
     val data: Data
-        get() = dataMap.getOrPut(codepoint) { Data() }
+        get() = dataMap.getOrPut(codepoint) { Data(codepoint) }
 
-    class Data {
+    class Data(val codepoint: Int) {
+        val glyph = Glyph(codepoint)
         val enabledCells = mutableSetOf<Vec2i>()
 
         var historyIndex = 0
@@ -85,15 +90,53 @@ class GlyphEditor: IMWindow() {
                 enabledCells.addAll(cells)
             }
         }
+
+        fun updateGlyph() {
+            if(enabledCells.isEmpty())  {
+                glyph.image = BitGrid(1, 1)
+                glyph.bearingX = 0
+                glyph.bearingY = 0
+                return
+            }
+            var minX = Int.MAX_VALUE
+            var maxX = 0
+            var minY = Int.MAX_VALUE
+            var maxY = 0
+            enabledCells.forEach {
+                minX = min(minX, it.x)
+                maxX = max(maxX, it.x)
+                minY = min(minY, it.y)
+                maxY = max(maxY, it.y)
+            }
+            val grid = BitGrid(maxX - minX + 1, maxY - minY + 1)
+            enabledCells.forEach {
+                grid[it - Vec2i(minX, maxX)] = true
+            }
+            glyph.image = grid
+            glyph.bearingX = minX
+            glyph.bearingY = -minY
+        }
+
     }
 
     override fun main() = with(ImGui) {
         val contentRect = win.contentsRegionRect
 
-        inputInt("Codepoint", ::codepoint, 1, 100, InputTextFlag.CharsHexadecimal.i)
-        inputInt("Zoom", ::granularity)
-        inputInt("Origin X", ::originX)
-        inputInt("Origin Y", ::originY)
+        pushButtonRepeat(true)
+        if (arrowButton("##left", Dir.Left)) codepoint--
+        sameLine()
+        text("U+%04X".format(codepoint))
+        sameLine()
+        if (arrowButton("##right", Dir.Right)) codepoint++
+        popButtonRepeat()
+
+        withItemWidth(150) {
+            inputInt("Zoom", ::granularity)
+            sameLine()
+            inputInt("Origin X", ::originX)
+            sameLine()
+            inputInt("Origin Y", ::originY)
+        }
 
         canvas = Rect(contentRect.min + cursorPos - Vec2(0, win.dc.prevLineHeight), contentRect.max)
         itemSize(canvas, style.framePadding.y)
@@ -116,30 +159,32 @@ class GlyphEditor: IMWindow() {
 
         drawList.addRectFilled(canvas.min, canvas.max, Colors.editorBackground)
 
-        keys {
-            if(ifMac("shift+cmd+z", "ctrl+y").pressed()) {
-                data.redo()
-            } else if(ifMac("cmd+z", "ctrl+z").pressed()) {
-                data.undo()
-            }
-            val newTool = when {
-                "b".pressed() -> brush.apply { eraser = false }
-                "e".pressed() -> brush.apply { eraser = true }
-                "m".pressed() -> marquee
-                "prim+v".pressed() -> {
-                    nudge.stop()
-                    if (marquee.clipboard.isEmpty()) {
-                        tool
-                    } else {
-                        nudge.moving.addAll(marquee.clipboard)
-                        nudge
-                    }
+        if(isWindowHovered()) {
+            keys {
+                if (ifMac("shift+cmd+z", "ctrl+y").pressed()) {
+                    data.redo()
+                } else if (ifMac("cmd+z", "ctrl+z").pressed()) {
+                    data.undo()
                 }
-                else -> tool
-            }
-            if (newTool != tool) {
-                tool.stop()
-                tool = newTool
+                val newTool = when {
+                    "b".pressed() -> brush.apply { eraser = false }
+                    "e".pressed() -> brush.apply { eraser = true }
+                    "m".pressed() -> marquee
+                    "prim+v".pressed() -> {
+                        nudge.stop()
+                        if (marquee.clipboard.isEmpty()) {
+                            tool
+                        } else {
+                            nudge.moving.addAll(marquee.clipboard)
+                            nudge
+                        }
+                    }
+                    else -> tool
+                }
+                if (newTool != tool) {
+                    tool.stop()
+                    tool = newTool
+                }
             }
         }
 
@@ -199,13 +244,13 @@ class GlyphEditor: IMWindow() {
 
         override fun update() = with(ImGui) {
             val mousePos = cell(io.mousePos - canvas.min)
-            if(isKeyPressed(GLFW.GLFW_KEY_ESCAPE)) {
+            if(isWindowHovered() && isKeyPressed(GLFW.GLFW_KEY_ESCAPE)) {
                 stop()
                 tool = marquee
                 marquee.update()
                 return
             }
-            if(isMouseHoveringRect(canvas)) {
+            if(isWindowHovered() && isMouseHoveringRect(canvas)) {
                 if(isMouseClicked(0)) {
                     if(mousePos in moving) {
                         draggingGripPoint = mousePos
@@ -228,26 +273,28 @@ class GlyphEditor: IMWindow() {
                 }
             }
 
-            keys {
-                "left" pressed { offset(Vec2i(-1, 0)) }
-                "right" pressed { offset(Vec2i(1, 0)) }
-                "up" pressed { offset(Vec2i(0, -1)) }
-                "down" pressed { offset(Vec2i(0, 1)) }
+            if(isWindowHovered()) {
+                keys {
+                    "left" pressed { offset(Vec2i(-1, 0)) }
+                    "right" pressed { offset(Vec2i(1, 0)) }
+                    "up" pressed { offset(Vec2i(0, -1)) }
+                    "down" pressed { offset(Vec2i(0, 1)) }
 
-                if(moving.isNotEmpty()) {
-                    "prim+c" pressed {
-                        marquee.clipboard.clear()
-                        marquee.clipboard.addAll(moving)
-                    }
-                    "prim+x" pressed {
-                        marquee.clipboard.clear()
-                        marquee.clipboard.addAll(moving)
-                        moving.clear()
-                        tool = marquee
-                    }
-                    "backspace" pressed {
-                        moving.clear()
-                        tool = marquee
+                    if (moving.isNotEmpty()) {
+                        "prim+c" pressed {
+                            marquee.clipboard.clear()
+                            marquee.clipboard.addAll(moving)
+                        }
+                        "prim+x" pressed {
+                            marquee.clipboard.clear()
+                            marquee.clipboard.addAll(moving)
+                            moving.clear()
+                            tool = marquee
+                        }
+                        "backspace" pressed {
+                            moving.clear()
+                            tool = marquee
+                        }
                     }
                 }
             }
@@ -288,7 +335,7 @@ class GlyphEditor: IMWindow() {
 
         override fun update(): Unit = with(ImGui) {
             val mouseCell = cell(io.mousePos - canvas.min)
-            if(isMouseHoveringRect(canvas)) {
+            if(isWindowHovered() && isMouseHoveringRect(canvas)) {
                 if (isMouseClicked(0)) {
                     if(mouseCell in selected && io.primaryModifier) {
                         tool = nudge
@@ -306,47 +353,49 @@ class GlyphEditor: IMWindow() {
             if (isMouseReleased(0)) {
                 stop()
             }
-            if(isMouseDown(0)) {
-                val start = start
-                selecting.clear()
-                if(start != null) {
-                    for (x in min(start.x, mouseCell.x)..max(start.x, mouseCell.x)) {
-                        for (y in min(start.y, mouseCell.y)..max(start.y, mouseCell.y)) {
-                            selecting.add(Vec2i(x, y))
+            if(isWindowHovered()) {
+                if(isMouseDown(0)) {
+                    val start = start
+                    selecting.clear()
+                    if(start != null) {
+                        for (x in min(start.x, mouseCell.x)..max(start.x, mouseCell.x)) {
+                            for (y in min(start.y, mouseCell.y)..max(start.y, mouseCell.y)) {
+                                selecting.add(Vec2i(x, y))
+                            }
                         }
                     }
-                }
-            } else {
-                keys {
-                    "prim+(left|right|up|down)" pressed {
-                        tool = nudge
-                        nudge.start(selected)
-                        selected.clear()
-                        nudge.update()
-                        return
+                } else {
+                    keys {
+                        "prim+(left|right|up|down)" pressed {
+                            tool = nudge
+                            nudge.start(selected)
+                            selected.clear()
+                            nudge.update()
+                            return
+                        }
+                        "backspace" pressed {
+                            if (data.enabledCells.removeAll(selected)) data.pushHistory()
+                            selected.clear()
+                        }
+                        "escape" pressed {
+                            selected.clear()
+                        }
+                        (selected.isNotEmpty() && io.primaryModifier) and "c" pressed {
+                            clipboard.clear()
+                            clipboard.addAll(selected.intersect(data.enabledCells))
+                            selected.clear()
+                        }
+                        (selected.isNotEmpty() && io.primaryModifier) and "x" pressed {
+                            clipboard.clear()
+                            clipboard.addAll(selected.intersect(data.enabledCells))
+                            if (data.enabledCells.removeAll(clipboard)) data.pushHistory()
+                            selected.clear()
+                        }
+                        "left" pressed { offset(Vec2i(-1, 0)) }
+                        "right" pressed { offset(Vec2i(1, 0)) }
+                        "up" pressed { offset(Vec2i(0, -1)) }
+                        "down" pressed { offset(Vec2i(0, 1)) }
                     }
-                    "backspace" pressed {
-                        if(data.enabledCells.removeAll(selected)) data.pushHistory()
-                        selected.clear()
-                    }
-                    "escape" pressed {
-                        selected.clear()
-                    }
-                    (selected.isNotEmpty() && io.primaryModifier) and "c" pressed {
-                        clipboard.clear()
-                        clipboard.addAll(selected.intersect(data.enabledCells))
-                        selected.clear()
-                    }
-                    (selected.isNotEmpty() && io.primaryModifier) and "x" pressed {
-                        clipboard.clear()
-                        clipboard.addAll(selected.intersect(data.enabledCells))
-                        if(data.enabledCells.removeAll(clipboard)) data.pushHistory()
-                        selected.clear()
-                    }
-                    "left" pressed { offset(Vec2i(-1, 0)) }
-                    "right" pressed { offset(Vec2i(1, 0)) }
-                    "up" pressed { offset(Vec2i(0, -1)) }
-                    "down" pressed { offset(Vec2i(0, 1)) }
                 }
             }
         }
@@ -396,7 +445,7 @@ class GlyphEditor: IMWindow() {
             val mouseCell = cell(io.mousePos - canvas.min)
             var mouseCellPrev = cell(io.mousePos - canvas.min - io.mouseDelta)
 
-            if(isMouseHoveringRect(canvas)) {
+            if(isWindowHovered() && isMouseHoveringRect(canvas)) {
                 if (isMouseClicked(0)) {
                     drawingState = !eraser
                     if (io.keyShift)
