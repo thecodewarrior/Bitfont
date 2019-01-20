@@ -4,7 +4,7 @@ import games.thecodewarrior.bitfont.utils.extensions.u32
 import imgui.Color
 
 object Colors {
-    val editorBackground = col("ff_151618")
+    val editorBackground = col("ff_0A0A0A")
     val editorAxes = col("ff_ff7a64")
     val editorSelection = col("ff_ff7a64")
     val editorGrid = col("ff_3b3b46")

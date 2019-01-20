@@ -10,6 +10,8 @@ import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import imgui.Col
 import imgui.ImGui
+import imgui.InputTextFlag
+import imgui.InputTextFlags
 import imgui.internal.Rect
 import org.lwjgl.glfw.GLFW
 import kotlin.math.floor
@@ -37,43 +39,58 @@ class GlyphEditor: IMWindow() {
     val origin: Vec2i
         get() = Vec2i(originX, originY)
 
-    val enabledCells = mutableSetOf<Vec2i>()
+    val dataMap = mutableMapOf<Int, Data>()
 
-    var historyIndex = 0
-    var undoDepth = 0
-    var redoDepth = 0
-    val history = MutableList<Set<Vec2i>>(100) { emptySet() }
+    val data: Data
+        get() = dataMap.getOrPut(codepoint) { Data() }
 
-    fun pushHistory() {
-        historyIndex++
-        undoDepth = min(99, undoDepth + 1)
-        redoDepth = 0
-        history[historyIndex % history.size] = enabledCells.toSet()
-    }
+    class Data {
+        val enabledCells = mutableSetOf<Vec2i>()
 
-    fun undo() {
-        if(undoDepth != 0) {
-            undoDepth--
-            historyIndex--
-            redoDepth++
-        }
-        enabledCells.clear()
-        enabledCells.addAll(history[historyIndex % history.size])
-    }
+        var historyIndex = 0
+        var undoDepth = 0
+        var redoDepth = 0
+        val history = MutableList(100) { State() }
 
-    fun redo() {
-        if(redoDepth != 0) {
-            undoDepth++
+        fun pushHistory() {
             historyIndex++
-            redoDepth--
+            undoDepth = min(99, undoDepth + 1)
+            redoDepth = 0
+            history[historyIndex % history.size] = State()
         }
-        enabledCells.clear()
-        enabledCells.addAll(history[historyIndex % history.size])
+
+        fun undo() {
+            if (undoDepth != 0) {
+                undoDepth--
+                historyIndex--
+                redoDepth++
+            }
+            history[historyIndex % history.size].apply()
+        }
+
+        fun redo() {
+            if (redoDepth != 0) {
+                undoDepth++
+                historyIndex++
+                redoDepth--
+            }
+            history[historyIndex % history.size].apply()
+        }
+
+        inner class State {
+            val cells = enabledCells.toSet()
+
+            fun apply() {
+                enabledCells.clear()
+                enabledCells.addAll(cells)
+            }
+        }
     }
 
     override fun main() = with(ImGui) {
         val contentRect = win.contentsRegionRect
 
+        inputInt("Codepoint", ::codepoint, 1, 100, InputTextFlag.CharsHexadecimal.i)
         inputInt("Zoom", ::granularity)
         inputInt("Origin X", ::originX)
         inputInt("Origin Y", ::originY)
@@ -101,9 +118,9 @@ class GlyphEditor: IMWindow() {
 
         keys {
             if(ifMac("shift+cmd+z", "ctrl+y").pressed()) {
-                redo()
+                data.redo()
             } else if(ifMac("cmd+z", "ctrl+z").pressed()) {
-                undo()
+                data.undo()
             }
             val newTool = when {
                 "b".pressed() -> brush.apply { eraser = false }
@@ -154,7 +171,7 @@ class GlyphEditor: IMWindow() {
             )
         }
 
-        (enabledCells + nudge.moving).forEach {
+        (data.enabledCells + nudge.moving).forEach {
             drawCell(it, Col.Text)
         }
 
@@ -246,12 +263,12 @@ class GlyphEditor: IMWindow() {
         }
 
         fun start(selected: Collection<Vec2i>) {
-            moving.addAll(selected.intersect(enabledCells))
-            if(enabledCells.removeAll(moving)) pushHistory()
+            moving.addAll(selected.intersect(data.enabledCells))
+            if(data.enabledCells.removeAll(moving)) data.pushHistory()
         }
 
         override fun stop() {
-            if(enabledCells.addAll(moving)) pushHistory()
+            if(data.enabledCells.addAll(moving)) data.pushHistory()
             moving.clear()
         }
 
@@ -309,7 +326,7 @@ class GlyphEditor: IMWindow() {
                         return
                     }
                     "backspace" pressed {
-                        if(enabledCells.removeAll(selected)) pushHistory()
+                        if(data.enabledCells.removeAll(selected)) data.pushHistory()
                         selected.clear()
                     }
                     "escape" pressed {
@@ -317,13 +334,13 @@ class GlyphEditor: IMWindow() {
                     }
                     (selected.isNotEmpty() && io.primaryModifier) and "c" pressed {
                         clipboard.clear()
-                        clipboard.addAll(selected.intersect(enabledCells))
+                        clipboard.addAll(selected.intersect(data.enabledCells))
                         selected.clear()
                     }
                     (selected.isNotEmpty() && io.primaryModifier) and "x" pressed {
                         clipboard.clear()
-                        clipboard.addAll(selected.intersect(enabledCells))
-                        if(enabledCells.removeAll(clipboard)) pushHistory()
+                        clipboard.addAll(selected.intersect(data.enabledCells))
+                        if(data.enabledCells.removeAll(clipboard)) data.pushHistory()
                         selected.clear()
                     }
                     "left" pressed { offset(Vec2i(-1, 0)) }
@@ -389,16 +406,17 @@ class GlyphEditor: IMWindow() {
             }
             if (isMouseReleased(0)) {
                 drawingState = null
-                if(modified) pushHistory()
+                if(modified) data.pushHistory()
+                modified = false
             }
 
             if(drawingState != null)
                 mouseReleasedPos = mouseCell
             val cells = mouseCellPrev.lineTo(mouseCell)
             if (drawingState == true) {
-                modified = enabledCells.addAll(cells) || modified
+                modified = data.enabledCells.addAll(cells) || modified
             } else if (drawingState == false) {
-                modified = enabledCells.removeAll(cells) || modified
+                modified = data.enabledCells.removeAll(cells) || modified
             }
         }
 
