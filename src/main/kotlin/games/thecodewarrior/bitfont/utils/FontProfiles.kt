@@ -17,12 +17,12 @@ private val context = FontRenderContext(AffineTransform(), true, true)
 private val caches = mutableMapOf<Font, Int2ObjectOpenHashMap<List<List<Vec2>>>>()
 
 fun Font.glyphProfile(codepoint: Int): List<List<Vec2>> {
-    return caches.getOrPut(this) { Int2ObjectOpenHashMap() }.getOrPut(codepoint) {
+    val font = this.deriveFont(1000f)
+    val points = caches.getOrPut(font) { Int2ObjectOpenHashMap() }.getOrPut(codepoint) {
         val resolution = 32
-        val scaleFactor = 10000.0
-        val vector = this.createGlyphVector(context, Character.toChars(codepoint))
+        val vector = font.createGlyphVector(FontRenderContext(null, true, true), Character.toChars(codepoint))
         val shape = vector.getGlyphOutline(0)
-        val pathIter = shape.getPathIterator(AffineTransform.getScaleInstance(scaleFactor, scaleFactor))
+        val pathIter = shape.getPathIterator(AffineTransform())
         val paths = mutableListOf<List<Vec2>>()
         var path = mutableListOf<Vec2>()
 
@@ -31,7 +31,7 @@ fun Font.glyphProfile(codepoint: Int): List<List<Vec2>> {
             val type = pathIter.currentSegment(coords)
             when (type) {
                 PathIterator.SEG_CLOSE -> {
-                    paths.add(path.map { it / scaleFactor })
+                    paths.add(path.map { it / 1000f })
                     path.clear()
                 }
                 PathIterator.SEG_MOVETO -> {
@@ -66,4 +66,6 @@ fun Font.glyphProfile(codepoint: Int): List<List<Vec2>> {
 
         return@getOrPut paths
     }
+
+    return points.map { path -> path.map { it * this.size2D}}
 }

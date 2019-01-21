@@ -6,11 +6,13 @@ import games.thecodewarrior.bitfont.utils.Constants
 import games.thecodewarrior.bitfont.utils.ReferenceFonts
 import games.thecodewarrior.bitfont.utils.alignedText
 import games.thecodewarrior.bitfont.utils.contours
+import games.thecodewarrior.bitfont.utils.extensions.ImGuiDrags
 import games.thecodewarrior.bitfont.utils.extensions.lineTo
 import games.thecodewarrior.bitfont.utils.extensions.primaryModifier
 import games.thecodewarrior.bitfont.utils.glyphProfile
 import games.thecodewarrior.bitfont.utils.ifMac
 import games.thecodewarrior.bitfont.utils.keys
+import glm_.func.common.clamp
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import imgui.Col
@@ -26,9 +28,9 @@ import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 class GlyphEditor: IMWindow() {
-    var codepoint: Int = 65
     override val title: String
         get() = "U+%04X".format(codepoint)
 
@@ -50,8 +52,19 @@ class GlyphEditor: IMWindow() {
 
     val dataMap = mutableMapOf<Int, Data>()
 
-    val data: Data
-        get() = dataMap.getOrPut(65) { Data(codepoint) }
+    var data: Data = Data(0)
+    var codepoint: Int = 0
+        set(value) {
+            if(field != value.clamp(0, 0x10FFFF) && data == Data(codepoint)) {
+                dataMap.remove(codepoint)
+            }
+            field = value.clamp(0, 0x10FFFF)
+            dataMap.getOrPut(codepoint) { Data(codepoint) }
+        }
+
+    init {
+        codepoint = 65
+    }
 
     var referenceStyle = 0
 
@@ -126,6 +139,31 @@ class GlyphEditor: IMWindow() {
             glyph.bearingY = -minY
         }
 
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is Data) return false
+
+            if (codepoint != other.codepoint) return false
+            if (glyph != other.glyph) return false
+            if (enabledCells != other.enabledCells) return false
+            if (historyIndex != other.historyIndex) return false
+            if (undoDepth != other.undoDepth) return false
+            if (redoDepth != other.redoDepth) return false
+            if (history != other.history) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = codepoint
+            result = 31 * result + glyph.hashCode()
+            result = 31 * result + enabledCells.hashCode()
+            result = 31 * result + historyIndex
+            result = 31 * result + undoDepth
+            result = 31 * result + redoDepth
+            result = 31 * result + history.hashCode()
+            return result
+        }
     }
 
     override fun main() = with(ImGui) {
@@ -144,7 +182,21 @@ class GlyphEditor: IMWindow() {
         pushButtonRepeat(true)
         if (arrowButton("##left", Dir.Left)) codepoint--
         sameLine()
-        alignedText("U+%04X".format(codepoint), Vec2(0.5), width = controlsWidth - frameHeight*2 - style.itemSpacing.x*2)
+        withItemWidth(controlsWidth - frameHeight*2 - style.itemSpacing.x*2) {
+            val speed = max(1.0, abs(getMouseDragDelta(0).y) / 10.0)
+            ImGuiDrags.dragScalar(
+                label = "##codepointDrag",
+                value = ::codepoint,
+                speed = speed,
+                power = 1.0,
+                minValue = 0,
+                maxValue = 0x10FFFF,
+                valueToDisplay = { "U+%04X".format(it) },
+                correct = { it.roundToInt() },
+                valueToString = { "%04X".format(it) },
+                stringToValue = { current, new -> (new.toIntOrNull(16) ?: current) to "" }
+            )
+        }
         sameLine()
         if (arrowButton("##right", Dir.Right)) codepoint++
         popButtonRepeat()
@@ -162,7 +214,7 @@ class GlyphEditor: IMWindow() {
         }
         text(ReferenceFonts.style(referenceStyle).fontName(codepoint))
 
-        val labelWidth = calcTextSize("Origin X").x + 1//+ style.itemSpacing.x
+        val labelWidth = calcTextSize("Origin X").x + 1
         withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
             alignTextToFramePadding(); alignedText("Origin X", Vec2(1, 0.5), labelWidth); sameLine()
             inputInt("Origin X", ::originX)
