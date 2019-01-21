@@ -4,6 +4,7 @@ import games.thecodewarrior.bitfont.data.BitGrid
 import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.utils.Constants
 import games.thecodewarrior.bitfont.utils.ReferenceFonts
+import games.thecodewarrior.bitfont.utils.alignedText
 import games.thecodewarrior.bitfont.utils.contours
 import games.thecodewarrior.bitfont.utils.extensions.lineTo
 import games.thecodewarrior.bitfont.utils.extensions.primaryModifier
@@ -15,6 +16,8 @@ import glm_.vec2.Vec2i
 import imgui.Col
 import imgui.Dir
 import imgui.ImGui
+import imgui.WindowFlag
+import imgui.functionalProgramming.withChild
 import imgui.functionalProgramming.withItemWidth
 import imgui.internal.Rect
 import org.lwjgl.glfw.GLFW
@@ -62,6 +65,8 @@ class GlyphEditor: IMWindow() {
 
     val referenceFont: Font
         get() = ReferenceFonts[referenceFontFamily, referenceFontFace]
+
+    val controlsWidth: Float = 150f
 
     class Data(val codepoint: Int) {
         val glyph = Glyph(codepoint)
@@ -136,40 +141,49 @@ class GlyphEditor: IMWindow() {
 
     override fun main() = with(ImGui) {
         val contentRect = win.contentsRegionRect
+        withChild("Controls", Vec2(controlsWidth, contentRect.height), false) {
+            drawControls()
+        }
 
+        sameLine()
+
+        canvas = Rect(contentRect.min + Vec2(controlsWidth + 5, 0), contentRect.max)
+        drawCanvas()
+    }
+
+    fun drawControls() = with(ImGui) { withItemWidth(controlsWidth) {
         pushButtonRepeat(true)
         if (arrowButton("##left", Dir.Left)) codepoint--
         sameLine()
-        text("U+%04X".format(codepoint))
+        alignedText("U+%04X".format(codepoint), Vec2(0.5), width = controlsWidth - frameHeight*2 - style.itemSpacing.x*2)
         sameLine()
         if (arrowButton("##right", Dir.Right)) codepoint++
         popButtonRepeat()
 
-        withItemWidth(150) {
-            listBox("##fontFamily", ::referenceFontFamily,
-                ReferenceFonts.familyNames, 4)
-            sameLine()
-            listBox("##fontFace", ::referenceFontFace,
-                ReferenceFonts.faceNames[referenceFontFamily], 4)
-            sameLine()
-            val speed = 1f / max(1f, abs(getMouseDragDelta(0).y) / 10)
-            dragFloat("Size", ::referenceFontSize, speed, 1f, 1000f)
 
-            inputInt("Zoom", ::granularity)
-            sameLine()
-            inputInt("Origin X", ::originX)
-            sameLine()
-            inputInt("Origin Y", ::originY)
+        alignedText("Reference Font", Vec2(0.5), width = controlsWidth)
+        listBox("##fontFamily", ::referenceFontFamily,
+            ReferenceFonts.familyNames, 4)
+        listBox("##fontFace", ::referenceFontFace,
+            ReferenceFonts.faceNames[referenceFontFamily], 4)
+        val speed = 1f / max(1f, abs(getMouseDragDelta(0).y) / 10)
+        alignTextToFramePadding()
+        text("Size")
+        sameLine()
+        withItemWidth(controlsWidth - cursorPosX) {
+            dragFloat("Size", ::referenceFontSize, speed, 1f, 1000f)
         }
 
-        canvas = Rect(contentRect.min + cursorPos - Vec2(0, win.dc.prevLineHeight), contentRect.max)
-        itemSize(canvas, style.framePadding.y)
-        itemHoverable(canvas, "editor".hashCode())
-        pushClipRect(canvas.min, canvas.max, true)
-        if (!itemAdd(canvas, "editor".hashCode())) return
-        drawGrid()
-        popClipRect()
-    }
+        val labelWidth = calcTextSize("Origin X").x + 1//+ style.itemSpacing.x
+        withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
+            alignTextToFramePadding(); alignedText("Origin X", Vec2(1, 0.5), labelWidth); sameLine()
+            inputInt("Origin X", ::originX)
+            alignTextToFramePadding(); alignedText("Origin Y", Vec2(1, 0.5), labelWidth); sameLine()
+            inputInt("Origin Y", ::originY)
+            alignTextToFramePadding(); alignedText("Scale", Vec2(1, 0.5), labelWidth); sameLine()
+            inputInt("Scale", ::granularity)
+        }
+    } }
 
     fun drawCell(cell: Vec2i, col: Col) {
         drawList.addRectFilled(
@@ -179,7 +193,11 @@ class GlyphEditor: IMWindow() {
         )
     }
 
-    fun drawGrid() = with(ImGui) {
+    fun drawCanvas() = with(ImGui) {
+        itemSize(canvas, style.framePadding.y)
+        itemHoverable(canvas, "editor".hashCode())
+        pushClipRect(canvas.min, canvas.max, true)
+        if (!itemAdd(canvas, "editor".hashCode())) return
 
         drawList.addRectFilled(canvas.min, canvas.max, Constants.editorBackground)
 
@@ -251,6 +269,8 @@ class GlyphEditor: IMWindow() {
         }
 
         tool.draw()
+
+        popClipRect()
     }
 
     fun cell(relativeMouse: Vec2): Vec2i {
