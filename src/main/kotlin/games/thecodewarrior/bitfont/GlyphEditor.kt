@@ -43,28 +43,17 @@ class GlyphEditor: IMWindow() {
     var tool: EditorTool = brush
 
     var canvas = Rect()
-    var originX = 10
-    var originY = 10
+    var originX = 4
+    var originY = 16
     val origin: Vec2i
         get() = Vec2i(originX, originY)
 
     val dataMap = mutableMapOf<Int, Data>()
 
     val data: Data
-        get() = dataMap.getOrPut(codepoint) { Data(codepoint) }
+        get() = dataMap.getOrPut(65) { Data(codepoint) }
 
-    var referenceFontFamily = 0
-        set(value) {
-            if(field != value) referenceFontFace = 0
-            field = value
-        }
-    var referenceFontFace = 0
-    var referenceFontSize: Float
-        get() = referenceFont.size2D
-        set(value) { ReferenceFonts.setFontSize(referenceFontFamily, value) }
-
-    val referenceFont: Font
-        get() = ReferenceFonts[referenceFontFamily, referenceFontFace]
+    var referenceStyle = 0
 
     val controlsWidth: Float = 150f
 
@@ -162,17 +151,16 @@ class GlyphEditor: IMWindow() {
 
 
         alignedText("Reference Font", Vec2(0.5), width = controlsWidth)
-        listBox("##fontFamily", ::referenceFontFamily,
-            ReferenceFonts.familyNames, 4)
-        listBox("##fontFace", ::referenceFontFace,
-            ReferenceFonts.faceNames[referenceFontFamily], 4)
+        listBox("##style", ::referenceStyle,
+            ReferenceFonts.styles, 3)
         val speed = 1f / max(1f, abs(getMouseDragDelta(0).y) / 10)
         alignTextToFramePadding()
         text("Size")
         sameLine()
         withItemWidth(controlsWidth - cursorPosX) {
-            dragFloat("Size", ::referenceFontSize, speed, 1f, 1000f)
+            dragFloat("Size", ReferenceFonts::size, speed, 1f, 1000f)
         }
+        text(ReferenceFonts.style(referenceStyle).fontName(codepoint))
 
         val labelWidth = calcTextSize("Origin X").x + 1//+ style.itemSpacing.x
         withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
@@ -262,7 +250,7 @@ class GlyphEditor: IMWindow() {
             drawCell(it, Col.Text)
         }
 
-        referenceFont.glyphProfile(codepoint).forEach { contour ->
+        ReferenceFonts.style(referenceStyle)[codepoint].glyphProfile(codepoint).forEach { contour ->
             drawList.addPolyline(ArrayList(contour.map {
                 canvas.min + pos(it)
             }), Constants.editorSelection, true, 1f)
