@@ -20,6 +20,7 @@ import uno.glfw.glfw
 import uno.glfw.windowHint
 
 fun main(args: Array<String>) {
+    System.setProperty("java.awt.headless", "true")
     HelloWorld_lwjgl()
 }
 

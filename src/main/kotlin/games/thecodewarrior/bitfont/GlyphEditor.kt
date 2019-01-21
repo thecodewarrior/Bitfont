@@ -2,10 +2,12 @@ package games.thecodewarrior.bitfont
 
 import games.thecodewarrior.bitfont.data.BitGrid
 import games.thecodewarrior.bitfont.data.Glyph
-import games.thecodewarrior.bitfont.utils.Colors
+import games.thecodewarrior.bitfont.utils.Constants
+import games.thecodewarrior.bitfont.utils.ReferenceFonts
 import games.thecodewarrior.bitfont.utils.contours
 import games.thecodewarrior.bitfont.utils.extensions.lineTo
 import games.thecodewarrior.bitfont.utils.extensions.primaryModifier
+import games.thecodewarrior.bitfont.utils.glyphProfile
 import games.thecodewarrior.bitfont.utils.ifMac
 import games.thecodewarrior.bitfont.utils.keys
 import glm_.vec2.Vec2
@@ -13,11 +15,11 @@ import glm_.vec2.Vec2i
 import imgui.Col
 import imgui.Dir
 import imgui.ImGui
-import imgui.InputTextFlag
-import imgui.InputTextFlags
 import imgui.functionalProgramming.withItemWidth
 import imgui.internal.Rect
 import org.lwjgl.glfw.GLFW
+import java.awt.Font
+import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
@@ -47,6 +49,19 @@ class GlyphEditor: IMWindow() {
 
     val data: Data
         get() = dataMap.getOrPut(codepoint) { Data(codepoint) }
+
+    var referenceFontFamily = 0
+        set(value) {
+            if(field != value) referenceFontFace = 0
+            field = value
+        }
+    var referenceFontFace = 0
+    var referenceFontSize: Float
+        get() = referenceFont.size2D
+        set(value) { ReferenceFonts.setFontSize(referenceFontFamily, value) }
+
+    val referenceFont: Font
+        get() = ReferenceFonts[referenceFontFamily, referenceFontFace]
 
     class Data(val codepoint: Int) {
         val glyph = Glyph(codepoint)
@@ -131,6 +146,15 @@ class GlyphEditor: IMWindow() {
         popButtonRepeat()
 
         withItemWidth(150) {
+            listBox("##fontFamily", ::referenceFontFamily,
+                ReferenceFonts.familyNames, 4)
+            sameLine()
+            listBox("##fontFace", ::referenceFontFace,
+                ReferenceFonts.faceNames[referenceFontFamily], 4)
+            sameLine()
+            val speed = 1f / max(1f, abs(getMouseDragDelta(0).y) / 10)
+            dragFloat("Size", ::referenceFontSize, speed, 1f, 1000f)
+
             inputInt("Zoom", ::granularity)
             sameLine()
             inputInt("Origin X", ::originX)
@@ -157,7 +181,7 @@ class GlyphEditor: IMWindow() {
 
     fun drawGrid() = with(ImGui) {
 
-        drawList.addRectFilled(canvas.min, canvas.max, Colors.editorBackground)
+        drawList.addRectFilled(canvas.min, canvas.max, Constants.editorBackground)
 
         if(isWindowHovered()) {
             keys {
@@ -192,12 +216,12 @@ class GlyphEditor: IMWindow() {
 
         for(i in 0 .. (canvas.height / granularity).toInt()) {
             val col = when(i) {
-                origin.y -> Colors.editorAxes
-                origin.y - App.xHeight -> Colors.editorGuides
-                origin.y - App.capHeight -> Colors.editorGuides
-                origin.y - App.ascender -> Colors.editorGuides
-                origin.y + App.descender -> Colors.editorGuides
-                else -> Colors.editorGrid
+                origin.y -> Constants.editorAxes
+                origin.y - App.xHeight -> Constants.editorGuides
+                origin.y - App.capHeight -> Constants.editorGuides
+                origin.y - App.ascender -> Constants.editorGuides
+                origin.y + App.descender -> Constants.editorGuides
+                else -> Constants.editorGrid
             }
             drawList.addLine(
                 Vec2(canvas.min.x, canvas.min.y + i*granularity),
@@ -211,13 +235,19 @@ class GlyphEditor: IMWindow() {
             drawList.addLine(
                 Vec2(canvas.min.x + i*granularity, canvas.min.y),
                 Vec2(canvas.min.x + i*granularity, canvas.max.y),
-                if(i == origin.x) Colors.editorAxes else Colors.editorGrid,
+                if(i == origin.x) Constants.editorAxes else Constants.editorGrid,
                 1f
             )
         }
 
         (data.enabledCells + nudge.moving).forEach {
             drawCell(it, Col.Text)
+        }
+
+        referenceFont.glyphProfile(codepoint).forEach { contour ->
+            drawList.addPolyline(ArrayList(contour.map {
+                canvas.min + pos(it)
+            }), Constants.editorSelection, true, 1f)
         }
 
         tool.draw()
@@ -230,6 +260,10 @@ class GlyphEditor: IMWindow() {
 
     fun pos(cell: Vec2i): Vec2 {
         return Vec2((cell + origin) * granularity)
+    }
+
+    fun pos(point: Vec2): Vec2 {
+        return (point + origin) * granularity
     }
 
     interface EditorTool {
@@ -305,7 +339,7 @@ class GlyphEditor: IMWindow() {
             moving.contours().forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
                     canvas.min + pos(it)
-                }), Colors.editorSelection, true, 2f)
+                }), Constants.editorSelection, true, 2f)
             }
         }
 
@@ -404,13 +438,13 @@ class GlyphEditor: IMWindow() {
             selected.contours().forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
                     canvas.min + pos(it)
-                }), Colors.editorSelection, true, 2f)
+                }), Constants.editorSelection, true, 2f)
             }
 
             selecting.contours().forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
                     canvas.min + pos(it)
-                }), Colors.editorSelection, true, 2f)
+                }), Constants.editorSelection, true, 2f)
             }
         }
 
