@@ -1,12 +1,9 @@
 package games.thecodewarrior.bitfont.utils
 
-import games.thecodewarrior.bitfont.App
+import games.thecodewarrior.bitfont.Main
 import games.thecodewarrior.bitfont.utils.extensions.u32
 import imgui.Color
-import java.awt.Font
 import java.io.InputStream
-import java.util.SortedMap
-import java.util.TreeMap
 
 object Constants {
     val editorBackground = col("ff_0A0A0A")
@@ -27,5 +24,5 @@ object Constants {
         ).u32
     }
 
-    fun resource(name: String): InputStream? = App::class.java.getResourceAsStream(name)
+    fun resource(name: String): InputStream? = Main::class.java.getResourceAsStream(name)
 }
