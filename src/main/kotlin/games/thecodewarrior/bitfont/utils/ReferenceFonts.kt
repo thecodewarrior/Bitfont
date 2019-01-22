@@ -5,12 +5,6 @@ import java.awt.Font
 import kotlin.math.max
 
 object ReferenceFonts {
-    var size: Float = 1f
-        set(value) {
-            field = max(1f, value)
-            updateSizes()
-        }
-
     val serifDisplay: FallbackFont
     val serifMono: FallbackFont
     val serif: FallbackFont
@@ -80,12 +74,6 @@ object ReferenceFonts {
 
     fun style(i: Int): FallbackFont {
         return styleFonts[i]
-    }
-
-    private fun updateSizes() {
-        val newFonts = fonts.mapValues { it.value.deriveFont(size) }
-        fonts.clear()
-        fonts.putAll(newFonts)
     }
 }
 

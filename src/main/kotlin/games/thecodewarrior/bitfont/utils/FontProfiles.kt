@@ -16,7 +16,7 @@ private val context = FontRenderContext(AffineTransform(), true, true)
 
 private val caches = mutableMapOf<Font, Int2ObjectOpenHashMap<List<List<Vec2>>>>()
 
-fun Font.glyphProfile(codepoint: Int): List<List<Vec2>> {
+fun Font.glyphProfile(codepoint: Int, size: Float): List<List<Vec2>> {
     val font = this.deriveFont(1000f)
     val points = caches.getOrPut(font) { Int2ObjectOpenHashMap() }.getOrPut(codepoint) {
         val resolution = 32
@@ -67,5 +67,5 @@ fun Font.glyphProfile(codepoint: Int): List<List<Vec2>> {
         return@getOrPut paths
     }
 
-    return points.map { path -> path.map { it * this.size2D}}
+    return points.map { path -> path.map { it * size } }
 }

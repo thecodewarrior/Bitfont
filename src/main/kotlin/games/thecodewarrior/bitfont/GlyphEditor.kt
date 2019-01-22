@@ -18,12 +18,12 @@ import glm_.vec2.Vec2i
 import imgui.Col
 import imgui.Dir
 import imgui.ImGui
-import imgui.WindowFlag
 import imgui.functionalProgramming.withChild
 import imgui.functionalProgramming.withItemWidth
 import imgui.internal.Rect
 import org.lwjgl.glfw.GLFW
-import java.awt.Font
+import java.awt.font.FontRenderContext
+import java.awt.geom.AffineTransform
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.max
@@ -59,7 +59,7 @@ class GlyphEditor: IMWindow() {
                 dataMap.remove(codepoint)
             }
             field = value.clamp(0, 0x10FFFF)
-            dataMap.getOrPut(codepoint) { Data(codepoint) }
+            data = dataMap.getOrPut(codepoint) { Data(codepoint) }
         }
 
     init {
@@ -67,6 +67,9 @@ class GlyphEditor: IMWindow() {
     }
 
     var referenceStyle = 0
+    var referenceSize = 1f
+        set(value) { field = value.clamp(1f, 1000f) }
+    var displayReference = false
 
     val controlsWidth: Float = 150f
 
@@ -201,19 +204,6 @@ class GlyphEditor: IMWindow() {
         if (arrowButton("##right", Dir.Right)) codepoint++
         popButtonRepeat()
 
-
-        alignedText("Reference Font", Vec2(0.5), width = controlsWidth)
-        listBox("##style", ::referenceStyle,
-            ReferenceFonts.styles, 3)
-        val speed = 1f / max(1f, abs(getMouseDragDelta(0).y) / 10)
-        alignTextToFramePadding()
-        text("Size")
-        sameLine()
-        withItemWidth(controlsWidth - cursorPosX) {
-            dragFloat("Size", ReferenceFonts::size, speed, 1f, 1000f)
-        }
-        text(ReferenceFonts.style(referenceStyle).fontName(codepoint))
-
         val labelWidth = calcTextSize("Origin X").x + 1
         withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
             alignTextToFramePadding(); alignedText("Origin X", Vec2(1, 0.5), labelWidth); sameLine()
@@ -223,6 +213,24 @@ class GlyphEditor: IMWindow() {
             alignTextToFramePadding(); alignedText("Scale", Vec2(1, 0.5), labelWidth); sameLine()
             inputInt("Scale", ::granularity)
         }
+
+        val prevCursor = Vec2(cursorPos)
+        alignedText("Reference Font", Vec2(0.5), width = controlsWidth)
+        cursorPos = prevCursor
+        checkbox("##displayReference", ::displayReference)
+        listBox("##style", ::referenceStyle,
+            ReferenceFonts.styles, 3)
+        val speed = 1f / max(1f, abs(getMouseDragDelta(0).y) / 10)
+        alignTextToFramePadding()
+        text("Size")
+        sameLine()
+        withItemWidth(controlsWidth - cursorPosX) {
+            dragFloat("Size", ::referenceSize, speed, 1f, 1000f)
+        }
+        text(ReferenceFonts.style(referenceStyle).fontName(codepoint))
+
+        val bb = Rect(win.dc.cursorPos, win.dc.cursorPos + Vec2(controlsWidth))
+        drawReference(bb)
     } }
 
     fun drawCell(cell: Vec2i, col: Col) {
@@ -231,6 +239,73 @@ class GlyphEditor: IMWindow() {
             canvas.min + pos(cell + Vec2i(1, 1)),
             col.u32
         )
+    }
+
+    fun drawReference(bb: Rect) = with(ImGui) {
+        itemSize(bb)
+        pushClipRect(bb.min, bb.max, true)
+        itemAdd(bb, "##referenceImage".hashCode())
+
+        drawList.addRectFilled(
+            bb.min,
+            bb.max,
+            Constants.editorBackground
+        )
+
+        val font = ReferenceFonts.style(referenceStyle)[codepoint]
+        val bigFont = font.deriveFont(1000f)
+        val frc = FontRenderContext(AffineTransform(), true, true)
+        val metrics = bigFont.getLineMetrics(String(Character.toChars(codepoint)), frc)
+        val profile = font.glyphProfile(codepoint, 1f)
+        if(profile.isEmpty()) return
+
+        val capHeight = bigFont.createGlyphVector(frc, "X").visualBounds.height / 1000
+        val lowerHeight = bigFont.createGlyphVector(frc, "x").visualBounds.height / 1000
+
+        val glyphMin = Vec2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+        val glyphMax = Vec2(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY)
+
+        profile.forEach { it.forEach { point ->
+            glyphMin minAssign point
+            glyphMax maxAssign point
+        } }
+
+        val visibleBounds = Rect(
+            glyphMin min Vec2(0, -capHeight),
+            glyphMax max Vec2(0, 0)
+        )
+
+        val scales = (bb.size * 0.8) / visibleBounds.size
+        val scale = min(scales.x, scales.y)
+        val origin = Vec2i(bb.min + bb.size * 0.1 - visibleBounds.min * scale + Vec2(0, bb.height * 0.8 - visibleBounds.height * scale)/2)
+
+        fun guide(height: Float, col: Int) {
+            drawList.addLine(
+                Vec2(bb.min.x, origin.y + (height * scale).toInt()),
+                Vec2(bb.max.x, origin.y + (height * scale).toInt()),
+                col,
+                1f
+            )
+        }
+
+        guide(-capHeight.toFloat(), Constants.editorGuides)
+        guide(-lowerHeight.toFloat(), Constants.editorGuides)
+
+        guide(0f, Constants.editorAxes)
+        drawList.addLine(
+            Vec2(origin.x, bb.min.y),
+            Vec2(origin.x, bb.max.y),
+            Constants.editorAxes,
+            1f
+        )
+
+        profile.forEach { contour ->
+            drawList.addPolyline(ArrayList(contour.map {
+                Vec2(origin) + it * scale
+            }), Constants.editorSelection, true, 1f)
+        }
+
+        popClipRect()
     }
 
     fun drawCanvas() = with(ImGui) {
@@ -302,10 +377,12 @@ class GlyphEditor: IMWindow() {
             drawCell(it, Col.Text)
         }
 
-        ReferenceFonts.style(referenceStyle)[codepoint].glyphProfile(codepoint).forEach { contour ->
-            drawList.addPolyline(ArrayList(contour.map {
-                canvas.min + pos(it)
-            }), Constants.editorSelection, true, 1f)
+        if(displayReference) {
+            ReferenceFonts.style(referenceStyle)[codepoint].glyphProfile(codepoint, referenceSize).forEach { contour ->
+                drawList.addPolyline(ArrayList(contour.map {
+                    canvas.min + pos(it)
+                }), Constants.editorSelection, true, 1f)
+            }
         }
 
         tool.draw()
