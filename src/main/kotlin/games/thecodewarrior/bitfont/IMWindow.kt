@@ -2,6 +2,7 @@ package games.thecodewarrior.bitfont
 
 import imgui.DrawList
 import imgui.ImGui
+import imgui.WindowFlag
 import imgui.internal.Window
 
 abstract class IMWindow {
@@ -9,9 +10,13 @@ abstract class IMWindow {
     abstract val title: String
     protected abstract fun main()
 
+    val windowFlags = mutableSetOf<WindowFlag>()
+
     fun push() {
         if(visible) {
-            if(ImGui.begin_("$title###${System.identityHashCode(this@IMWindow)}", ::visible)) {
+            if(ImGui.begin_("$title###${System.identityHashCode(this@IMWindow)}", ::visible,
+                    windowFlags.fold(0) { acc, it -> acc or it.i })
+            ) {
                 main()
             }
             ImGui.end()

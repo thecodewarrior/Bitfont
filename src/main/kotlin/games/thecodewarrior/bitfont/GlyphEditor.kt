@@ -19,6 +19,9 @@ import glm_.vec2.Vec2i
 import imgui.Col
 import imgui.Dir
 import imgui.ImGui
+import imgui.WindowFlag
+import imgui.functionalProgramming.menu
+import imgui.functionalProgramming.menuBar
 import imgui.functionalProgramming.withChild
 import imgui.functionalProgramming.withItemWidth
 import imgui.internal.Rect
@@ -30,6 +33,7 @@ import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 class GlyphEditor: IMWindow() {
     override val title: String
@@ -63,17 +67,21 @@ class GlyphEditor: IMWindow() {
             data = dataMap.getOrPut(codepoint) { Data(codepoint) }
         }
 
-    init {
-        codepoint = 65
-    }
-
     var referenceStyle = 0
     var referenceSize = 1f
         set(value) { field = value.clamp(1f, 1000f) }
     var displayReference = false
     var displayGrid = true
+    var displayGuides = true
+    var localGridRadius = 0
+        set(value) { field = value.clamp(0, 100) }
 
     val controlsWidth: Float = 150f
+
+    init {
+        windowFlags.add(WindowFlag.MenuBar)
+        codepoint = 65
+    }
 
     class Data(val codepoint: Int) {
         val glyph = Glyph(codepoint)
@@ -172,15 +180,41 @@ class GlyphEditor: IMWindow() {
     }
 
     override fun main() = with(ImGui) {
+        var menuHeight = -cursorPos
+        drawMenu()
         val contentRect = win.contentsRegionRect
+        menuHeight = menuHeight + cursorPos
         withChild("Controls", Vec2(controlsWidth, contentRect.height), false) {
             drawControls()
         }
 
         sameLine()
 
-        canvas = Rect(contentRect.min + Vec2(controlsWidth + 5, 0), contentRect.max)
+        canvas = Rect(contentRect.min + Vec2(controlsWidth + 5, menuHeight.y), contentRect.max)
         drawCanvas()
+    }
+
+    fun drawMenu() = with(ImGui) {
+        menuBar {
+            menu("Menu") {
+//                menuItem("Open", "Ctrl+O")
+//                menu("Open Recent") {
+//                    menuItem("fish_hat.c")
+//                    menuItem("fish_hat.inl")
+//                    menuItem("fish_hat.h")
+//                    menu("More..") {
+//                        menuItem("Hello")
+//                        menuItem("Sailor")
+//                    }
+//                }
+                if(menuItem("Save", "Ctrl+S")) {
+                }
+//                menuItem("Save As..")
+                separator()
+//                menuItem("Checked", selected = true)
+//                menuItem("Quit", "Alt+F4")
+            }
+        }
     }
 
     fun drawControls() = with(ImGui) { withItemWidth(controlsWidth) {
@@ -216,6 +250,10 @@ class GlyphEditor: IMWindow() {
             inputInt("Scale", ::granularity)
             alignTextToFramePadding(); alignedText("Grid", Vec2(1, 0.5), labelWidth); sameLine()
             checkbox("##showGrid", ::displayGrid)
+            alignTextToFramePadding(); alignedText("Local Grid", Vec2(1, 0.5), labelWidth); sameLine()
+            inputInt("##localGridRadius", ::localGridRadius)
+            alignTextToFramePadding(); alignedText("Guides", Vec2(1, 0.5), labelWidth); sameLine()
+            checkbox("##showGuides", ::displayGuides)
         }
 
         val prevCursor = Vec2(cursorPos)
@@ -350,32 +388,69 @@ class GlyphEditor: IMWindow() {
 
         tool.update()
 
+        fun horizontalLine(pos: Number, col: Int) {
+            drawList.addLine(
+                Vec2(canvas.min.x, canvas.min.y + (pos.toFloat() + origin.y) * granularity),
+                Vec2(canvas.max.x, canvas.min.y + (pos.toFloat() + origin.y) * granularity),
+                col,
+                1f
+            )
+        }
+
+        fun verticalLine(pos: Number, col: Int) {
+            drawList.addLine(
+                Vec2(canvas.min.x + (pos.toFloat() + origin.x) * granularity, canvas.min.y),
+                Vec2(canvas.min.x + (pos.toFloat() + origin.x) * granularity, canvas.max.y),
+                col,
+                1f
+            )
+        }
+
         if(displayGrid) {
             for (i in 0..(canvas.height / granularity).toInt()) {
-                val col = when (i) {
-                    origin.y -> Constants.editorAxes
-                    origin.y - App.xHeight -> Constants.editorGuides
-                    origin.y - App.capHeight -> Constants.editorGuides
-                    origin.y - App.ascender -> Constants.editorGuides
-                    origin.y + App.descender -> Constants.editorGuides
-                    else -> Constants.editorGrid
-                }
-                drawList.addLine(
-                    Vec2(canvas.min.x, canvas.min.y + i * granularity),
-                    Vec2(canvas.max.x, canvas.min.y + i * granularity),
-                    col,
-                    1f
-                )
+                horizontalLine(i - origin.y, Constants.editorGrid)
             }
 
             for (i in 0..(canvas.width / granularity).toInt()) {
-                drawList.addLine(
-                    Vec2(canvas.min.x + i * granularity, canvas.min.y),
-                    Vec2(canvas.min.x + i * granularity, canvas.max.y),
-                    if (i == origin.x) Constants.editorAxes else Constants.editorGrid,
-                    1f
-                )
+                verticalLine(i - origin.x, Constants.editorGrid)
             }
+        } else if(localGridRadius > 0) {
+            val cursorPos = pos(Vec2(0.5, 0.5) + cell(io.mousePos - canvas.min))
+            val cursorCell = cell(cursorPos)
+            for(i in -localGridRadius .. localGridRadius + 1) {
+
+                val offset = pos(cursorCell + Vec2i(i, i)) - cursorPos
+                val radius = localGridRadius*granularity
+                if(offset.x < radius) {
+                    val length = sqrt(radius * radius - offset.x * offset.x)
+                    drawList.addLine(
+                        canvas.min + cursorPos + Vec2(offset.x, -length),
+                        canvas.min + cursorPos + Vec2(offset.x, length),
+                        Constants.editorGrid,
+                        1f
+                    )
+                }
+                if(offset.y < radius) {
+                    val length = sqrt(radius*radius - offset.y*offset.y)
+                    drawList.addLine(
+                        canvas.min + cursorPos + Vec2(-length, offset.y),
+                        canvas.min + cursorPos + Vec2(length, offset.y),
+                        Constants.editorGrid,
+                        1f
+                    )
+                }
+            }
+        }
+
+
+        if(displayGuides) {
+            horizontalLine(-App.xHeight, Constants.editorGuides)
+            horizontalLine(-App.capHeight, Constants.editorGuides)
+            horizontalLine(-App.ascender, Constants.editorGuides)
+            horizontalLine(App.descender, Constants.editorGuides)
+
+            verticalLine(0, Constants.editorAxes)
+            horizontalLine(0, Constants.editorAxes)
         }
 
         (data.enabledCells + nudge.moving).forEach {
