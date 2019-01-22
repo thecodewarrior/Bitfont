@@ -1,5 +1,6 @@
 package games.thecodewarrior.bitfont
 
+import com.ibm.icu.lang.UCharacter
 import games.thecodewarrior.bitfont.data.BitGrid
 import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.utils.Constants
@@ -32,7 +33,7 @@ import kotlin.math.roundToInt
 
 class GlyphEditor: IMWindow() {
     override val title: String
-        get() = "U+%04X".format(codepoint)
+        get() = "U+%04X - %s".format(codepoint, UCharacter.getName(codepoint))
 
     var granularity = 25
     set(value) {
@@ -70,6 +71,7 @@ class GlyphEditor: IMWindow() {
     var referenceSize = 1f
         set(value) { field = value.clamp(1f, 1000f) }
     var displayReference = false
+    var displayGrid = true
 
     val controlsWidth: Float = 150f
 
@@ -212,6 +214,8 @@ class GlyphEditor: IMWindow() {
             inputInt("Origin Y", ::originY)
             alignTextToFramePadding(); alignedText("Scale", Vec2(1, 0.5), labelWidth); sameLine()
             inputInt("Scale", ::granularity)
+            alignTextToFramePadding(); alignedText("Grid", Vec2(1, 0.5), labelWidth); sameLine()
+            checkbox("##showGrid", ::displayGrid)
         }
 
         val prevCursor = Vec2(cursorPos)
@@ -255,7 +259,6 @@ class GlyphEditor: IMWindow() {
         val font = ReferenceFonts.style(referenceStyle)[codepoint]
         val bigFont = font.deriveFont(1000f)
         val frc = FontRenderContext(AffineTransform(), true, true)
-        val metrics = bigFont.getLineMetrics(String(Character.toChars(codepoint)), frc)
         val profile = font.glyphProfile(codepoint, 1f)
         if(profile.isEmpty()) return
 
@@ -347,30 +350,32 @@ class GlyphEditor: IMWindow() {
 
         tool.update()
 
-        for(i in 0 .. (canvas.height / granularity).toInt()) {
-            val col = when(i) {
-                origin.y -> Constants.editorAxes
-                origin.y - App.xHeight -> Constants.editorGuides
-                origin.y - App.capHeight -> Constants.editorGuides
-                origin.y - App.ascender -> Constants.editorGuides
-                origin.y + App.descender -> Constants.editorGuides
-                else -> Constants.editorGrid
+        if(displayGrid) {
+            for (i in 0..(canvas.height / granularity).toInt()) {
+                val col = when (i) {
+                    origin.y -> Constants.editorAxes
+                    origin.y - App.xHeight -> Constants.editorGuides
+                    origin.y - App.capHeight -> Constants.editorGuides
+                    origin.y - App.ascender -> Constants.editorGuides
+                    origin.y + App.descender -> Constants.editorGuides
+                    else -> Constants.editorGrid
+                }
+                drawList.addLine(
+                    Vec2(canvas.min.x, canvas.min.y + i * granularity),
+                    Vec2(canvas.max.x, canvas.min.y + i * granularity),
+                    col,
+                    1f
+                )
             }
-            drawList.addLine(
-                Vec2(canvas.min.x, canvas.min.y + i*granularity),
-                Vec2(canvas.max.x, canvas.min.y + i*granularity),
-                col,
-                1f
-            )
-        }
 
-        for(i in 0 .. (canvas.width / granularity).toInt()) {
-            drawList.addLine(
-                Vec2(canvas.min.x + i*granularity, canvas.min.y),
-                Vec2(canvas.min.x + i*granularity, canvas.max.y),
-                if(i == origin.x) Constants.editorAxes else Constants.editorGrid,
-                1f
-            )
+            for (i in 0..(canvas.width / granularity).toInt()) {
+                drawList.addLine(
+                    Vec2(canvas.min.x + i * granularity, canvas.min.y),
+                    Vec2(canvas.min.x + i * granularity, canvas.max.y),
+                    if (i == origin.x) Constants.editorAxes else Constants.editorGrid,
+                    1f
+                )
+            }
         }
 
         (data.enabledCells + nudge.moving).forEach {

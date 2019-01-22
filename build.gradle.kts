@@ -35,6 +35,7 @@ dependencies {
     "compile"(kotlin("stdlib-jdk8", "1.3.0"))
     "compile"(kotlin("reflect", "1.3.0"))
     "compile"("it.unimi.dsi:fastutil:8.2.2")
+    "compile"("com.ibm.icu:icu4j:63.1")
     "compile"("com.github.kotlin-graphics:imgui:v1.63-beta-03")
     val lwjglNatives = when (OperatingSystem.current()) {
         OperatingSystem.WINDOWS -> "natives-windows"
