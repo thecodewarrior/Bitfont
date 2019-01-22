@@ -1,6 +1,7 @@
 package games.thecodewarrior.bitfont
 
 import com.ibm.icu.lang.UCharacter
+import games.thecodewarrior.bitfont.data.BitFont
 import games.thecodewarrior.bitfont.data.BitGrid
 import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.utils.Constants
@@ -35,7 +36,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-class GlyphEditor: IMWindow() {
+class GlyphEditor(val bitFont: BitFont): IMWindow() {
     override val title: String
         get() = "U+%04X - %s".format(codepoint, UCharacter.getName(codepoint))
 
@@ -83,8 +84,8 @@ class GlyphEditor: IMWindow() {
         codepoint = 65
     }
 
-    class Data(val codepoint: Int) {
-        val glyph = Glyph(codepoint)
+    inner class Data(val codepoint: Int) {
+        val glyph = bitFont.glyphs.getOrPut(codepoint) { Glyph(codepoint) }
         val enabledCells = mutableSetOf<Vec2i>()
 
         var historyIndex = 0
@@ -92,11 +93,16 @@ class GlyphEditor: IMWindow() {
         var redoDepth = 0
         val history = MutableList(100) { State() }
 
+        init {
+            updateFromGlyph()
+        }
+
         fun pushHistory() {
             historyIndex++
             undoDepth = min(99, undoDepth + 1)
             redoDepth = 0
             history[historyIndex % history.size] = State()
+            updateGlyph()
         }
 
         fun undo() {
@@ -106,6 +112,7 @@ class GlyphEditor: IMWindow() {
                 redoDepth++
             }
             history[historyIndex % history.size].apply()
+            updateGlyph()
         }
 
         fun redo() {
@@ -115,6 +122,7 @@ class GlyphEditor: IMWindow() {
                 redoDepth--
             }
             history[historyIndex % history.size].apply()
+            updateGlyph()
         }
 
         inner class State {
@@ -145,11 +153,23 @@ class GlyphEditor: IMWindow() {
             }
             val grid = BitGrid(maxX - minX + 1, maxY - minY + 1)
             enabledCells.forEach {
-                grid[it - Vec2i(minX, maxX)] = true
+                grid[it - Vec2i(minX, minY)] = true
             }
             glyph.image = grid
             glyph.bearingX = minX
-            glyph.bearingY = -minY
+            glyph.bearingY = minY
+        }
+
+        fun updateFromGlyph() {
+            enabledCells.clear()
+            val grid = glyph.image
+            for(x in 0 until grid.width) {
+                for(y in 0 until grid.height) {
+                    if(grid[Vec2i(x, y)]) {
+                        enabledCells.add(Vec2i(x + glyph.bearingX, y + glyph.bearingY))
+                    }
+                }
+            }
         }
 
         override fun equals(other: Any?): Boolean {
@@ -444,10 +464,10 @@ class GlyphEditor: IMWindow() {
 
 
         if(displayGuides) {
-            horizontalLine(-App.xHeight, Constants.editorGuides)
-            horizontalLine(-App.capHeight, Constants.editorGuides)
-            horizontalLine(-App.ascender, Constants.editorGuides)
-            horizontalLine(App.descender, Constants.editorGuides)
+            horizontalLine(-bitFont.xHeight, Constants.editorGuides)
+            horizontalLine(-bitFont.capHeight, Constants.editorGuides)
+            horizontalLine(-bitFont.ascender, Constants.editorGuides)
+            horizontalLine(bitFont.descender, Constants.editorGuides)
 
             verticalLine(0, Constants.editorAxes)
             horizontalLine(0, Constants.editorAxes)

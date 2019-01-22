@@ -10,6 +10,7 @@ abstract class IMWindow {
     abstract val title: String
     protected abstract fun main()
 
+    open val children = mutableListOf<IMWindow>()
     val windowFlags = mutableSetOf<WindowFlag>()
 
     fun push() {
@@ -20,6 +21,9 @@ abstract class IMWindow {
                 main()
             }
             ImGui.end()
+        }
+        children.forEach {
+            it.push()
         }
     }
 
