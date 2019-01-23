@@ -80,7 +80,6 @@ class GlyphEditor(val bitFont: BitFont): IMWindow() {
     val controlsWidth: Float = 150f
 
     init {
-        windowFlags.add(WindowFlag.MenuBar)
         codepoint = 65
     }
 
@@ -201,7 +200,6 @@ class GlyphEditor(val bitFont: BitFont): IMWindow() {
 
     override fun main() = with(ImGui) {
         var menuHeight = -cursorPos
-        drawMenu()
         val contentRect = win.contentsRegionRect
         menuHeight = menuHeight + cursorPos
         withChild("Controls", Vec2(controlsWidth, contentRect.height), false) {
@@ -212,29 +210,6 @@ class GlyphEditor(val bitFont: BitFont): IMWindow() {
 
         canvas = Rect(contentRect.min + Vec2(controlsWidth + 5, menuHeight.y), contentRect.max)
         drawCanvas()
-    }
-
-    fun drawMenu() = with(ImGui) {
-        menuBar {
-            menu("Menu") {
-//                menuItem("Open", "Ctrl+O")
-//                menu("Open Recent") {
-//                    menuItem("fish_hat.c")
-//                    menuItem("fish_hat.inl")
-//                    menuItem("fish_hat.h")
-//                    menu("More..") {
-//                        menuItem("Hello")
-//                        menuItem("Sailor")
-//                    }
-//                }
-                if(menuItem("Save", "Ctrl+S")) {
-                }
-//                menuItem("Save As..")
-                separator()
-//                menuItem("Checked", selected = true)
-//                menuItem("Quit", "Alt+F4")
-            }
-        }
     }
 
     fun drawControls() = with(ImGui) { withItemWidth(controlsWidth) {

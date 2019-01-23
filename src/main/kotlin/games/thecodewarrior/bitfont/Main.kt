@@ -1,6 +1,7 @@
 package games.thecodewarrior.bitfont
 
-import games.thecodewarrior.bitfont.utils.ifMac
+import games.thecodewarrior.bitfont.data.BitFont
+import games.thecodewarrior.bitfont.utils.ifMacSystem
 import glm_.vec4.Vec4
 import gln.checkError
 import gln.glClearColor
@@ -14,7 +15,6 @@ import imgui.impl.LwjglGlfw.GlfwClientApi
 import org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT
 import org.lwjgl.opengl.GL11.glClear
 import org.lwjgl.system.MemoryStack
-import org.lwjgl.system.Platform
 import uno.glfw.GlfwWindow
 import uno.glfw.glfw
 import uno.glfw.windowHint
@@ -32,11 +32,13 @@ object Main {
     val clearColor = Vec4(0.45f, 0.55f, 0.6f, 1f)
     var showDemo = true
 
-    val mainWindow = FontWindow()
+    val windows = mutableListOf<IMWindow>(
+        FontWindow(BitFont("Font", 16, 10, 4, 9, 6)).also { it.visible = true }
+    )
 
     init {
-        glfw.init(ifMac("3.2", "3.0"))
-        if(Platform.get() == Platform.MACOSX) {
+        glfw.init(ifMacSystem("3.2", "3.0"))
+        ifMacSystem {
             glfw.windowHint {
                 windowHint.profile = windowHint.Profile.core
                 windowHint.forwardComp = true
@@ -74,8 +76,7 @@ object Main {
             if (showDemo)
                 showDemoWindow(::showDemo)
 
-            mainWindow.visible = true
-            mainWindow.push()
+            windows.toList().forEach { it.push() }
         }
 
         // Rendering

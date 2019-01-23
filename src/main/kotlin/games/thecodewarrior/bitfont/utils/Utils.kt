@@ -1,15 +1,33 @@
 package games.thecodewarrior.bitfont.utils
 
+import imgui.ImGui
 import org.lwjgl.system.Platform
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.awt.image.IndexColorModel
 
-fun <T> ifMac(mac: T, others: () -> T): T {
-    return if (Platform.get() == Platform.MACOSX) mac else others()
+inline fun <T> ifMac(f: () -> T): T? {
+    if(ImGui.io.configMacOSXBehaviors)
+        return f()
+    return null
+}
+inline fun <T> ifMac(mac: T, others: () -> T): T {
+    return if (ImGui.io.configMacOSXBehaviors) mac else others()
 }
 fun <T> ifMac(mac: T, others: T): T {
     return ifMac(mac) { others }
+}
+
+inline fun <T> ifMacSystem(f: () -> T): T? {
+    if(Platform.get() == Platform.MACOSX)
+        return f()
+    return null
+}
+inline fun <T> ifMacSystem(mac: T, others: () -> T): T {
+    return if (Platform.get() == Platform.MACOSX) mac else others()
+}
+fun <T> ifMacSystem(mac: T, others: T): T {
+    return ifMacSystem(mac) { others }
 }
 
 fun Color.toHexString(): String {

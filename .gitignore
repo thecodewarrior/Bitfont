@@ -134,3 +134,4 @@ gradle-app.setting
 imgui.ini
 hs_err*.log
 replay_pid*.log
+/run
