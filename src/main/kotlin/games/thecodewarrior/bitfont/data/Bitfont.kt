@@ -1,15 +1,13 @@
 package games.thecodewarrior.bitfont.data
 
-import com.beust.klaxon.Json
 import com.beust.klaxon.JsonObject
-import com.beust.klaxon.KlaxonJson
 import com.beust.klaxon.json
 import games.thecodewarrior.bitfont.utils.serialization.JsonReadable
 import games.thecodewarrior.bitfont.utils.serialization.JsonWritable
 import glm_.func.common.clamp
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 
-class BitFont(name: String, lineHeight: Int, ascender: Int, descender: Int, capHeight: Int, xHeight: Int): JsonWritable<JsonObject> {
+class Bitfont(name: String, lineHeight: Int, ascender: Int, descender: Int, capHeight: Int, xHeight: Int): JsonWritable<JsonObject> {
     var name: String = name
 
     var lineHeight: Int = lineHeight.clamp(0, 65535)
@@ -57,9 +55,9 @@ class BitFont(name: String, lineHeight: Int, ascender: Int, descender: Int, capH
         )
     }
 
-    companion object: JsonReadable<JsonObject, BitFont> {
-        override fun readJson(j: JsonObject): BitFont {
-            val font = BitFont(
+    companion object: JsonReadable<JsonObject, Bitfont> {
+        override fun readJson(j: JsonObject): Bitfont {
+            val font = Bitfont(
                 j.string("name")!!,
                 j.int("lineHeight")!!,
                 j.int("ascender")!!,

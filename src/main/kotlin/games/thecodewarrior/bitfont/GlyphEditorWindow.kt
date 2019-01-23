@@ -1,7 +1,7 @@
 package games.thecodewarrior.bitfont
 
 import com.ibm.icu.lang.UCharacter
-import games.thecodewarrior.bitfont.data.BitFont
+import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.BitGrid
 import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.utils.Constants
@@ -11,6 +11,7 @@ import games.thecodewarrior.bitfont.utils.contours
 import games.thecodewarrior.bitfont.utils.extensions.ImGuiDrags
 import games.thecodewarrior.bitfont.utils.extensions.lineTo
 import games.thecodewarrior.bitfont.utils.extensions.primaryModifier
+import games.thecodewarrior.bitfont.utils.getValue
 import games.thecodewarrior.bitfont.utils.glyphProfile
 import games.thecodewarrior.bitfont.utils.ifMac
 import games.thecodewarrior.bitfont.utils.keys
@@ -20,11 +21,9 @@ import glm_.vec2.Vec2i
 import imgui.Col
 import imgui.Dir
 import imgui.ImGui
-import imgui.WindowFlag
-import imgui.functionalProgramming.menu
-import imgui.functionalProgramming.menuBar
 import imgui.functionalProgramming.withChild
 import imgui.functionalProgramming.withItemWidth
+import imgui.getValue
 import imgui.internal.Rect
 import org.lwjgl.glfw.GLFW
 import java.awt.font.FontRenderContext
@@ -37,14 +36,16 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-class GlyphEditor(val bitFont: BitFont): IMWindow() {
+class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
+    val bitfont: Bitfont = document.bitfont
+
     override val title: String
-        get() = "U+%04X - %s".format(codepoint, UCharacter.getName(codepoint))
+        get() = "${bitfont.name}: U+%04X - %s".format(codepoint, UCharacter.getName(codepoint))
 
     var granularity = 25
-    set(value) {
-        field = max(value, 1)
-    }
+        set(value) {
+            field = max(value, 1)
+        }
     val brush = BrushTool()
     val marquee: MarqueeTool = MarqueeTool()
     val nudge: NudgeTool = NudgeTool()
@@ -85,7 +86,7 @@ class GlyphEditor(val bitFont: BitFont): IMWindow() {
     }
 
     inner class Data(val codepoint: Int) {
-        val glyph = bitFont.glyphs.getOrPut(codepoint) { Glyph(codepoint) }
+        val glyph = bitfont.glyphs.getOrPut(codepoint) { Glyph(codepoint) }
         val enabledCells = mutableSetOf<Vec2i>()
 
         var historyIndex = 0
@@ -459,10 +460,10 @@ class GlyphEditor(val bitFont: BitFont): IMWindow() {
 
 
         if(displayGuides) {
-            horizontalLine(-bitFont.xHeight, Constants.editorGuides)
-            horizontalLine(-bitFont.capHeight, Constants.editorGuides)
-            horizontalLine(-bitFont.ascender, Constants.editorGuides)
-            horizontalLine(bitFont.descender, Constants.editorGuides)
+            horizontalLine(-bitfont.xHeight, Constants.editorGuides)
+            horizontalLine(-bitfont.capHeight, Constants.editorGuides)
+            horizontalLine(-bitfont.ascender, Constants.editorGuides)
+            horizontalLine(bitfont.descender, Constants.editorGuides)
 
             verticalLine(0, Constants.editorAxes)
             horizontalLine(0, Constants.editorAxes)

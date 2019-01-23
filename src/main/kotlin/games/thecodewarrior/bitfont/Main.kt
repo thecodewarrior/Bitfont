@@ -1,6 +1,6 @@
 package games.thecodewarrior.bitfont
 
-import games.thecodewarrior.bitfont.data.BitFont
+import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.utils.ifMacSystem
 import glm_.vec4.Vec4
 import gln.checkError
@@ -32,8 +32,8 @@ object Main {
     val clearColor = Vec4(0.45f, 0.55f, 0.6f, 1f)
     var showDemo = true
 
-    val windows = mutableListOf<IMWindow>(
-        FontWindow(BitFont("Font", 16, 10, 4, 9, 6)).also { it.visible = true }
+    val documents = mutableListOf(
+        BitfontDocument.blank()
     )
 
     init {
@@ -77,7 +77,7 @@ object Main {
             if (showDemo)
                 showDemoWindow(::showDemo)
 
-            windows.toList().forEach { it.push() }
+            documents.toList().forEach { it.push() }
         }
 
         // Rendering

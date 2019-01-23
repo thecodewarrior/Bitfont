@@ -5,6 +5,9 @@ import org.lwjgl.system.Platform
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.awt.image.IndexColorModel
+import kotlin.reflect.KMutableProperty0
+import kotlin.reflect.KProperty
+import kotlin.reflect.KProperty0
 
 inline fun <T> ifMac(f: () -> T): T? {
     if(ImGui.io.configMacOSXBehaviors)
@@ -29,6 +32,9 @@ inline fun <T> ifMacSystem(mac: T, others: () -> T): T {
 fun <T> ifMacSystem(mac: T, others: T): T {
     return ifMacSystem(mac) { others }
 }
+
+operator fun <R> KMutableProperty0<R>.setValue(host: Any?, property: KProperty<*>, value: R) = set(value)
+operator fun <R> KProperty0<R>.getValue(host: Any?, property: KProperty<*>): R = get()
 
 fun Color.toHexString(): String {
     val a = if(alpha != 255) "%02x".format(alpha) else ""
