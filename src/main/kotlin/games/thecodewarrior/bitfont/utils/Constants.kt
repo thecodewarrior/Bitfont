@@ -3,13 +3,10 @@ package games.thecodewarrior.bitfont.utils
 import com.beust.klaxon.Klaxon
 import games.thecodewarrior.bitfont.Main
 import games.thecodewarrior.bitfont.utils.extensions.u32
-import games.thecodewarrior.bitfont.utils.serialization.applyKlaxonExtensions
 import imgui.Color
 import java.io.InputStream
 
 object Constants {
-    val klaxon = applyKlaxonExtensions(Klaxon())
-
     val editorBackground = col("ff_0A0A0A")
     val editorAxes = col("ff_ff7a64")
     val editorSelection = col("ff_ff7a64")

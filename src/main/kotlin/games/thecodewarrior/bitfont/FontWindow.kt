@@ -1,5 +1,6 @@
 package games.thecodewarrior.bitfont
 
+import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.Parser
 import games.thecodewarrior.bitfont.data.BitFont
@@ -75,17 +76,15 @@ class FontWindow(val bitFont: BitFont): IMWindow() {
 //                    }
 //                }
                 if(menuItem("Save", ifMac("⌘S", "Ctrl+S")) || (isWindowHovered() && "prim+S".pressed())) {
-                    val s = Constants.klaxon.toPrettyJsonString(bitFont)
+                    val s = bitFont.writeJson().toJsonString(true)
                     File("font.json").writeText(s)
                 }
                 if(menuItem("Open", ifMac("⌘O", "Ctrl+O")) || (isWindowHovered() && "prim+O".pressed())) {
-                    val json = File("font.json").readText()
-                    val bitFont = Constants.klaxon.parse<BitFont>(json)
-                    if(bitFont != null) {
-                        val newWindow = FontWindow(bitFont)
-                        newWindow.visible = true
-                        Main.windows.add(newWindow)
-                    }
+                    val json = Parser.default().parse(StringBuilder(File("font.json").readText())) as JsonObject
+                    val bitFont = BitFont.readJson(json)
+                    val newWindow = FontWindow(bitFont)
+                    newWindow.visible = true
+                    Main.windows.add(newWindow)
                 }
 //                menuItem("Save As..")
 //                separator()

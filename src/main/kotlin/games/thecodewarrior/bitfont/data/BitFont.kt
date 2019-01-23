@@ -1,51 +1,74 @@
 package games.thecodewarrior.bitfont.data
 
 import com.beust.klaxon.Json
+import com.beust.klaxon.JsonObject
+import com.beust.klaxon.KlaxonJson
+import com.beust.klaxon.json
+import games.thecodewarrior.bitfont.utils.serialization.JsonReadable
+import games.thecodewarrior.bitfont.utils.serialization.JsonWritable
 import glm_.func.common.clamp
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 
-class BitFont(name: String, lineHeight: Int, ascender: Int, descender: Int, capHeight: Int, xHeight: Int) {
-    @Json
+class BitFont(name: String, lineHeight: Int, ascender: Int, descender: Int, capHeight: Int, xHeight: Int): JsonWritable<JsonObject> {
     var name: String = name
 
-    @Json
-    var lineHeight: Int = lineHeight
+    var lineHeight: Int = lineHeight.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)
         }
 
-    @Json
-    var ascender: Int = ascender
+    var ascender: Int = ascender.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)
         }
 
-    @Json
-    var descender: Int = descender
+    var descender: Int = descender.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)
         }
 
-    @Json
-    var capHeight: Int = capHeight
+    var capHeight: Int = capHeight.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)
         }
 
-    @Json
-    var xHeight: Int = xHeight
+    var xHeight: Int = xHeight.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)
         }
 
-    @Json(ignored = true)
     val glyphs = Int2ObjectOpenHashMap<Glyph>()
 
-    @Json(name = "glyphs")
-    var klaxonGlyphs: Map<String, Glyph>
-        get() = glyphs.mapKeys { "${it.key}" }
-        set(value) {
-            glyphs.clear()
-            glyphs.putAll(value.mapKeys { it.key.toInt() })
+    override fun writeJson(): JsonObject = json {
+        obj(
+            "name" to name,
+            "lineHeight" to lineHeight,
+            "ascender" to ascender,
+            "descender" to descender,
+            "capHeight" to capHeight,
+            "xHeight" to xHeight,
+            "glyphs" to obj(
+                *glyphs.map {
+                    "${it.key}" to it.value.writeJson()
+                }.toTypedArray()
+            )
+        )
+    }
+
+    companion object: JsonReadable<JsonObject, BitFont> {
+        override fun readJson(j: JsonObject): BitFont {
+            val font = BitFont(
+                j.string("name")!!,
+                j.int("lineHeight")!!,
+                j.int("ascender")!!,
+                j.int("descender")!!,
+                j.int("capHeight")!!,
+                j.int("xHeight")!!
+            )
+            j.obj("glyphs")!!.forEach { key, value ->
+                font.glyphs[key.toInt()] = Glyph.readJson(value as JsonObject)
+            }
+            return font
         }
+    }
 }

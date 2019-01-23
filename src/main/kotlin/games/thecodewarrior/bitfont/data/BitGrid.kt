@@ -1,7 +1,12 @@
 package games.thecodewarrior.bitfont.data
 
 import com.beust.klaxon.Json
+import com.beust.klaxon.JsonObject
+import com.beust.klaxon.KlaxonJson
+import com.beust.klaxon.json
 import games.thecodewarrior.bitfont.utils.IndexColorModel
+import games.thecodewarrior.bitfont.utils.serialization.JsonReadable
+import games.thecodewarrior.bitfont.utils.serialization.JsonWritable
 import glm_.vec2.Vec2i
 import jdk.nashorn.internal.ir.annotations.Ignore
 import java.awt.Color
@@ -9,7 +14,7 @@ import java.awt.image.BufferedImage
 import java.util.Arrays
 import kotlin.math.max
 
-class BitGrid(val width: Int, val height: Int) {
+class BitGrid(val width: Int, val height: Int): JsonWritable<JsonObject> {
     val size = Vec2i(width, height)
     val data = UByteArray((width*height+7)/8) // (...+7)/8 rounds up
 
@@ -85,5 +90,21 @@ class BitGrid(val width: Int, val height: Int) {
             }
         }
         return image
+    }
+
+    override fun writeJson(): JsonObject = json {
+        obj(
+            "size" to array(width, height),
+            "data" to data.joinToString("") { it.toString(16).padStart(2, '0') }
+        )
+    }
+
+    companion object: JsonReadable<JsonObject, BitGrid> {
+        override fun readJson(j: JsonObject): BitGrid {
+            val size = j.array<Int>("size")!!
+            val grid = BitGrid(size[0], size[1])
+            j.string("data")!!.chunkedSequence(2).map { it.toUByte(16) }.forEachIndexed { i, v -> grid.data[i] = v }
+            return grid
+        }
     }
 }
