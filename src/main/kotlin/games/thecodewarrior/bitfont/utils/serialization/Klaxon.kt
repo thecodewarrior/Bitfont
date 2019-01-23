@@ -15,7 +15,7 @@ fun applyKlaxonExtensions(klaxon: Klaxon): Klaxon {
                 grid
             },
             { value ->
-                """{"width": ${value.width}, "height": ${value.height}, "data": "${value.data.joinToString("") { it.toString(16) }}"}"""
+                """{"width": ${value.width}, "height": ${value.height}, "data": "${value.data.joinToString("") { it.toString(16).padStart(2, '0') }}"}"""
             }
         ))
 }

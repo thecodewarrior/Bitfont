@@ -54,6 +54,7 @@ object Main {
         // Setup ImGui binding
         ctx = Context()
         ImGui.io.iniFilename = null
+        ImGui.io.configMacOSXBehaviors = ifMacSystem(true, false)
         LwjglGlfw.init(window, true, GlfwClientApi.OpenGL)
 
         ImGui.styleColorsDark()
