@@ -8,11 +8,11 @@ import java.io.InputStream
 
 object Constants {
     val editorBackground = col("ff_0A0A0A")
-    val editorAxes = col("ff_ff7a64")
-    val editorSelection = col("ff_ff7a64")
+    val editorAxes = SimpleColors.orange
+    val editorSelection = SimpleColors.magenta
     val editorGrid = col("ff_3b3b46")
-    val editorGuides = col("ff_3d73ad")
-    val editorKernProfile = col("ff_861813")
+    val editorGuides = SimpleColors.blue
+    val editorAdvance = SimpleColors.green
 
     fun col(hex: String): Int {
         val int = hex.replace("_", "").toUInt(16)
@@ -26,4 +26,32 @@ object Constants {
     }
 
     fun resource(name: String): InputStream? = Main::class.java.getResourceAsStream(name)
+
+    object SimpleColors {
+        val maroon = col("ff_800000")
+        val red = col("ff_e6194b")
+        val pink = col("ff_fabebe")
+
+        val brown = col("ff_9a6324")
+        val orange = col("ff_f58231")
+
+        val yellow = col("ff_ffe119")
+        val beige = col("ff_fffac8")
+
+        val green = col("ff_3cb44b")
+        val mint = col("ff_aaffc3")
+
+        val teal = col("ff_469990")
+        val cyan = col("ff_42d4f4")
+
+        val navy = col("ff_000075")
+        val blue = col("ff_4363d8")
+
+        val lavender = col("ff_e6beff")
+        val magenta = col("ff_f032e6")
+
+        val black = col("ff_000000")
+        val grey = col("ff_a9a9a9")
+        val white = col("ff_ffffff")
+    }
 }

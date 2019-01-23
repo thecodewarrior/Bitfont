@@ -18,6 +18,8 @@ class BitGrid(val width: Int, val height: Int): JsonWritable<JsonObject> {
     val size = Vec2i(width, height)
     val data = UByteArray((width*height+7)/8) // (...+7)/8 rounds up
 
+    fun isEmpty(): Boolean = data.all { it == 0.toUByte() }
+
     operator fun get(pos: Vec2i): Boolean {
         if(pos.x < 0 || pos.x >= width)
             throw IndexOutOfBoundsException("Passed x coordinate is out of bounds. x = ${pos.x}, width = $width")

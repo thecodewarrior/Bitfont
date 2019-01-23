@@ -48,7 +48,9 @@ class BitFont(name: String, lineHeight: Int, ascender: Int, descender: Int, capH
             "capHeight" to capHeight,
             "xHeight" to xHeight,
             "glyphs" to obj(
-                *glyphs.map {
+                *glyphs.filter {
+                    !it.value.isEmpty()
+                }.map {
                     "${it.key}" to it.value.writeJson()
                 }.toTypedArray()
             )

@@ -30,6 +30,7 @@ import org.lwjgl.glfw.GLFW
 import java.awt.font.FontRenderContext
 import java.awt.geom.AffineTransform
 import kotlin.math.abs
+import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
@@ -77,7 +78,7 @@ class GlyphEditor(val bitFont: BitFont): IMWindow() {
     var localGridRadius = 0
         set(value) { field = value.clamp(0, 100) }
 
-    val controlsWidth: Float = 150f
+    val controlsWidth: Float = 175f
 
     init {
         codepoint = 65
@@ -91,6 +92,13 @@ class GlyphEditor(val bitFont: BitFont): IMWindow() {
         var undoDepth = 0
         var redoDepth = 0
         val history = MutableList(100) { State() }
+
+        var advance: Int
+            get() = glyph.calcAdvance
+            set(value) { glyph.advance = value }
+        var autoAdvance: Boolean
+            get() = glyph.advance == null
+            set(value) { glyph.advance = if(value) null else 0 }
 
         init {
             updateFromGlyph()
@@ -235,7 +243,17 @@ class GlyphEditor(val bitFont: BitFont): IMWindow() {
         if (arrowButton("##right", Dir.Right)) codepoint++
         popButtonRepeat()
 
-        val labelWidth = calcTextSize("Origin X").x + 1
+        var labelWidth = calcTextSize("Advance").x + 1
+        withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
+            alignTextToFramePadding(); alignedText("Advance", Vec2(1, 0.5), labelWidth); sameLine()
+            inputInt("##advance", data::advance)
+            alignTextToFramePadding(); alignedText("Auto", Vec2(1, 0.5), labelWidth); sameLine()
+            checkbox("##autoAdvance", data::autoAdvance)
+        }
+
+        separator()
+
+        labelWidth = calcTextSize("Local Grid").x + 1
         withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
             alignTextToFramePadding(); alignedText("Origin X", Vec2(1, 0.5), labelWidth); sameLine()
             inputInt("Origin X", ::originX)
@@ -250,6 +268,8 @@ class GlyphEditor(val bitFont: BitFont): IMWindow() {
             alignTextToFramePadding(); alignedText("Guides", Vec2(1, 0.5), labelWidth); sameLine()
             checkbox("##showGuides", ::displayGuides)
         }
+
+        separator()
 
         val prevCursor = Vec2(cursorPos)
         alignedText("Reference Font", Vec2(0.5), width = controlsWidth)
@@ -446,6 +466,21 @@ class GlyphEditor(val bitFont: BitFont): IMWindow() {
 
             verticalLine(0, Constants.editorAxes)
             horizontalLine(0, Constants.editorAxes)
+
+            val advanceEnd = Vec2(canvas.min.x + (origin.x + data.glyph.calcAdvance) * granularity, canvas.min.y + origin.y * granularity)
+            drawList.addLine(
+                Vec2(canvas.min.x + origin.x * granularity, canvas.min.y + origin.y * granularity),
+                advanceEnd,
+                Constants.editorAdvance,
+                1f
+            )
+
+            drawList.addLine(
+                advanceEnd - Vec2(0, ceil(granularity/2.0)),
+                advanceEnd + Vec2(0, ceil(granularity/2.0)),
+                Constants.editorAdvance,
+                1f
+            )
         }
 
         (data.enabledCells + nudge.moving).forEach {
