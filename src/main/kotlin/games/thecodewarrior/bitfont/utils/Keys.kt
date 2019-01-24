@@ -31,8 +31,16 @@ object ImGuiKeys {
 
         rpn.forEach { item ->
             when(item) {
-                KeyItem.AndOp -> stack.push(stack.pop() && stack.pop())
-                KeyItem.OrOp -> stack.push(stack.pop() || stack.pop())
+                KeyItem.AndOp -> {
+                    val a = stack.pop()
+                    val b = stack.pop()
+                    stack.push(a && b)
+                }
+                KeyItem.OrOp -> {
+                    val a = stack.pop()
+                    val b = stack.pop()
+                    stack.push(a || b)
+                }
                 KeyItem.ModSuper -> stack.push(ImGui.io.keySuper)
                 KeyItem.ModShift -> stack.push(ImGui.io.keyShift)
                 KeyItem.ModCtrl -> stack.push(ImGui.io.keyCtrl)
