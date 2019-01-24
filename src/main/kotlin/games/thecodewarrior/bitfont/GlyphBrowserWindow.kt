@@ -52,10 +52,15 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
                 needsRedraw = true
             field = value
         }
-    val cellSize = 36
+    val cellSize = 32
     val referenceImages = Java2DTexture(cellSize*16, cellSize*16)
 
+    var wasHovered = false
+
     override fun main() = with(ImGui) {
+        if(isWindowHovered() && !wasHovered) needsRedraw = true
+        wasHovered = isWindowHovered()
+
         var menuHeight = -cursorPos
         val contentRect = win.contentsRegionRect
         menuHeight = menuHeight + cursorPos
@@ -174,7 +179,10 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
 
         g.color = Constants.SimpleColors.maroonAwt
         g.drawLine(x*cellSize, origin.y, (x+1)*cellSize, origin.y)
-        g.color = Color.WHITE
+        if(bitfont.glyphs[codepoint]?.isEmpty() == false)
+            g.color = Color("afafaf")
+        else
+            g.color = Color.WHITE
         g.font = font.deriveFont(scale)
         g.drawString(String(Character.toChars(codepoint)), origin.x, origin.y)
     }

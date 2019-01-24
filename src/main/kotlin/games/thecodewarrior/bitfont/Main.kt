@@ -47,6 +47,7 @@ object Main {
         window = GlfwWindow(1280, 720, "Dear ImGui Lwjgl OpenGL3 example").apply {
             init()
         }
+        window.setSizeLimit(800 .. 2400, 300 .. 1500)
 
         glfw.swapInterval = 1   // Enable vsync
 
