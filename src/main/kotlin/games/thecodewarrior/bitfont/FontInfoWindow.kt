@@ -55,6 +55,11 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
             document.editorWindow = GlyphEditorWindow(document)
             document.editorWindow.visible = true
         }
+        sameLine()
+        button("Browse") {
+            document.browserWindow = GlyphBrowserWindow(document)
+            document.browserWindow.visible = true
+        }
 
         drawMenu()
     }

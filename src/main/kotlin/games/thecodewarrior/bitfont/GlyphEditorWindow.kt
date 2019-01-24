@@ -364,7 +364,6 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         drawList.addImage(sidebarReferenceImage.texID, bb.min, bb.max)
 
         popClipRect()
-
     }
 
     fun drawCanvas() = with(ImGui) {

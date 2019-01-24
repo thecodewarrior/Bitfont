@@ -5,11 +5,13 @@ import games.thecodewarrior.bitfont.data.Bitfont
 class BitfontDocument(val bitfont: Bitfont) {
     var infoWindow = FontInfoWindow(this)
     var editorWindow = GlyphEditorWindow(this)
+    var browserWindow = GlyphBrowserWindow(this)
 
     fun push() {
         infoWindow.visible = true
         infoWindow.push()
         editorWindow.push()
+        browserWindow.push()
     }
 
     companion object {

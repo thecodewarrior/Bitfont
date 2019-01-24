@@ -53,5 +53,31 @@ object Constants {
         val black = col("ff_000000")
         val grey = col("ff_a9a9a9")
         val white = col("ff_ffffff")
+
+        val maroonAwt = Color("800000")
+        val redAwt = Color("e6194b")
+        val pinkAwt = Color("fabebe")
+
+        val brownAwt = Color("9a6324")
+        val orangeAwt = Color("f58231")
+
+        val yellowAwt = Color("ffe119")
+        val beigeAwt = Color("fffac8")
+
+        val greenAwt = Color("3cb44b")
+        val mintAwt = Color("aaffc3")
+
+        val tealAwt = Color("469990")
+        val cyanAwt = Color("42d4f4")
+
+        val navyAwt = Color("000075")
+        val blueAwt = Color("4363d8")
+
+        val lavenderAwt = Color("e6beff")
+        val magentaAwt = Color("f032e6")
+
+        val blackAwt = Color("000000")
+        val greyAwt = Color("a9a9a9")
+        val whiteAwt = Color("ffffff")
     }
 }
