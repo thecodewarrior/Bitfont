@@ -663,12 +663,12 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
                         "escape" pressed {
                             selected.clear()
                         }
-                        (selected.isNotEmpty() && io.primaryModifier) and "c" pressed {
+                        (selected.intersect(data.enabledCells).isNotEmpty() && io.primaryModifier) and "c" pressed {
                             clipboard.clear()
                             clipboard.addAll(selected.intersect(data.enabledCells))
                             selected.clear()
                         }
-                        (selected.isNotEmpty() && io.primaryModifier) and "x" pressed {
+                        (selected.intersect(data.enabledCells).isNotEmpty() && io.primaryModifier) and "x" pressed {
                             clipboard.clear()
                             clipboard.addAll(selected.intersect(data.enabledCells))
                             if (data.enabledCells.removeAll(clipboard)) data.pushHistory()
