@@ -144,6 +144,8 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
             if(isWindowHovered() && isMouseClicked(0)) {
                 val codepoint = (page shl 8) or (cursorPos.y shl 4) or cursorPos.x
                 document.editorWindow.codepoint = codepoint
+                document.editorWindow.visible = true
+                document.editorWindow.focus()
             }
         }
     }
@@ -180,9 +182,9 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         g.color = Constants.SimpleColors.maroonAwt
         g.drawLine(x*cellSize, origin.y, (x+1)*cellSize, origin.y)
         if(bitfont.glyphs[codepoint]?.isEmpty() == false)
-            g.color = Color("afafaf")
-        else
             g.color = Color.WHITE
+        else
+            g.color = Color("afafaf")
         g.font = font.deriveFont(scale)
         g.drawString(String(Character.toChars(codepoint)), origin.x, origin.y)
     }

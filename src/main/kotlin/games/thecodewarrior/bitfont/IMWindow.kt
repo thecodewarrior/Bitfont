@@ -13,8 +13,16 @@ abstract class IMWindow {
     open val children = mutableListOf<IMWindow>()
     val windowFlags = mutableSetOf<WindowFlag>()
 
+    private var takeFocus = false
+
+    fun focus() { takeFocus = true }
+
     fun push() {
         if(visible) {
+            if(takeFocus) {
+                ImGui.setNextWindowFocus()
+                takeFocus = false
+            }
             if(ImGui.begin_("$title###${System.identityHashCode(this@IMWindow)}", ::visible,
                     windowFlags.fold(0) { acc, it -> acc or it.i })
             ) {

@@ -20,6 +20,7 @@ import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import imgui.Col
 import imgui.Dir
+import imgui.FocusedFlag
 import imgui.ImGui
 import imgui.functionalProgramming.withChild
 import imgui.functionalProgramming.withItemWidth
@@ -64,8 +65,11 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     var data: Data = Data(0)
     var codepoint: Int = 0
         set(value) {
-            if(field != value.clamp(0, 0x10FFFF) && data == Data(codepoint)) {
-                dataMap.remove(codepoint)
+            if(field != value.clamp(0, 0x10FFFF)) {
+                if(tool === nudge) nudge.stop()
+                if(data == Data(codepoint)) {
+                    dataMap.remove(codepoint)
+                }
             }
             field = value.clamp(0, 0x10FFFF)
             data = dataMap.getOrPut(codepoint) { Data(codepoint) }
@@ -81,8 +85,6 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     var localGridRadius = 0
         set(value) { field = value.clamp(0, 100) }
 
-
-
     init {
         codepoint = 65
     }
@@ -92,8 +94,11 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         val enabledCells = mutableSetOf<Vec2i>()
 
         var historyIndex = 0
+            private set
         var undoDepth = 0
+            private set
         var redoDepth = 0
+            private set
         val history = MutableList(100) { State() }
 
         var advance: Int
@@ -105,6 +110,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         init {
             updateFromGlyph()
+            history[0] = State()
         }
 
         fun pushHistory() {
@@ -366,15 +372,19 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         popClipRect()
     }
 
+    var canvasMouseHovered = false
+    var canvasKeyFocused = false
+
     fun drawCanvas() = with(ImGui) {
         itemSize(canvas, style.framePadding.y)
-        itemHoverable(canvas, "editor".hashCode())
+        canvasMouseHovered = itemHoverable(canvas, "editor".hashCode())
         pushClipRect(canvas.min, canvas.max, true)
         if (!itemAdd(canvas, "editor".hashCode())) return
+        canvasKeyFocused = isWindowFocused(FocusedFlag.RootAndChildWindows)
 
         drawList.addRectFilled(canvas.min, canvas.max, Constants.editorBackground)
 
-        if(isWindowHovered()) {
+        if(canvasKeyFocused) {
             keys {
                 if (ifMac("shift+cmd+z", "ctrl+y").pressed()) {
                     data.redo()
@@ -527,13 +537,13 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         override fun update() = with(ImGui) {
             val mousePos = cell(io.mousePos - canvas.min)
-            if(isWindowHovered() && isKeyPressed(GLFW.GLFW_KEY_ESCAPE)) {
+            if(canvasKeyFocused && isKeyPressed(GLFW.GLFW_KEY_ESCAPE)) {
                 stop()
                 tool = marquee
                 marquee.update()
                 return
             }
-            if(isWindowHovered() && isMouseHoveringRect(canvas)) {
+            if(canvasMouseHovered) {
                 if(isMouseClicked(0)) {
                     if(mousePos in moving) {
                         draggingGripPoint = mousePos
@@ -556,7 +566,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
                 }
             }
 
-            if(isWindowHovered()) {
+            if(canvasKeyFocused) {
                 keys {
                     "left" pressed { offset(Vec2i(-1, 0)) }
                     "right" pressed { offset(Vec2i(1, 0)) }
@@ -594,7 +604,8 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         fun start(selected: Collection<Vec2i>) {
             moving.addAll(selected.intersect(data.enabledCells))
-            if(data.enabledCells.removeAll(moving)) data.pushHistory()
+            if(!ImGui.io.keyAlt)
+                if(data.enabledCells.removeAll(moving)) data.pushHistory()
         }
 
         override fun stop() {
@@ -618,7 +629,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         override fun update(): Unit = with(ImGui) {
             val mouseCell = cell(io.mousePos - canvas.min)
-            if(isWindowHovered() && isMouseHoveringRect(canvas)) {
+            if(canvasMouseHovered) {
                 if (isMouseClicked(0)) {
                     if(mouseCell in selected && io.primaryModifier) {
                         tool = nudge
@@ -636,49 +647,48 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             if (isMouseReleased(0)) {
                 stop()
             }
-            if(isWindowHovered()) {
-                if(isMouseDown(0)) {
-                    val start = start
-                    selecting.clear()
-                    if(start != null) {
-                        for (x in min(start.x, mouseCell.x)..max(start.x, mouseCell.x)) {
-                            for (y in min(start.y, mouseCell.y)..max(start.y, mouseCell.y)) {
-                                selecting.add(Vec2i(x, y))
-                            }
+            if(canvasMouseHovered && isMouseDown(0)) {
+                val start = start
+                selecting.clear()
+                if(start != null) {
+                    for (x in min(start.x, mouseCell.x)..max(start.x, mouseCell.x)) {
+                        for (y in min(start.y, mouseCell.y)..max(start.y, mouseCell.y)) {
+                            selecting.add(Vec2i(x, y))
                         }
                     }
-                } else {
-                    keys {
-                        "prim+(left|right|up|down)" pressed {
-                            tool = nudge
-                            nudge.start(selected)
-                            selected.clear()
-                            nudge.update()
-                            return
-                        }
-                        "backspace" pressed {
-                            if (data.enabledCells.removeAll(selected)) data.pushHistory()
-                            selected.clear()
-                        }
-                        "escape" pressed {
-                            selected.clear()
-                        }
-                        (selected.intersect(data.enabledCells).isNotEmpty() && io.primaryModifier) and "c" pressed {
-                            clipboard.clear()
-                            clipboard.addAll(selected.intersect(data.enabledCells))
-                            selected.clear()
-                        }
-                        (selected.intersect(data.enabledCells).isNotEmpty() && io.primaryModifier) and "x" pressed {
-                            clipboard.clear()
-                            clipboard.addAll(selected.intersect(data.enabledCells))
-                            if (data.enabledCells.removeAll(clipboard)) data.pushHistory()
-                            selected.clear()
-                        }
-                        "left" pressed { offset(Vec2i(-1, 0)) }
-                        "right" pressed { offset(Vec2i(1, 0)) }
-                        "up" pressed { offset(Vec2i(0, -1)) }
-                        "down" pressed { offset(Vec2i(0, 1)) }
+                }
+            }
+            if(canvasKeyFocused) {
+                keys {
+                    "prim+(left|right|up|down)" pressed {
+                        tool = nudge
+                        nudge.start(selected)
+                        selected.clear()
+                        nudge.update()
+                        return
                     }
+                    "backspace" pressed {
+                        if (data.enabledCells.removeAll(selected)) data.pushHistory()
+                        selected.clear()
+                    }
+                    "escape" pressed {
+                        selected.clear()
+                    }
+                    (selected.intersect(data.enabledCells).isNotEmpty() && io.primaryModifier) and "c" pressed {
+                        clipboard.clear()
+                        clipboard.addAll(selected.intersect(data.enabledCells))
+                        selected.clear()
+                    }
+                    (selected.intersect(data.enabledCells).isNotEmpty() && io.primaryModifier) and "x" pressed {
+                        clipboard.clear()
+                        clipboard.addAll(selected.intersect(data.enabledCells))
+                        if (data.enabledCells.removeAll(clipboard)) data.pushHistory()
+                        selected.clear()
+                    }
+                    "left" pressed { offset(Vec2i(-1, 0)) }
+                    "right" pressed { offset(Vec2i(1, 0)) }
+                    "up" pressed { offset(Vec2i(0, -1)) }
+                    "down" pressed { offset(Vec2i(0, 1)) }
                 }
             }
         }
@@ -728,7 +738,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             val mouseCell = cell(io.mousePos - canvas.min)
             var mouseCellPrev = cell(io.mousePos - canvas.min - io.mouseDelta)
 
-            if(isWindowHovered() && isMouseHoveringRect(canvas)) {
+            if(canvasMouseHovered) {
                 if (isMouseClicked(0)) {
                     drawingState = !eraser
                     if (io.keyShift)
