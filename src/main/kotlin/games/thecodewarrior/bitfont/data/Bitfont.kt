@@ -7,7 +7,7 @@ import games.thecodewarrior.bitfont.utils.serialization.JsonWritable
 import glm_.func.common.clamp
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 
-class Bitfont(name: String, lineHeight: Int, ascender: Int, descender: Int, capHeight: Int, xHeight: Int): JsonWritable<JsonObject> {
+class Bitfont(name: String, lineHeight: Int, ascender: Int, descender: Int, capHeight: Int, xHeight: Int, spacing: Int): JsonWritable<JsonObject> {
     var name: String = name
 
     var lineHeight: Int = lineHeight.clamp(0, 65535)
@@ -35,6 +35,11 @@ class Bitfont(name: String, lineHeight: Int, ascender: Int, descender: Int, capH
             field = value.clamp(0, 65535)
         }
 
+    var spacing: Int = spacing.clamp(0, 65535)
+        set(value) {
+            field = value.clamp(0, 65535)
+        }
+
     val glyphs = Int2ObjectOpenHashMap<Glyph>()
 
     override fun writeJson(): JsonObject = json {
@@ -45,6 +50,7 @@ class Bitfont(name: String, lineHeight: Int, ascender: Int, descender: Int, capH
             "descender" to descender,
             "capHeight" to capHeight,
             "xHeight" to xHeight,
+            "spacing" to spacing,
             "glyphs" to obj(
                 *glyphs.filter {
                     !it.value.isEmpty()
@@ -63,7 +69,8 @@ class Bitfont(name: String, lineHeight: Int, ascender: Int, descender: Int, capH
                 j.int("ascender")!!,
                 j.int("descender")!!,
                 j.int("capHeight")!!,
-                j.int("xHeight")!!
+                j.int("xHeight")!!,
+                j.int("spacing")!!
             )
             j.obj("glyphs")!!.forEach { key, value ->
                 font.glyphs[key.toInt()] = Glyph.readJson(value as JsonObject)

@@ -21,22 +21,30 @@ class BitGrid(val width: Int, val height: Int): JsonWritable<JsonObject> {
     fun isEmpty(): Boolean = data.all { it == 0.toUByte() }
 
     operator fun get(pos: Vec2i): Boolean {
-        if(pos.x < 0 || pos.x >= width)
-            throw IndexOutOfBoundsException("Passed x coordinate is out of bounds. x = ${pos.x}, width = $width")
-        if(pos.y < 0 || pos.y >= height)
-            throw IndexOutOfBoundsException("Passed y coordinate is out of bounds. y = ${pos.y}, height = $height")
-        val i = pos.x + pos.y*width
+        return this[pos.x, pos.y]
+    }
+
+    operator fun set(pos: Vec2i, value: Boolean) {
+        this[pos.x, pos.y] = value
+    }
+
+    operator fun get(x: Int, y: Int): Boolean {
+        if(x < 0 || x >= width)
+            throw IndexOutOfBoundsException("Passed x coordinate is out of bounds. x = $x, width = $width")
+        if(y < 0 || y >= height)
+            throw IndexOutOfBoundsException("Passed y coordinate is out of bounds. y = $y, height = $height")
+        val i = x + y*width
         val byteIndex = i / 8
         val bitIndex = i % 8
         return data[byteIndex].toUInt() and (1u shl bitIndex) != 0u
     }
 
-    operator fun set(pos: Vec2i, value: Boolean) {
-        if(pos.x !in 0 until width)
-            throw IndexOutOfBoundsException("Passed x coordinate is out of bounds. x = ${pos.x}, width = $width")
-        if(pos.y !in 0 until height)
-            throw IndexOutOfBoundsException("Passed y coordinate is out of bounds. y = ${pos.y}, height = $height")
-        val i = pos.x + pos.y*width
+    operator fun set(x: Int, y: Int, value: Boolean) {
+        if(x !in 0 until width)
+            throw IndexOutOfBoundsException("Passed x coordinate is out of bounds. x = $x, width = $width")
+        if(y !in 0 until height)
+            throw IndexOutOfBoundsException("Passed y coordinate is out of bounds. y = $y, height = $height")
+        val i = x + y*width
         val byteIndex = i / 8
         val bitIndex = i % 8
         if(value) {

@@ -102,7 +102,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         val history = MutableList(100) { State() }
 
         var advance: Int
-            get() = glyph.calcAdvance
+            get() = glyph.calcAdvance(bitfont.spacing)
             set(value) { glyph.advance = value }
         var autoAdvance: Boolean
             get() = glyph.advance == null
@@ -479,7 +479,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             verticalLine(0, Constants.editorAxes)
             horizontalLine(0, Constants.editorAxes)
 
-            val advanceEnd = Vec2(canvas.min.x + (origin.x + data.glyph.calcAdvance) * granularity, canvas.min.y + origin.y * granularity)
+            val advanceEnd = Vec2(canvas.min.x + (origin.x + data.glyph.calcAdvance(bitfont.spacing)) * granularity, canvas.min.y + origin.y * granularity)
             drawList.addLine(
                 Vec2(canvas.min.x + origin.x * granularity, canvas.min.y + origin.y * granularity),
                 advanceEnd,

@@ -38,9 +38,9 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
         }
         withItemWidth(150f) {
             val arr = bitfont.name.toCharArray().let { name ->
-                CharArray(name.size + 10).also { name.copyInto(it) }
+                CharArray(name.size + 1000).also { name.copyInto(it) }
             }
-            if (inputText("Name", arr, InputTextFlag.EnterReturnsTrue.i))
+            if(inputText("Name", arr, InputTextFlag.EnterReturnsTrue.i))
                 bitfont.name = String(g.inputTextState.textW.sliceArray(0 until g.inputTextState.textW.indexOf('\u0000')))
         }
         withItemWidth(100f) {
@@ -55,6 +55,8 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
             sameLine(); showHelpMarker("The height of capital letters (X, N, etc.) above the baseline, ignoring letters like A or O which may overshoot this line")
             inputInt("x height", bitfont::xHeight)
             sameLine(); showHelpMarker("The height of the short lowercase letters (x, n, etc.) above the baseline, ignoring letters like d or l which overshoot this line")
+            inputInt("Spacing", bitfont::spacing)
+            sameLine(); showHelpMarker("The amount of space between consecutive characters")
         }
 
         button("Edit") {
@@ -66,6 +68,12 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
             val browser = GlyphBrowserWindow(document)
             browser.visible = true
             document.browserWindows.add(browser)
+        }
+        sameLine()
+        button("Test") {
+            val test = TestingWindow(document)
+            test.visible = true
+            document.testWindows.add(test)
         }
 
         drawMenu()

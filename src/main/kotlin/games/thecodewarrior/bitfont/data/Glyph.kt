@@ -7,6 +7,7 @@ import games.thecodewarrior.bitfont.utils.serialization.JsonReadable
 import games.thecodewarrior.bitfont.utils.serialization.JsonWritable
 import glm_.func.common.clamp
 import glm_.vec2.Vec2i
+import kotlin.math.max
 
 class Glyph(val codepoint: Int): JsonWritable<JsonObject> {
     var bearingX: Int = 0
@@ -21,8 +22,9 @@ class Glyph(val codepoint: Int): JsonWritable<JsonObject> {
         set(value) {
             field = value?.clamp(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
         }
-    val calcAdvance: Int
-        get() = advance ?: if(image.isEmpty()) 0 else bearingX + image.width + 1
+
+    fun calcAdvance(spacing: Int): Int = advance ?: if (image.isEmpty()) 0 else max(0, bearingX) + image.width + spacing
+
     var image: BitGrid = BitGrid(1, 1)
 
     fun isEmpty(): Boolean = image.isEmpty() && advance == null
