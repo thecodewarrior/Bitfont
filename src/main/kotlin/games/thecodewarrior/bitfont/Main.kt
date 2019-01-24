@@ -2,6 +2,7 @@ package games.thecodewarrior.bitfont
 
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.utils.ifMacSystem
+import games.thecodewarrior.bitfont.utils.opengl.Java2DTexture
 import glm_.vec4.Vec4
 import gln.checkError
 import gln.glClearColor
@@ -32,9 +33,7 @@ object Main {
     val clearColor = Vec4(0.45f, 0.55f, 0.6f, 1f)
     var showDemo = true
 
-    val documents = mutableListOf(
-        BitfontDocument.blank()
-    )
+    val documents: MutableList<BitfontDocument>
 
     init {
         glfw.init(ifMacSystem("3.2", "3.0"))
@@ -59,6 +58,10 @@ object Main {
 
         ImGui.styleColorsDark()
 
+        documents = mutableListOf(
+            BitfontDocument.blank()
+        )
+
         window.loop(::mainLoop)
 
         LwjglGlfw.shutdown()
@@ -69,6 +72,8 @@ object Main {
     }
 
     fun mainLoop(stack: MemoryStack) {
+
+        Java2DTexture.cleanUpTextures()
 
         // Start the Dear ImGui frame
         LwjglGlfw.newFrame()
@@ -84,6 +89,8 @@ object Main {
         glViewport(window.framebufferSize)
         glClearColor(clearColor)
         glClear(GL_COLOR_BUFFER_BIT)
+
+        Java2DTexture.updateTextures()
 
         ImGui.render()
         ImplGL3.renderDrawData(ImGui.drawData!!)

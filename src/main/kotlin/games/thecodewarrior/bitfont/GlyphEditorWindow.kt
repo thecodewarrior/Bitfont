@@ -11,10 +11,10 @@ import games.thecodewarrior.bitfont.utils.contours
 import games.thecodewarrior.bitfont.utils.extensions.ImGuiDrags
 import games.thecodewarrior.bitfont.utils.extensions.lineTo
 import games.thecodewarrior.bitfont.utils.extensions.primaryModifier
-import games.thecodewarrior.bitfont.utils.getValue
 import games.thecodewarrior.bitfont.utils.glyphProfile
 import games.thecodewarrior.bitfont.utils.ifMac
 import games.thecodewarrior.bitfont.utils.keys
+import games.thecodewarrior.bitfont.utils.opengl.Java2DTexture
 import glm_.func.common.clamp
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
@@ -23,7 +23,6 @@ import imgui.Dir
 import imgui.ImGui
 import imgui.functionalProgramming.withChild
 import imgui.functionalProgramming.withItemWidth
-import imgui.getValue
 import imgui.internal.Rect
 import org.lwjgl.glfw.GLFW
 import java.awt.font.FontRenderContext
@@ -53,6 +52,8 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     var tool: EditorTool = brush
 
     var canvas = Rect()
+    val controlsWidth: Float = 175f
+
     var originX = 4
     var originY = 16
     val origin: Vec2i
@@ -73,13 +74,14 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     var referenceStyle = 0
     var referenceSize = 1f
         set(value) { field = value.clamp(1f, 1000f) }
+    val sidebarReferenceImage = Java2DTexture(controlsWidth.toInt(), controlsWidth.toInt())
     var displayReference = false
     var displayGrid = true
     var displayGuides = true
     var localGridRadius = 0
         set(value) { field = value.clamp(0, 100) }
 
-    val controlsWidth: Float = 175f
+
 
     init {
         codepoint = 65
@@ -356,13 +358,13 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             1f
         )
 
-        profile.forEach { contour ->
-            drawList.addPolyline(ArrayList(contour.map {
-                Vec2(origin) + it * scale
-            }), Constants.editorSelection, true, 1f)
-        }
+        val g = sidebarReferenceImage.edit(true, true)
+        g.font = font.deriveFont(scale)
+        g.drawString(String(Character.toChars(codepoint)), origin.x - bb.min.x, origin.y - bb.min.y)
+        drawList.addImage(sidebarReferenceImage.texID, bb.min, bb.max)
 
         popClipRect()
+
     }
 
     fun drawCanvas() = with(ImGui) {
