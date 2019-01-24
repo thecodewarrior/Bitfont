@@ -24,12 +24,18 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
 
     override val title: String
         get() = "${bitfont.name}: Font Information"
+    var lastSave: Long = System.currentTimeMillis()
 
     init {
         windowFlags.addAll(WindowFlag.MenuBar, WindowFlag.AlwaysAutoResize)
     }
 
     override fun main() = with(ImGui) {
+        if(System.currentTimeMillis() - lastSave > 60_000) {
+            val s = bitfont.writeJson().toJsonString(true)
+            File("font-autosave-${LocalDateTime.now().minute % 10}.json").writeText(s)
+            lastSave = System.currentTimeMillis()
+        }
         withItemWidth(150f) {
             val arr = bitfont.name.toCharArray().let { name ->
                 CharArray(name.size + 10).also { name.copyInto(it) }
@@ -83,6 +89,7 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                     val s = bitfont.writeJson().toJsonString(true)
                     File("font.json").writeText(s)
                     File("font-${LocalDateTime.now().format(formatter)}.json").writeText(s)
+                    lastSave = System.currentTimeMillis()
                 }
                 if(menuItem("Open", ifMac("Cmd+O", "Ctrl+O")) || (isWindowHovered() && "prim+O".pressed())) {
                     val json = Parser.default().parse(StringBuilder(File("font.json").readText())) as JsonObject
