@@ -30,13 +30,10 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
     var canvas = Rect()
 
     init {
-        windowFlags.addAll(WindowFlag.AlwaysAutoResize)
     }
 
     override fun main(): Unit = with(ImGui) {
-        val canvasPos = win.contentsRegionRect.min + cursorPos
-
-        withItemWidth(400f) {
+        withItemWidth(win.contentsRegionRect.width - 300f) {
             val arr = testString.replace("\n", "\\n").toCharArray().let { name ->
                 CharArray(name.size + 1000).also { name.copyInto(it) }
             }
@@ -48,7 +45,9 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
             inputInt("Scale", ::scale)
         }
 
-        canvas = Rect(canvasPos, canvasPos + Vec2(600, 100))
+        val canvasPos = win.contentsRegionRect.min + Vec2(0, frameHeightWithSpacing)
+
+        canvas = Rect(canvasPos, canvasPos + Vec2(win.contentsRegionRect.width, win.contentsRegionRect.max.y - canvasPos.y))
         itemSize(canvas)
         pushClipRect(canvas.min, canvas.max, true)
         itemHoverable(canvas, "canvas".hashCode())

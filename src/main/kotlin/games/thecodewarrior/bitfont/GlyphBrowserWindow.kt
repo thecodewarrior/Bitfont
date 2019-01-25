@@ -5,6 +5,7 @@ import games.thecodewarrior.bitfont.utils.Constants
 import games.thecodewarrior.bitfont.utils.ReferenceFonts
 import games.thecodewarrior.bitfont.utils.alignedText
 import games.thecodewarrior.bitfont.utils.extensions.ImGuiDrags
+import games.thecodewarrior.bitfont.utils.extensions.strokeWidth
 import games.thecodewarrior.bitfont.utils.glyphProfile
 import games.thecodewarrior.bitfont.utils.opengl.Java2DTexture
 import glm_.func.common.clamp
@@ -53,7 +54,7 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
             field = value
         }
     val cellSize = 32
-    val referenceImages = Java2DTexture(cellSize*16, cellSize*16)
+    val referenceImages = Java2DTexture(cellSize*17, cellSize*17)
 
     var wasHovered = false
 
@@ -71,7 +72,7 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         sameLine()
 
         val canvasPos = contentRect.min + Vec2(controlsWidth + 5, menuHeight.y)
-        canvas = Rect(canvasPos, canvasPos + Vec2(cellSize*16))
+        canvas = Rect(canvasPos, canvasPos + Vec2(cellSize*17))
         itemSize(canvas)
         pushClipRect(canvas.min, canvas.max, true)
         itemHoverable(canvas, "canvas".hashCode())
@@ -119,30 +120,30 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         if(needsRedraw) {
             val g = referenceImages.edit(true, true)
             g.color = Color("3b3b46")
-            for(x in 0..15) {
-                g.drawLine(x*cellSize, 0, x*cellSize, cellSize*16)
+            for(x in 1..16) {
+                g.drawLine(x*cellSize, cellSize, x*cellSize, cellSize*17)
             }
-            for(y in 0..15) {
-                g.drawLine(0, y*cellSize, cellSize*16, y*cellSize)
+            for(y in 1..16) {
+                g.drawLine(cellSize, y*cellSize, cellSize*17, y*cellSize)
             }
 
-            for(x in 0..15) {
-                for(y in 0..15) {
+            for(x in 0..16) {
+                for(y in 0..16) {
                     drawCell(g, x, y)
                 }
             }
         }
 
-        val bb = Rect(canvas.min, canvas.min + Vec2(cellSize*16))
+        val bb = Rect(canvas.min, canvas.min + Vec2(cellSize*17))
         drawList.addImage(referenceImages.texID, bb.min, bb.max)
         needsRedraw = false
 
         val cursorPos = cell(io.mousePos - canvas.min)
-        if(cursorPos.x in 0 .. 15 && cursorPos.y in 0 .. 15) {
+        if(cursorPos.x in 1 .. 16 && cursorPos.y in 1 .. 16) {
             drawList.addRect(canvas.min + pos(cursorPos), canvas.min + pos(cursorPos + Vec2i(1)), Constants.SimpleColors.red)
 
             if(isWindowHovered() && isMouseClicked(0)) {
-                val codepoint = (page shl 8) or (cursorPos.y shl 4) or cursorPos.x
+                val codepoint = (page shl 8) or ((cursorPos.y-1) shl 4) or (cursorPos.x-1)
                 document.editorWindow.codepoint = codepoint
                 document.editorWindow.visible = true
                 document.editorWindow.focus()
@@ -166,7 +167,11 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
     fun drawCell(g: Graphics2D, x: Int, y: Int) {
         val frc = FontRenderContext(AffineTransform(), true, true)
 
-        val codepoint = (page shl 8) or (y shl 4) or x
+        val codepoint: Int = when {
+            x == 0 -> " 0123456789ABCDEF"[y].toInt()
+            y == 0 -> " 0123456789ABCDEF"[x].toInt()
+            else -> (page shl 8) or ((y-1) shl 4) or (x-1)
+        }
         val chr = String(Character.toChars(codepoint))
 
         val font = ReferenceFonts.style(referenceStyle)[codepoint]
@@ -179,12 +184,16 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         val baseline = metrics.ascent * scale
         val origin = Vec2i(x*cellSize, y*cellSize) + Vec2i((cellSize - profile.visualBounds.width*scale)/2 - profile.visualBounds.minX*scale, baseline)
 
-        g.color = Constants.SimpleColors.maroonAwt
-        g.drawLine(x*cellSize, origin.y, (x+1)*cellSize, origin.y)
-        if(bitfont.glyphs[codepoint]?.isEmpty() == false)
-            g.color = Color.WHITE
-        else
-            g.color = Color("afafaf")
+        if(x == 0 || y == 0) {
+            g.color = Color("3b3b46")
+        } else {
+            g.color = Constants.SimpleColors.maroonAwt
+            g.drawLine(x * cellSize, origin.y, (x + 1) * cellSize, origin.y)
+            if (bitfont.glyphs[codepoint]?.isEmpty() == false)
+                g.color = Color.WHITE
+            else
+                g.color = Color("afafaf")
+        }
         g.font = font.deriveFont(scale)
         g.drawString(String(Character.toChars(codepoint)), origin.x, origin.y)
     }

@@ -70,11 +70,13 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
                 if(data == Data(codepoint)) {
                     dataMap.remove(codepoint)
                 }
+                codepointChanged = true
             }
             field = value.clamp(0, 0x10FFFF)
             data = dataMap.getOrPut(codepoint) { Data(codepoint) }
         }
 
+    var codepointChanged = false
     var referenceStyle = 0
     var referenceSize = 1f
         set(value) { field = value.clamp(1f, 1000f) }
@@ -106,7 +108,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             set(value) { glyph.advance = value }
         var autoAdvance: Boolean
             get() = glyph.advance == null
-            set(value) { glyph.advance = if(value) null else 0 }
+            set(value) { glyph.advance = if(value) null else advance }
 
         init {
             updateFromGlyph()
@@ -216,6 +218,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     }
 
     override fun main() = with(ImGui) {
+        val wasChanged = codepointChanged
         var menuHeight = -cursorPos
         val contentRect = win.contentsRegionRect
         menuHeight = menuHeight + cursorPos
@@ -227,6 +230,8 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         canvas = Rect(contentRect.min + Vec2(controlsWidth + 5, menuHeight.y), contentRect.max)
         drawCanvas()
+        if(wasChanged)
+            codepointChanged = false
     }
 
     fun drawControls() = with(ImGui) { withItemWidth(controlsWidth) {
@@ -364,12 +369,16 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             1f
         )
 
-        val g = sidebarReferenceImage.edit(true, true)
-        g.font = font.deriveFont(scale)
-        g.drawString(String(Character.toChars(codepoint)), origin.x - bb.min.x, origin.y - bb.min.y)
+        if(codepointChanged) updateReference(font, scale, origin - bb.min)
         drawList.addImage(sidebarReferenceImage.texID, bb.min, bb.max)
 
         popClipRect()
+    }
+
+    fun updateReference(font: java.awt.Font, scale: Float, origin: Vec2i) {
+        val g = sidebarReferenceImage.edit(true, true)
+        g.font = font.deriveFont(scale)
+        g.drawString(String(Character.toChars(codepoint)), origin.x, origin.y)
     }
 
     var canvasMouseHovered = false
@@ -384,12 +393,19 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         drawList.addRectFilled(canvas.min, canvas.max, Constants.editorBackground)
 
+        if(canvasMouseHovered && isMouseClicked(0)) focus()
         if(canvasKeyFocused) {
             keys {
                 if (ifMac("shift+cmd+z", "ctrl+y").pressed()) {
                     data.redo()
                 } else if (ifMac("cmd+z", "ctrl+z").pressed()) {
                     data.undo()
+                }
+                "tab" pressed {
+                    if(io.keyShift)
+                        codepoint--
+                    else
+                        codepoint++
                 }
                 val newTool = when {
                     "b".pressed() -> brush.apply { eraser = false }

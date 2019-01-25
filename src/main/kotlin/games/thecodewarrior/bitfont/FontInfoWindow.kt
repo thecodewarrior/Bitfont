@@ -96,12 +96,18 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                     val formatter = DateTimeFormatter.ofPattern("uuuuMMdd.kkmmss")
                     val s = bitfont.writeJson().toJsonString(true)
                     File("font.json").writeText(s)
+                    File("${bitfont.name.replace("[^A-Za-z0-9_]+".toRegex(), "_")}.json").writeText(s)
                     File("font-${LocalDateTime.now().format(formatter)}.json").writeText(s)
                     lastSave = System.currentTimeMillis()
                 }
                 if(menuItem("Open", ifMac("Cmd+O", "Ctrl+O")) || (isWindowHovered() && "prim+O".pressed())) {
                     val json = Parser.default().parse(StringBuilder(File("font.json").readText())) as JsonObject
                     val bitfont = Bitfont.readJson(json)
+                    val newDocument = BitfontDocument(bitfont)
+                    Main.documents.add(newDocument)
+                }
+                if(menuItem("New", ifMac("Cmd+N", "Ctrl+N")) || (isWindowHovered() && "prim+N".pressed())) {
+                    val bitfont = Bitfont("Untitled", 16, 10, 4, 9, 6, 2)
                     val newDocument = BitfontDocument(bitfont)
                     Main.documents.add(newDocument)
                 }
