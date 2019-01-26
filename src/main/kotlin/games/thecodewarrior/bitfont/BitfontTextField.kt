@@ -11,6 +11,7 @@ open class BitfontTextField(val bitfont: Bitfont) {
     protected val typesetter = Typesetter(bitfont)
     var options: TypesettingOptions = TypesettingOptions()
 
+    // logic
     private var _text = StringBuffer()
     var text: String
         get() = _text.toString()
@@ -22,6 +23,7 @@ open class BitfontTextField(val bitfont: Bitfont) {
                 updateCursor()
             }
         }
+
     protected var _cursor = 0
     var cursor: Int
         get() = _cursor
@@ -29,7 +31,11 @@ open class BitfontTextField(val bitfont: Bitfont) {
             _cursor = value
             updateCursor()
         }
-    var cursorPos: Vec2i = Vec2i()
+
+    open val rendering = TextFieldRendering()
+    open class TextFieldRendering {
+        var cursor: Vec2i = Vec2i()
+    }
 
     var layout: TextLayout = TextLayout()
         protected set
@@ -40,7 +46,7 @@ open class BitfontTextField(val bitfont: Bitfont) {
 
     protected open fun updateCursor() {
         _cursor = _cursor.clamp(0, text.length)
-        cursorPos = if(cursor >= layout.characters.size)
+        rendering.cursor = if(cursor >= layout.characters.size)
             layout.endPos
         else
             layout.characters[cursor].pos
@@ -65,9 +71,4 @@ open class BitfontTextField(val bitfont: Bitfont) {
         updateLayout()
         updateCursor()
     }
-
-}
-
-abstract class BitfontTextInputDriver {
-
 }

@@ -23,7 +23,7 @@ class Glyph(): JsonWritable<JsonObject> {
             field = value?.clamp(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
         }
 
-    fun calcAdvance(spacing: Int): Int = advance ?: if (image.isEmpty()) 0 else max(0, bearingX) + image.width + spacing
+    fun calcAdvance(spacing: Int): Int = advance ?: if (image.isEmpty()) 0 else bearingX + image.width + spacing
 
     var image: BitGrid = BitGrid(1, 1)
 

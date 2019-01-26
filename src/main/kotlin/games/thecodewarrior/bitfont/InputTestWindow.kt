@@ -92,8 +92,8 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
         }
         if(System.currentTimeMillis() % 1000 > 500) {
             drawList.addRectFilled(
-                textOrigin + (field.cursorPos - Vec2(1, bitfont.ascender))*scale,
-                textOrigin + (field.cursorPos + Vec2(0, bitfont.descender))*scale,
+                textOrigin + (field.rendering.cursor - Vec2(1, bitfont.ascender))*scale,
+                textOrigin + (field.rendering.cursor + Vec2(0, bitfont.descender))*scale,
                 Constants.SimpleColors.white
             )
         }
