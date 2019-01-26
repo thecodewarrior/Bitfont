@@ -9,7 +9,7 @@ import glm_.func.common.clamp
 import glm_.vec2.Vec2i
 import kotlin.math.max
 
-class Glyph(val codepoint: Int): JsonWritable<JsonObject> {
+class Glyph(): JsonWritable<JsonObject> {
     var bearingX: Int = 0
         set(value) {
             field = value.clamp(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
@@ -31,7 +31,6 @@ class Glyph(val codepoint: Int): JsonWritable<JsonObject> {
 
     override fun writeJson(): JsonObject = json {
         obj(
-            "codepoint" to codepoint,
             "bearing" to array(bearingX, bearingY),
             "advance" to advance,
             "image" to image.writeJson()
@@ -40,7 +39,7 @@ class Glyph(val codepoint: Int): JsonWritable<JsonObject> {
 
     companion object: JsonReadable<JsonObject, Glyph> {
         override fun readJson(j: JsonObject): Glyph {
-            val glyph = Glyph(j.int("codepoint")!!)
+            val glyph = Glyph()
             j.array<Int>("bearing")!!.also {
                 glyph.bearingX = it[0]
                 glyph.bearingY = it[1]

@@ -2,43 +2,45 @@ package games.thecodewarrior.bitfont
 
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.typesetting.TypesetCharacter
-import games.thecodewarrior.bitfont.typesetting.Typesetter
-import games.thecodewarrior.bitfont.typesetting.TypesettingOptions
 import games.thecodewarrior.bitfont.utils.Constants
-import games.thecodewarrior.bitfont.utils.extensions.addAll
+import games.thecodewarrior.bitfont.utils.extensions.cString
+import games.thecodewarrior.bitfont.utils.keys
 import glm_.vec2.Vec2
+import imgui.FocusedFlag
 import imgui.ImGui
 import imgui.InputTextFlag
-import imgui.WindowFlag
 import imgui.functionalProgramming.withItemWidth
 import imgui.g
 import imgui.internal.Rect
 import kotlin.math.max
 
-class TestingWindow(val document: BitfontDocument): IMWindow() {
+class InputTestWindow(val document: BitfontDocument): IMWindow() {
     val bitfont: Bitfont = document.bitfont
-    val typesetter = Typesetter(bitfont)
+    val field = BitfontTextField(bitfont)
 
     override val title: String
         get() = "${bitfont.name}: Testing"
 
-    var testString: String = ""
     var scale = 2
         set(value) {
             field = max(value, 1)
         }
     var canvas = Rect()
+    val textOrigin: Vec2
+        get() = canvas.min + bitfont.lineHeight * scale
+    var canvasKeyFocused = false
 
     init {
     }
 
     override fun main(): Unit = with(ImGui) {
+        canvasKeyFocused = isWindowFocused(FocusedFlag.RootAndChildWindows)
         withItemWidth(win.contentsRegionRect.width - 300f) {
-            val arr = testString.replace("\n", "\\n").toCharArray().let { name ->
+            val arr = field.text.replace("\n", "\\n").toCharArray().let { name ->
                 CharArray(name.size + 1000).also { name.copyInto(it) }
             }
             if(inputText("##testText", arr, InputTextFlag.EnterReturnsTrue.i))
-                testString = String(g.inputTextState.textW.sliceArray(0 until g.inputTextState.textW.indexOf('\u0000'))).replace("\\n", "\n")
+                field.text = String(g.inputTextState.textW.sliceArray(0 until g.inputTextState.textW.indexOf('\u0000'))).replace("\\n", "\n")
         }
         withItemWidth(150f) {
             sameLine()
@@ -56,7 +58,7 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
         popClipRect()
     }
 
-    fun drawCanvas() {
+    fun drawCanvas() = with(ImGui) {
         drawList.addRectFilled(
             canvas.min,
             canvas.max,
@@ -66,9 +68,34 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
         val cursor = canvas.min + Vec2(bitfont.lineHeight) * scale
         drawList.addLine(Vec2(canvas.min.x, cursor.y), cursor, Constants.editorAxes)
 
-        val layout = typesetter.typeset(testString)
-        layout.characters.forEach { char ->
+        if(canvasKeyFocused) keys {
+            if("left".pressed()) {
+                field.cursor--
+            }
+            if("right".pressed()) {
+                field.cursor++
+            }
+            if("backspace".pressed() && field.cursor > 0) {
+                    field.delete(field.cursor-1, field.cursor)
+            }
+            if("delete".pressed() && field.cursor < field.text.length) {
+                field.delete(field.cursor, field.cursor+1)
+            }
+            val input = io.inputCharacters.cString()
+            if(input.isNotEmpty()) {
+                field.insert(field.cursor, input)
+            }
+        }
+
+        field.layout.characters.forEach { char ->
             drawGlyph(char)
+        }
+        if(System.currentTimeMillis() % 1000 > 500) {
+            drawList.addRectFilled(
+                textOrigin + (field.cursorPos - Vec2(1, bitfont.ascender))*scale,
+                textOrigin + (field.cursorPos + Vec2(0, bitfont.descender))*scale,
+                Constants.SimpleColors.white
+            )
         }
     }
 
@@ -77,7 +104,7 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
         for(x in 0 until grid.width) {
             for(y in 0 until grid.height) {
                 if(grid[x, y]) {
-                    val pos = canvas.min + (char.glyphPos + Vec2(x, y) + Vec2(bitfont.lineHeight)) * scale
+                    val pos = textOrigin + (char.glyphPos + Vec2(x, y)) * scale
                     drawList.addRectFilled(pos, pos + Vec2(scale), Constants.SimpleColors.white)
                 }
 

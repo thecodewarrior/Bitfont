@@ -7,6 +7,7 @@ class BitfontDocument(val bitfont: Bitfont) {
     var editorWindow = GlyphEditorWindow(this)
     var browserWindows = mutableListOf<GlyphBrowserWindow>()
     var testWindows = mutableListOf<TestingWindow>()
+    var inputWindows = mutableListOf<InputTestWindow>()
 
     fun push() {
         infoWindow.visible = true
@@ -16,6 +17,8 @@ class BitfontDocument(val bitfont: Bitfont) {
         browserWindows.toList().forEach { it.push() }
         testWindows.removeIf { !it.visible }
         testWindows.toList().forEach { it.push() }
+        inputWindows.removeIf { !it.visible }
+        inputWindows.toList().forEach { it.push() }
     }
 
     companion object {

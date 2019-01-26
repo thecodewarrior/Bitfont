@@ -92,7 +92,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     }
 
     inner class Data(val codepoint: Int) {
-        val glyph = bitfont.glyphs.getOrPut(codepoint) { Glyph(codepoint) }
+        val glyph = bitfont.glyphs.getOrPut(codepoint) { Glyph() }
         val enabledCells = mutableSetOf<Vec2i>()
 
         var historyIndex = 0
