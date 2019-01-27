@@ -3,6 +3,7 @@ package games.thecodewarrior.bitfont
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
 import games.thecodewarrior.bitfont.data.Bitfont
+import games.thecodewarrior.bitfont.data.UnifontImporter
 import games.thecodewarrior.bitfont.utils.extensions.addAll
 import games.thecodewarrior.bitfont.utils.ifMac
 import games.thecodewarrior.bitfont.utils.keys
@@ -98,7 +99,7 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
 //                        menuItem("Sailor")
 //                    }
 //                }
-                if(menuItem("Save", ifMac("Cmd+S", "Ctrl+S")) || (isWindowHovered() && "prim+S".pressed())) {
+                if(menuItem("Save", ifMac("Cmd+S", "Ctrl+S"))) {
                     val formatter = DateTimeFormatter.ofPattern("uuuuMMdd.kkmmss")
                     val s = bitfont.writeJson().toJsonString(true)
                     File("font.json").writeText(s)
@@ -106,16 +107,24 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                     File("font-${LocalDateTime.now().format(formatter)}.json").writeText(s)
                     lastSave = System.currentTimeMillis()
                 }
-                if(menuItem("Open", ifMac("Cmd+O", "Ctrl+O")) || (isWindowHovered() && "prim+O".pressed())) {
+                if(menuItem("Open", ifMac("Cmd+O", "Ctrl+O"))) {
                     val json = Parser.default().parse(StringBuilder(File("font.json").readText())) as JsonObject
                     val bitfont = Bitfont.readJson(json)
                     val newDocument = BitfontDocument(bitfont)
                     Main.documents.add(newDocument)
                 }
-                if(menuItem("New", ifMac("Cmd+N", "Ctrl+N")) || (isWindowHovered() && "prim+N".pressed())) {
+                if(menuItem("New", ifMac("Cmd+N", "Ctrl+N"))) {
                     val bitfont = Bitfont("Untitled", 16, 10, 4, 9, 6, 2)
                     val newDocument = BitfontDocument(bitfont)
                     Main.documents.add(newDocument)
+                }
+                if(menuItem("Import")) {
+                    val bitfont = UnifontImporter.import(File("unifont.hex"))
+                    val newDocument = BitfontDocument(bitfont)
+                    Main.documents.add(newDocument)
+                }
+                if(menuItem("Optimize")) {
+                    bitfont.glyphs.forEach { _, glyph -> glyph.crop() }
                 }
                 if(menuItem("Close", ifMac("Cmd+W", "Ctrl+W"))) {
                     Main.documents.remove(document)

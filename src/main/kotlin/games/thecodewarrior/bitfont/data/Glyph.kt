@@ -8,6 +8,7 @@ import games.thecodewarrior.bitfont.utils.serialization.JsonWritable
 import glm_.func.common.clamp
 import glm_.vec2.Vec2i
 import kotlin.math.max
+import kotlin.math.min
 
 class Glyph(): JsonWritable<JsonObject> {
     var bearingX: Int = 0
@@ -28,6 +29,40 @@ class Glyph(): JsonWritable<JsonObject> {
     var image: BitGrid = BitGrid(1, 1)
 
     fun isEmpty(): Boolean = image.isEmpty() && advance == null
+
+    fun crop() {
+        if(image.isEmpty())  {
+            image = BitGrid(1, 1)
+            bearingX = 0
+            bearingY = 0
+            return
+        }
+        var minX = Int.MAX_VALUE
+        var maxX = 0
+        var minY = Int.MAX_VALUE
+        var maxY = 0
+        for(x in 0 until image.width) {
+            for(y in 0 until image.height) {
+                if(image[x, y]) {
+                    minX = min(minX, x)
+                    maxX = max(maxX, x)
+                    minY = min(minY, y)
+                    maxY = max(maxY, y)
+                }
+            }
+        }
+        val grid = BitGrid(maxX - minX + 1, maxY - minY + 1)
+        for(x in 0 until image.width) {
+            for(y in 0 until image.height) {
+                if(image[x, y]) {
+                    grid[x - minX, y - minY] = true
+                }
+            }
+        }
+        image = grid
+        bearingX += minX
+        bearingY += minY
+    }
 
     override fun writeJson(): JsonObject = json {
         obj(
