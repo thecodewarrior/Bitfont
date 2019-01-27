@@ -4,13 +4,15 @@ import com.ibm.icu.lang.UCharacter
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.BitGrid
 import games.thecodewarrior.bitfont.data.Glyph
-import games.thecodewarrior.bitfont.utils.Constants
+import games.thecodewarrior.bitfont.utils.Colors
 import games.thecodewarrior.bitfont.utils.ReferenceFonts
 import games.thecodewarrior.bitfont.utils.alignedText
 import games.thecodewarrior.bitfont.utils.contours
 import games.thecodewarrior.bitfont.utils.extensions.ImGuiDrags
+import games.thecodewarrior.bitfont.utils.extensions.JColor
 import games.thecodewarrior.bitfont.utils.extensions.lineTo
 import games.thecodewarrior.bitfont.utils.extensions.primaryModifier
+import games.thecodewarrior.bitfont.utils.extensions.u32
 import games.thecodewarrior.bitfont.utils.glyphProfile
 import games.thecodewarrior.bitfont.utils.ifMac
 import games.thecodewarrior.bitfont.utils.keys
@@ -240,6 +242,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         sameLine()
         withItemWidth(controlsWidth - frameHeight*2 - style.itemSpacing.x*2) {
             val speed = max(1.0, abs(getMouseDragDelta(0).y) / 10.0)
+            pushAllowKeyboardFocus(false)
             ImGuiDrags.dragScalar(
                 label = "##codepointDrag",
                 value = ::codepoint,
@@ -259,8 +262,10 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         var labelWidth = calcTextSize("Advance").x + 1
         withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
+            pushAllowKeyboardFocus(false)
             alignTextToFramePadding(); alignedText("Advance", Vec2(1, 0.5), labelWidth); sameLine()
             inputInt("##advance", data::advance)
+            pushAllowKeyboardFocus(false)
             alignTextToFramePadding(); alignedText("Auto", Vec2(1, 0.5), labelWidth); sameLine()
             checkbox("##autoAdvance", data::autoAdvance)
         }
@@ -270,16 +275,22 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         labelWidth = calcTextSize("Local Grid").x + 1
         withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
             alignTextToFramePadding(); alignedText("Origin X", Vec2(1, 0.5), labelWidth); sameLine()
+            pushAllowKeyboardFocus(false)
             inputInt("Origin X", ::originX)
             alignTextToFramePadding(); alignedText("Origin Y", Vec2(1, 0.5), labelWidth); sameLine()
+            pushAllowKeyboardFocus(false)
             inputInt("Origin Y", ::originY)
             alignTextToFramePadding(); alignedText("Scale", Vec2(1, 0.5), labelWidth); sameLine()
+            pushAllowKeyboardFocus(false)
             inputInt("Scale", ::granularity)
             alignTextToFramePadding(); alignedText("Grid", Vec2(1, 0.5), labelWidth); sameLine()
+            pushAllowKeyboardFocus(false)
             checkbox("##showGrid", ::displayGrid)
             alignTextToFramePadding(); alignedText("Local Grid", Vec2(1, 0.5), labelWidth); sameLine()
+            pushAllowKeyboardFocus(false)
             inputInt("##localGridRadius", ::localGridRadius)
             alignTextToFramePadding(); alignedText("Guides", Vec2(1, 0.5), labelWidth); sameLine()
+            pushAllowKeyboardFocus(false)
             checkbox("##showGuides", ::displayGuides)
         }
 
@@ -288,7 +299,9 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         val prevCursor = Vec2(cursorPos)
         alignedText("Reference Font", Vec2(0.5), width = controlsWidth)
         cursorPos = prevCursor
+        pushAllowKeyboardFocus(false)
         checkbox("##displayReference", ::displayReference)
+        pushAllowKeyboardFocus(false)
         listBox("##style", ::referenceStyle,
             ReferenceFonts.styles, 3)
         val speed = 1f / max(1f, abs(getMouseDragDelta(0).y) / 10)
@@ -296,6 +309,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         text("Size")
         sameLine()
         withItemWidth(controlsWidth - cursorPosX) {
+            pushAllowKeyboardFocus(false)
             dragFloat("Size", ::referenceSize, speed, 1f, 1000f)
         }
         text(ReferenceFonts.style(referenceStyle).fontName(codepoint))
@@ -320,63 +334,62 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         drawList.addRectFilled(
             bb.min,
             bb.max,
-            Constants.editorBackground
+            Colors.editor.background.u32
         )
 
-        val font = ReferenceFonts.style(referenceStyle)[codepoint]
-        val bigFont = font.deriveFont(1000f)
-        val frc = FontRenderContext(AffineTransform(), true, true)
-        val profile = font.glyphProfile(codepoint, 1f)
-        if(profile.isEmpty()) return
-
-        val capHeight = bigFont.createGlyphVector(frc, "X").visualBounds.height / 1000
-        val lowerHeight = bigFont.createGlyphVector(frc, "x").visualBounds.height / 1000
-
-        val glyphMin = Vec2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-        val glyphMax = Vec2(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY)
-
-        profile.forEach { it.forEach { point ->
-            glyphMin minAssign point
-            glyphMax maxAssign point
-        } }
-
-        val visibleBounds = Rect(
-            glyphMin min Vec2(0, -capHeight),
-            glyphMax max Vec2(0, 0)
-        )
-
-        val scales = (bb.size * 0.8) / visibleBounds.size
-        val scale = min(scales.x, scales.y)
-        val origin = Vec2i(bb.min + bb.size * 0.1 - visibleBounds.min * scale + Vec2(0, bb.height * 0.8 - visibleBounds.height * scale)/2)
-
-        fun guide(height: Float, col: Int) {
-            drawList.addLine(
-                Vec2(bb.min.x, origin.y + (height * scale).toInt()),
-                Vec2(bb.max.x, origin.y + (height * scale).toInt()),
-                col,
-                1f
-            )
-        }
-
-        guide(-capHeight.toFloat(), Constants.editorGuides)
-        guide(-lowerHeight.toFloat(), Constants.editorGuides)
-
-        guide(0f, Constants.editorAxes)
-        drawList.addLine(
-            Vec2(origin.x, bb.min.y),
-            Vec2(origin.x, bb.max.y),
-            Constants.editorAxes,
-            1f
-        )
-
-        if(codepointChanged) updateReference(font, scale, origin - bb.min)
+        if(codepointChanged) updateReference()
         drawList.addImage(sidebarReferenceImage.texID, bb.min, bb.max)
 
         popClipRect()
     }
 
-    fun updateReference(font: java.awt.Font, scale: Float, origin: Vec2i) {
+    fun updateReference() {
         val g = sidebarReferenceImage.edit(true, true)
+        val size = Vec2(sidebarReferenceImage.width, sidebarReferenceImage.height)
+
+        val chr = String(Character.toChars(codepoint))
+        val frc = FontRenderContext(AffineTransform(), true, true)
+
+        val font = ReferenceFonts.style(referenceStyle)[codepoint]
+        val bigFont = font.deriveFont(1000f)
+
+        val (ascent, descent) = bigFont.getLineMetrics(chr, frc).let { it.ascent/1000 to it.descent/1000 }
+
+        val capHeight = bigFont.createGlyphVector(frc, "X").visualBounds.height / 1000
+        val lowerHeight = bigFont.createGlyphVector(frc, "x").visualBounds.height / 1000
+        val descender = bigFont.createGlyphVector(frc, "gjpqy").visualBounds.maxY / 1000
+
+        val bounds = bigFont.createGlyphVector(frc, chr).visualBounds.let {
+            Rect(it.minX.toFloat()/1000, it.minY.toFloat()/1000, it.maxX.toFloat()/1000, it.maxY.toFloat()/1000)
+        }
+
+        bounds.min = bounds.min min Vec2(0, 0) min Vec2(0, -ascent)
+        bounds.max = bounds.max max Vec2(0, 0) max Vec2(0, descent)
+
+        val scales = (size * 0.8) / bounds.size
+        val scale = min(scales.x, scales.y)
+        val origin = Vec2i(size * 0.1 - bounds.min * scale + Vec2(0, size.y * 0.8 - bounds.height * scale)/2)
+
+        fun hGuide(position: Float, col: JColor) {
+            g.color = col
+            val y = (position*scale + origin.y).toInt()
+            g.drawLine(0, y, size.x.toInt(), y)
+        }
+
+        fun vGuide(position: Float, col: JColor) {
+            g.color = col
+            val x = (position*scale + origin.x).toInt()
+            g.drawLine(x, 0, x, size.y.toInt())
+        }
+
+        hGuide(-capHeight.toFloat(), Colors.editor.referencePanel.guides)
+        hGuide(-lowerHeight.toFloat(), Colors.editor.referencePanel.guides)
+        hGuide(descender.toFloat(), Colors.editor.referencePanel.guides)
+        hGuide(0f, Colors.editor.referencePanel.axes)
+
+        vGuide(0f, Colors.editor.referencePanel.axes)
+
+        g.color = Colors.editor.referencePanel.glyph
         g.font = font.deriveFont(scale)
         g.drawString(String(Character.toChars(codepoint)), origin.x, origin.y)
     }
@@ -391,7 +404,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         if (!itemAdd(canvas, "editor".hashCode())) return
         canvasKeyFocused = isWindowFocused(FocusedFlag.RootAndChildWindows)
 
-        drawList.addRectFilled(canvas.min, canvas.max, Constants.editorBackground)
+        drawList.addRectFilled(canvas.min, canvas.max, Colors.editor.background.u32)
 
         if(canvasMouseHovered && isMouseClicked(0)) focus()
         if(canvasKeyFocused) {
@@ -451,11 +464,11 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         if(displayGrid) {
             for (i in 0..(canvas.height / granularity).toInt()) {
-                horizontalLine(i - origin.y, Constants.editorGrid)
+                horizontalLine(i - origin.y, Colors.editor.grid.u32)
             }
 
             for (i in 0..(canvas.width / granularity).toInt()) {
-                verticalLine(i - origin.x, Constants.editorGrid)
+                verticalLine(i - origin.x, Colors.editor.grid.u32)
             }
         } else if(localGridRadius > 0) {
             val cursorPos = pos(Vec2(0.5, 0.5) + cell(io.mousePos - canvas.min))
@@ -469,7 +482,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
                     drawList.addLine(
                         canvas.min + cursorPos + Vec2(offset.x, -length),
                         canvas.min + cursorPos + Vec2(offset.x, length),
-                        Constants.editorGrid,
+                        Colors.editor.grid.u32,
                         1f
                     )
                 }
@@ -478,7 +491,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
                     drawList.addLine(
                         canvas.min + cursorPos + Vec2(-length, offset.y),
                         canvas.min + cursorPos + Vec2(length, offset.y),
-                        Constants.editorGrid,
+                        Colors.editor.grid.u32,
                         1f
                     )
                 }
@@ -487,26 +500,26 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
 
         if(displayGuides) {
-            horizontalLine(-bitfont.xHeight, Constants.editorGuides)
-            horizontalLine(-bitfont.capHeight, Constants.editorGuides)
-            horizontalLine(-bitfont.ascender, Constants.editorGuides)
-            horizontalLine(bitfont.descender, Constants.editorGuides)
+            horizontalLine(-bitfont.xHeight, Colors.editor.guides.u32)
+            horizontalLine(-bitfont.capHeight, Colors.editor.guides.u32)
+            horizontalLine(-bitfont.ascender, Colors.editor.guides.u32)
+            horizontalLine(bitfont.descender, Colors.editor.guides.u32)
 
-            verticalLine(0, Constants.editorAxes)
-            horizontalLine(0, Constants.editorAxes)
+            verticalLine(0, Colors.editor.axes.u32)
+            horizontalLine(0, Colors.editor.axes.u32)
 
             val advanceEnd = Vec2(canvas.min.x + (origin.x + data.glyph.calcAdvance(bitfont.spacing)) * granularity, canvas.min.y + origin.y * granularity)
             drawList.addLine(
                 Vec2(canvas.min.x + origin.x * granularity, canvas.min.y + origin.y * granularity),
                 advanceEnd,
-                Constants.editorAdvance,
+                Colors.editor.advance.u32,
                 1f
             )
 
             drawList.addLine(
                 advanceEnd - Vec2(0, ceil(granularity/2.0)),
                 advanceEnd + Vec2(0, ceil(granularity/2.0)),
-                Constants.editorAdvance,
+                Colors.editor.advance.u32,
                 1f
             )
         }
@@ -519,7 +532,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             ReferenceFonts.style(referenceStyle)[codepoint].glyphProfile(codepoint, referenceSize).forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
                     canvas.min + pos(it)
-                }), Constants.editorSelection, true, 1f)
+                }), Colors.editor.selection.u32, true, 1f)
             }
         }
 
@@ -614,7 +627,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             moving.contours().forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
                     canvas.min + pos(it)
-                }), Constants.editorSelection, true, 2f)
+                }), Colors.editor.selection.u32, true, 2f)
             }
         }
 
@@ -713,13 +726,13 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             selected.contours().forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
                     canvas.min + pos(it)
-                }), Constants.editorSelection, true, 2f)
+                }), Colors.editor.selection.u32, true, 2f)
             }
 
             selecting.contours().forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
                     canvas.min + pos(it)
-                }), Constants.editorSelection, true, 2f)
+                }), Colors.editor.selection.u32, true, 2f)
             }
         }
 

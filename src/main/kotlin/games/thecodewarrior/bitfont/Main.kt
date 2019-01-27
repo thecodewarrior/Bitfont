@@ -1,6 +1,7 @@
 package games.thecodewarrior.bitfont
 
 import games.thecodewarrior.bitfont.data.Bitfont
+import games.thecodewarrior.bitfont.utils.Colors
 import games.thecodewarrior.bitfont.utils.ifMacSystem
 import games.thecodewarrior.bitfont.utils.opengl.Java2DTexture
 import glm_.vec4.Vec4
@@ -30,7 +31,6 @@ object Main {
     val window: GlfwWindow
     val ctx: Context
 
-    val clearColor = Vec4(0.45f, 0.55f, 0.6f, 1f)
     var showDemo = true
 
     val documents: MutableList<BitfontDocument>
@@ -44,7 +44,7 @@ object Main {
             }
         }
 
-        window = GlfwWindow(1280, 720, "Dear ImGui Lwjgl OpenGL3 example").apply {
+        window = GlfwWindow(1280, 720, "Bitfont font editor").apply {
             init()
         }
         window.setSizeLimit(800 .. 2400, 300 .. 1500)
@@ -88,7 +88,7 @@ object Main {
 
         // Rendering
         glViewport(window.framebufferSize)
-        glClearColor(clearColor)
+        glClearColor(Colors.main.background)
         glClear(GL_COLOR_BUFFER_BIT)
 
         Java2DTexture.updateTextures()

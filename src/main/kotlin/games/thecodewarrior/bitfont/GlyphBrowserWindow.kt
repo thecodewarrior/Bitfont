@@ -1,14 +1,12 @@
 package games.thecodewarrior.bitfont
 
 import games.thecodewarrior.bitfont.utils.Color
-import games.thecodewarrior.bitfont.utils.Constants
+import games.thecodewarrior.bitfont.utils.Colors
 import games.thecodewarrior.bitfont.utils.ReferenceFonts
 import games.thecodewarrior.bitfont.utils.alignedText
 import games.thecodewarrior.bitfont.utils.extensions.ImGuiDrags
-import games.thecodewarrior.bitfont.utils.extensions.strokeWidth
-import games.thecodewarrior.bitfont.utils.glyphProfile
+import games.thecodewarrior.bitfont.utils.extensions.u32
 import games.thecodewarrior.bitfont.utils.opengl.Java2DTexture
-import glm_.func.common.clamp
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import imgui.Dir
@@ -17,14 +15,10 @@ import imgui.WindowFlag
 import imgui.functionalProgramming.withChild
 import imgui.functionalProgramming.withItemWidth
 import imgui.internal.Rect
-import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.font.FontRenderContext
 import java.awt.geom.AffineTransform
-import kotlin.math.abs
 import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
@@ -114,12 +108,12 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         drawList.addRectFilled(
             canvas.min,
             canvas.max,
-            Constants.editorBackground
+            Colors.browser.background.u32
         )
 
         if(needsRedraw) {
             val g = referenceImages.edit(true, true)
-            g.color = Color("3b3b46")
+            g.color = Colors.browser.gridLines
             for(x in 1..16) {
                 g.drawLine(x*cellSize, cellSize, x*cellSize, cellSize*17)
             }
@@ -140,7 +134,7 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
 
         val cursorPos = cell(io.mousePos - canvas.min)
         if(cursorPos.x in 1 .. 16 && cursorPos.y in 1 .. 16) {
-            drawList.addRect(canvas.min + pos(cursorPos), canvas.min + pos(cursorPos + Vec2i(1)), Constants.SimpleColors.red)
+            drawList.addRect(canvas.min + pos(cursorPos), canvas.min + pos(cursorPos + Vec2i(1)), Colors.browser.cellHighlight.u32)
 
             if(isWindowHovered() && isMouseClicked(0)) {
                 val codepoint = (page shl 8) or ((cursorPos.y-1) shl 4) or (cursorPos.x-1)
@@ -185,14 +179,14 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         val origin = Vec2i(x*cellSize, y*cellSize) + Vec2i((cellSize - profile.visualBounds.width*scale)/2 - profile.visualBounds.minX*scale, baseline)
 
         if(x == 0 || y == 0) {
-            g.color = Color("3b3b46")
+            g.color = Colors.browser.hexLabels
         } else {
-            g.color = Constants.SimpleColors.maroonAwt
+            g.color = Colors.browser.baseline
             g.drawLine(x * cellSize, origin.y, (x + 1) * cellSize, origin.y)
             if (bitfont.glyphs[codepoint]?.isEmpty() == false)
-                g.color = Color.WHITE
+                g.color = Colors.browser.glyph
             else
-                g.color = Color("afafaf")
+                g.color = Colors.browser.missingGlyph
         }
         g.font = font.deriveFont(scale)
         g.drawString(String(Character.toChars(codepoint)), origin.x, origin.y)

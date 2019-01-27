@@ -2,8 +2,9 @@ package games.thecodewarrior.bitfont
 
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.typesetting.TypesetCharacter
-import games.thecodewarrior.bitfont.utils.Constants
+import games.thecodewarrior.bitfont.utils.Colors
 import games.thecodewarrior.bitfont.utils.extensions.cString
+import games.thecodewarrior.bitfont.utils.extensions.u32
 import games.thecodewarrior.bitfont.utils.keys
 import glm_.vec2.Vec2
 import imgui.FocusedFlag
@@ -62,11 +63,11 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
         drawList.addRectFilled(
             canvas.min,
             canvas.max,
-            Constants.editorBackground
+            Colors.inputTest.background.u32
         )
 
-        val cursor = canvas.min + Vec2(bitfont.lineHeight) * scale
-        drawList.addLine(Vec2(canvas.min.x, cursor.y), cursor, Constants.editorAxes)
+        val cursor = canvas.min + Vec2(bitfont.lineHeight) * scale - Vec2(0.5)
+        drawList.addTriangleFilled(cursor, cursor + Vec2(-scale, -scale), cursor + Vec2(-scale, scale), Colors.inputTest.originIndicator.u32)
 
         if(canvasKeyFocused) keys {
             if("left".pressed()) {
@@ -94,7 +95,7 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
             drawList.addRectFilled(
                 textOrigin + (field.rendering.cursor - Vec2(1, bitfont.ascender))*scale,
                 textOrigin + (field.rendering.cursor + Vec2(0, bitfont.descender))*scale,
-                Constants.SimpleColors.white
+                Colors.inputTest.cursor.u32
             )
         }
     }
@@ -105,7 +106,7 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
             for(y in 0 until grid.height) {
                 if(grid[x, y]) {
                     val pos = textOrigin + (char.glyphPos + Vec2(x, y)) * scale
-                    drawList.addRectFilled(pos, pos + Vec2(scale), Constants.SimpleColors.white)
+                    drawList.addRectFilled(pos, pos + Vec2(scale), Colors.inputTest.text.u32)
                 }
 
             }

@@ -4,8 +4,10 @@ import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.typesetting.TypesetCharacter
 import games.thecodewarrior.bitfont.typesetting.Typesetter
 import games.thecodewarrior.bitfont.typesetting.TypesettingOptions
+import games.thecodewarrior.bitfont.utils.Colors
 import games.thecodewarrior.bitfont.utils.Constants
 import games.thecodewarrior.bitfont.utils.extensions.addAll
+import games.thecodewarrior.bitfont.utils.extensions.u32
 import glm_.vec2.Vec2
 import imgui.ImGui
 import imgui.InputTextFlag
@@ -60,11 +62,11 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
         drawList.addRectFilled(
             canvas.min,
             canvas.max,
-            Constants.editorBackground
+            Colors.layoutTest.background.u32
         )
 
-        val cursor = canvas.min + Vec2(bitfont.lineHeight) * scale
-        drawList.addLine(Vec2(canvas.min.x, cursor.y), cursor, Constants.editorAxes)
+        val cursor = canvas.min + Vec2(bitfont.lineHeight) * scale - Vec2(0.5)
+        drawList.addTriangleFilled(cursor, cursor + Vec2(-scale, -scale), cursor + Vec2(-scale, scale), Colors.layoutTest.originIndicator.u32)
 
         val layout = typesetter.typeset(testString)
         layout.characters.forEach { char ->
@@ -78,7 +80,7 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
             for(y in 0 until grid.height) {
                 if(grid[x, y]) {
                     val pos = canvas.min + (char.glyphPos + Vec2(x, y) + Vec2(bitfont.lineHeight)) * scale
-                    drawList.addRectFilled(pos, pos + Vec2(scale), Constants.SimpleColors.white)
+                    drawList.addRectFilled(pos, pos + Vec2(scale), Colors.layoutTest.text.u32)
                 }
 
             }
