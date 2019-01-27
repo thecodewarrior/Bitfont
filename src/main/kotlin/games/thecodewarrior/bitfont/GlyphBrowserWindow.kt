@@ -139,6 +139,7 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
             if(isWindowHovered() && isMouseClicked(0)) {
                 val codepoint = (page shl 8) or ((cursorPos.y-1) shl 4) or (cursorPos.x-1)
                 document.editorWindow.codepoint = codepoint
+                document.editorWindow.codepointHistory.push(codepoint)
                 document.editorWindow.visible = true
                 document.editorWindow.focus()
             }

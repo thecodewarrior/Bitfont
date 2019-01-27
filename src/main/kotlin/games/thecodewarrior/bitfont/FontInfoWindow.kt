@@ -7,6 +7,7 @@ import games.thecodewarrior.bitfont.data.UnifontImporter
 import games.thecodewarrior.bitfont.utils.extensions.addAll
 import games.thecodewarrior.bitfont.utils.ifMac
 import games.thecodewarrior.bitfont.utils.keys
+import games.thecodewarrior.bitfont.utils.nameslist.NamesList
 import imgui.ImGui
 import imgui.InputTextFlag
 import imgui.WindowFlag
@@ -125,6 +126,16 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                 }
                 if(menuItem("Optimize")) {
                     bitfont.glyphs.forEach { _, glyph -> glyph.crop() }
+                }
+                if(menuItem("NamesList")) {
+                    try {
+                        File("NamesList.txt").useLines {
+                            val list = NamesList()
+                            list.read(it)
+                        }
+                    } catch(e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
                 if(menuItem("Close", ifMac("Cmd+W", "Ctrl+W"))) {
                     Main.documents.remove(document)

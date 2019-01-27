@@ -5,6 +5,7 @@ import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.BitGrid
 import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.utils.Colors
+import games.thecodewarrior.bitfont.utils.HistoryTracker
 import games.thecodewarrior.bitfont.utils.ReferenceFonts
 import games.thecodewarrior.bitfont.utils.alignedText
 import games.thecodewarrior.bitfont.utils.contours
@@ -65,6 +66,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     val dataMap = mutableMapOf<Int, Data>()
 
     var data: Data = Data(0)
+
     var codepoint: Int = 0
         set(value) {
             if(field != value.clamp(0, 0x10FFFF)) {
@@ -89,6 +91,8 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     var localGridRadius = 0
         set(value) { field = value.clamp(0, 100) }
 
+    var codepointScrubbing = false
+    var codepointHistory = HistoryTracker<Int>(100, 65)
     init {
         codepoint = 65
     }
@@ -97,13 +101,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         val glyph = bitfont.glyphs.getOrPut(codepoint) { Glyph() }
         val enabledCells = mutableSetOf<Vec2i>()
 
-        var historyIndex = 0
-            private set
-        var undoDepth = 0
-            private set
-        var redoDepth = 0
-            private set
-        val history = MutableList(100) { State() }
+        val history: HistoryTracker<State>
 
         var advance: Int
             get() = glyph.calcAdvance(bitfont.spacing)
@@ -114,34 +112,21 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         init {
             updateFromGlyph()
-            history[0] = State()
+            history = HistoryTracker(100, State())
         }
 
         fun pushHistory() {
-            historyIndex++
-            undoDepth = min(99, undoDepth + 1)
-            redoDepth = 0
-            history[historyIndex % history.size] = State()
+            history.push(State())
             updateGlyph()
         }
 
         fun undo() {
-            if (undoDepth != 0) {
-                undoDepth--
-                historyIndex--
-                redoDepth++
-            }
-            history[historyIndex % history.size].apply()
+            history.undo().apply()
             updateGlyph()
         }
 
         fun redo() {
-            if (redoDepth != 0) {
-                undoDepth++
-                historyIndex++
-                redoDepth--
-            }
-            history[historyIndex % history.size].apply()
+            history.redo().apply()
             updateGlyph()
         }
 
@@ -199,9 +184,6 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             if (codepoint != other.codepoint) return false
             if (glyph != other.glyph) return false
             if (enabledCells != other.enabledCells) return false
-            if (historyIndex != other.historyIndex) return false
-            if (undoDepth != other.undoDepth) return false
-            if (redoDepth != other.redoDepth) return false
             if (history != other.history) return false
 
             return true
@@ -211,15 +193,28 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             var result = codepoint
             result = 31 * result + glyph.hashCode()
             result = 31 * result + enabledCells.hashCode()
-            result = 31 * result + historyIndex
-            result = 31 * result + undoDepth
-            result = 31 * result + redoDepth
             result = 31 * result + history.hashCode()
             return result
         }
     }
 
     override fun main() = with(ImGui) {
+        keys {
+            "tab" pressed {
+                if(io.keyShift)
+                    codepoint--
+                else
+                    codepoint++
+                codepointHistory.push(codepoint)
+            }
+            "shift+h" pressed {
+                codepointHistory.undo()
+            }
+            "shift+l" pressed {
+                codepointHistory.redo()
+            }
+        }
+
         val wasChanged = codepointChanged
         var menuHeight = -cursorPos
         val contentRect = win.contentsRegionRect
@@ -237,6 +232,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     }
 
     fun drawControls() = with(ImGui) { withItemWidth(controlsWidth) {
+        val oldCodepoint = codepoint
         pushButtonRepeat(true)
         if (arrowButton("##left", Dir.Left)) codepoint--
         sameLine()
@@ -251,7 +247,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
                 minValue = 0,
                 maxValue = 0x10FFFF,
                 valueToDisplay = { "U+%04X".format(it) },
-                correct = { it.roundToInt() },
+                correct = { codepointScrubbing = true; it.roundToInt() },
                 valueToString = { "%04X".format(it) },
                 stringToValue = { current, new -> (new.toIntOrNull(16) ?: current) to "" }
             )
@@ -259,6 +255,12 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         sameLine()
         if (arrowButton("##right", Dir.Right)) codepoint++
         popButtonRepeat()
+        if(codepoint != oldCodepoint) {
+            codepointScrubbing = true
+        } else if(codepointScrubbing) {
+            codepointScrubbing = false
+            codepointHistory.push(codepoint)
+        }
 
         var labelWidth = calcTextSize("Advance").x + 1
         withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
@@ -413,12 +415,6 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
                     data.redo()
                 } else if (ifMac("cmd+z", "ctrl+z").pressed()) {
                     data.undo()
-                }
-                "tab" pressed {
-                    if(io.keyShift)
-                        codepoint--
-                    else
-                        codepoint++
                 }
                 val newTool = when {
                     "b".pressed() -> brush.apply { eraser = false }
