@@ -20,6 +20,11 @@ class Java2DTexture(width: Int, height: Int) {
         private set
     var height = height
         private set
+    var filters: Boolean = false
+        set(value) {
+            field = value
+            updateFilters()
+        }
 
     private var initialized = false
     private val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
@@ -27,6 +32,7 @@ class Java2DTexture(width: Int, height: Int) {
 
     init {
         edit(clear = true)
+        updateFilters()
     }
 
     @JvmOverloads
@@ -55,6 +61,17 @@ class Java2DTexture(width: Int, height: Int) {
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL12.GL_BGRA,
             GL12.GL_UNSIGNED_INT_8_8_8_8_REV, null as IntBuffer?)
         checkError("J2D texture init texImage2D")
+    }
+
+    private fun updateFilters() {
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID)
+        if(filters) {
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR)
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR)
+        } else {
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST)
+        }
     }
 
     fun delete() {

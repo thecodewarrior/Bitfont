@@ -68,6 +68,7 @@ object Colors {
         val background = editor.background
         val originIndicator = orange
         val text = white
+        val boundingBoxes = magenta
     }
 
     object main {
