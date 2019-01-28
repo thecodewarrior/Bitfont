@@ -4,6 +4,7 @@ import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.UnifontImporter
+import games.thecodewarrior.bitfont.typesetting.BitfontAtlas
 import games.thecodewarrior.bitfont.utils.ReferenceFonts
 import games.thecodewarrior.bitfont.utils.extensions.addAll
 import games.thecodewarrior.bitfont.utils.ifMac
@@ -21,6 +22,7 @@ import imgui.g
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import javax.imageio.ImageIO
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -144,7 +146,9 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                 if(menuItem("Optimize")) {
                     bitfont.glyphs.forEach { _, glyph -> glyph.crop() }
                 }
-                if(menuItem("NamesList")) {
+                if(menuItem("Pack")) {
+                    val atlas = BitfontAtlas(bitfont)
+                    ImageIO.write(atlas.image(), "png", File("atlas.png"))
                 }
                 if(menuItem("Close", ifMac("Cmd+W", "Ctrl+W"))) {
                     Main.documents.remove(document)

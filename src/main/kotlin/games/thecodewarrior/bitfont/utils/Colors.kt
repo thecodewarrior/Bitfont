@@ -1,9 +1,11 @@
 package games.thecodewarrior.bitfont.utils
 
+
 // suppress classname as nested objects are used for namespacing.
 // Colors.editor.background instead of Colors.editorBackground
 @Suppress("ClassName")
 object Colors {
+    val transparent = java.awt.Color(1f, 1f, 1f, 0f)
     val maroon = Color("800000")
     val red = Color("e6194b")
     val pink = Color("fabebe")
