@@ -112,12 +112,12 @@ private fun commentLine(line: String): CommentLine {
 
 data class AliasLine(val text: String): NamesListLine()
 private fun aliasLine(line: String): AliasLine {
-    return AliasLine(line.removePrefix("$tabRE= "))
+    return AliasLine(line.removePrefix("$tabRE= ".re))
 }
 
 data class FormalAliasLine(val name: String): NamesListLine()
 private fun formalAliasLine(line: String): FormalAliasLine {
-    return FormalAliasLine(line.removePrefix("$tabRE% "))
+    return FormalAliasLine(line.removePrefix("$tabRE% ".re))
 }
 
 data class CrossRef(val codepoint: Int, val name: String): NamesListLine()

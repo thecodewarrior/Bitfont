@@ -39,7 +39,7 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         }
     var needsRedraw = true
     var canvas = Rect()
-    val controlsWidth: Float = 175f
+    val detail = GlyphDetailPane()
 
     val cellSize = 32
     val referenceImages = Java2DTexture(cellSize*17, cellSize*17)
@@ -53,13 +53,13 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         var menuHeight = -cursorPos
         val contentRect = win.contentsRegionRect
         menuHeight = menuHeight + cursorPos
-        withChild("Controls", Vec2(controlsWidth, contentRect.height), false) {
+        withChild("Controls", Vec2(detail.width, contentRect.height), false) {
             drawControls()
         }
 
         sameLine()
 
-        val canvasPos = contentRect.min + Vec2(controlsWidth + 5, menuHeight.y)
+        val canvasPos = contentRect.min + Vec2(detail.width + 5, menuHeight.y)
         canvas = Rect(canvasPos, canvasPos + Vec2(cellSize*17))
         itemSize(canvas)
         pushClipRect(canvas.min, canvas.max, true)
@@ -69,11 +69,11 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         popClipRect()
     }
 
-    fun drawControls() = with(ImGui) { withItemWidth(controlsWidth) {
+    fun drawControls() = with(ImGui) { withItemWidth(detail.width) {
         pushButtonRepeat(true)
         if (arrowButton("##left", Dir.Left)) page--
         sameLine()
-        withItemWidth(controlsWidth - frameHeight*2 - style.itemSpacing.x*2) {
+        withItemWidth(detail.width - frameHeight*2 - style.itemSpacing.x*2) {
             ImGuiDrags.dragScalar(
                 label = "##pageDrag",
                 value = ::page,
@@ -92,6 +92,8 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         popButtonRepeat()
 
         separator()
+
+        detail.draw()
     } }
 
     fun drawCanvas() = with(ImGui) {
@@ -128,10 +130,11 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
 
             if(isWindowHovered() && isMouseClicked(0)) {
                 val codepoint = (page shl 8) or ((cursorPos.y-1) shl 4) or (cursorPos.x-1)
-                document.editorWindow.codepoint = codepoint
-                document.editorWindow.codepointHistory.push(codepoint)
-                document.editorWindow.visible = true
-                document.editorWindow.focus()
+//                document.editorWindow.codepoint = codepoint
+//                document.editorWindow.codepointHistory.push(codepoint)
+//                document.editorWindow.visible = true
+//                document.editorWindow.focus()
+                detail.codepoint = codepoint
             }
         }
     }
