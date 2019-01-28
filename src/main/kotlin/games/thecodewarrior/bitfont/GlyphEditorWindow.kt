@@ -81,9 +81,6 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         }
 
     var codepointChanged = false
-    var referenceStyle = 0
-    var referenceSize = 1f
-        set(value) { field = value.clamp(1f, 1000f) }
     val sidebarReferenceImage = Java2DTexture(controlsWidth.toInt(), controlsWidth.toInt())
     var displayReference = false
     var displayGrid = true
@@ -303,18 +300,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         cursorPos = prevCursor
         pushAllowKeyboardFocus(false)
         checkbox("##displayReference", ::displayReference)
-        pushAllowKeyboardFocus(false)
-        listBox("##style", ::referenceStyle,
-            ReferenceFonts.styles, 3)
-        val speed = 1f / max(1f, abs(getMouseDragDelta(0).y) / 10)
-        alignTextToFramePadding()
-        text("Size")
-        sameLine()
-        withItemWidth(controlsWidth - cursorPosX) {
-            pushAllowKeyboardFocus(false)
-            dragFloat("Size", ::referenceSize, speed, 1f, 1000f)
-        }
-        text(ReferenceFonts.style(referenceStyle).fontName(codepoint))
+        text(ReferenceFonts.style(document.referenceStyle).fontName(codepoint))
 
         val bb = Rect(win.dc.cursorPos, win.dc.cursorPos + Vec2(controlsWidth))
         drawReference(bb)
@@ -352,7 +338,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         val chr = String(Character.toChars(codepoint))
         val frc = FontRenderContext(AffineTransform(), true, true)
 
-        val font = ReferenceFonts.style(referenceStyle)[codepoint]
+        val font = ReferenceFonts.style(document.referenceStyle)[codepoint]
         val bigFont = font.deriveFont(1000f)
 
         val (ascent, descent) = bigFont.getLineMetrics(chr, frc).let { it.ascent/1000 to it.descent/1000 }
@@ -525,7 +511,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         }
 
         if(displayReference) {
-            ReferenceFonts.style(referenceStyle)[codepoint].glyphProfile(codepoint, referenceSize).forEach { contour ->
+            ReferenceFonts.style(document.referenceStyle)[codepoint].glyphProfile(codepoint, document.referenceSize).forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
                     canvas.min + pos(it)
                 }), Colors.editor.selection.u32, true, 1f)

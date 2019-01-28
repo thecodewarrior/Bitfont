@@ -41,12 +41,6 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
     var canvas = Rect()
     val controlsWidth: Float = 175f
 
-    var referenceStyle = 0
-        set(value) {
-            if(value != field)
-                needsRedraw = true
-            field = value
-        }
     val cellSize = 32
     val referenceImages = Java2DTexture(cellSize*17, cellSize*17)
 
@@ -98,10 +92,6 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         popButtonRepeat()
 
         separator()
-
-        alignedText("Reference Font", Vec2(0.5), width = controlsWidth)
-        listBox("##style", ::referenceStyle,
-            ReferenceFonts.styles, 3)
     } }
 
     fun drawCanvas() = with(ImGui) {
@@ -169,7 +159,7 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         }
         val chr = String(Character.toChars(codepoint))
 
-        val font = ReferenceFonts.style(referenceStyle)[codepoint]
+        val font = ReferenceFonts.style(document.referenceStyle)[codepoint]
 
         val metrics = font.getLineMetrics(chr, frc)
         val profile = font.createGlyphVector(frc, chr)

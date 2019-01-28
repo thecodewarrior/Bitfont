@@ -4,6 +4,7 @@ import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.UnifontImporter
+import games.thecodewarrior.bitfont.utils.ReferenceFonts
 import games.thecodewarrior.bitfont.utils.extensions.addAll
 import games.thecodewarrior.bitfont.utils.ifMac
 import games.thecodewarrior.bitfont.utils.keys
@@ -20,6 +21,8 @@ import imgui.g
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.abs
+import kotlin.math.max
 
 class FontInfoWindow(val document: BitfontDocument): IMWindow() {
     val bitfont: Bitfont = document.bitfont
@@ -59,6 +62,20 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
             sameLine(); showHelpMarker("The height of the short lowercase letters (x, n, etc.) above the baseline, ignoring letters like d or l which overshoot this line")
             inputInt("Spacing", bitfont::spacing)
             sameLine(); showHelpMarker("The amount of space between consecutive characters")
+        }
+
+        withItemWidth(175f) {
+            pushAllowKeyboardFocus(false)
+            listBox("##style", document::referenceStyle,
+                ReferenceFonts.styles, 3)
+            val speed = 1f / max(1f, abs(getMouseDragDelta(0).y) / 10)
+            alignTextToFramePadding()
+            text("Size")
+            sameLine()
+            withItemWidth(175f - cursorPosX) {
+                pushAllowKeyboardFocus(false)
+                dragFloat("Size", document::referenceSize, speed, 1f, 1000f)
+            }
         }
 
         button("Edit") {

@@ -1,6 +1,7 @@
 package games.thecodewarrior.bitfont
 
 import games.thecodewarrior.bitfont.data.Bitfont
+import glm_.func.common.clamp
 
 class BitfontDocument(val bitfont: Bitfont) {
     var infoWindow = FontInfoWindow(this)
@@ -8,6 +9,10 @@ class BitfontDocument(val bitfont: Bitfont) {
     var browserWindows = mutableListOf<GlyphBrowserWindow>()
     var testWindows = mutableListOf<TestingWindow>()
     var inputWindows = mutableListOf<InputTestWindow>()
+
+    var referenceStyle = 0
+    var referenceSize = 1f
+        set(value) { field = value.clamp(1f, 1000f) }
 
     fun push() {
         infoWindow.visible = true
