@@ -128,14 +128,6 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                     bitfont.glyphs.forEach { _, glyph -> glyph.crop() }
                 }
                 if(menuItem("NamesList")) {
-                    try {
-                        File("NamesList.txt").useLines {
-                            val list = NamesList()
-                            list.read(it)
-                        }
-                    } catch(e: Exception) {
-                        e.printStackTrace()
-                    }
                 }
                 if(menuItem("Close", ifMac("Cmd+W", "Ctrl+W"))) {
                     Main.documents.remove(document)

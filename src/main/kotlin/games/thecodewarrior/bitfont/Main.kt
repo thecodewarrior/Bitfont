@@ -2,6 +2,7 @@ package games.thecodewarrior.bitfont
 
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.utils.Colors
+import games.thecodewarrior.bitfont.utils.Constants
 import games.thecodewarrior.bitfont.utils.ifMacSystem
 import games.thecodewarrior.bitfont.utils.opengl.Java2DTexture
 import glm_.vec4.Vec4
@@ -62,6 +63,8 @@ object Main {
         documents = mutableListOf(
             BitfontDocument.blank()
         )
+
+        Constants // load class
 
         window.loop(::mainLoop)
 
