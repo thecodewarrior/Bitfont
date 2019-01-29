@@ -27,6 +27,8 @@ import imgui.FocusedFlag
 import imgui.ImGui
 import imgui.functionalProgramming.withChild
 import imgui.functionalProgramming.withItemWidth
+import imgui.functionalProgramming.button
+import imgui.imgui.withFloat
 import imgui.internal.Rect
 import org.lwjgl.glfw.GLFW
 import java.awt.font.FontRenderContext
@@ -93,6 +95,9 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     init {
         codepoint = 65
     }
+
+    var horizontalGuides = mutableListOf<Float>()
+    var verticalGuides = mutableListOf<Float>()
 
     inner class Data(val codepoint: Int) {
         val glyph = bitfont.glyphs.getOrPut(codepoint) { Glyph() }
@@ -295,6 +300,32 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         separator()
 
+        text("Horizontal")
+        horizontalGuides.forEachIndexed { i, value ->
+            val arr = floatArrayOf(value)
+            withFloat(arr, 0) { prop ->
+                dragFloat("##horizontal.$i", prop, 0.5f, -100f, 100f)
+            }
+            horizontalGuides[i] = arr[0]
+        }
+        button("+##horizontal") {
+            horizontalGuides.add(0f)
+        }
+
+        text("Vertical")
+        verticalGuides.forEachIndexed { i, value ->
+            val arr = floatArrayOf(value)
+            withFloat(arr, 0) { prop ->
+                dragFloat("##vertical.$i", prop, 0.5f, -100f, 100f)
+            }
+            verticalGuides[i] = arr[0]
+        }
+        button("+##vertical") {
+            verticalGuides.add(0f)
+        }
+
+        separator()
+
         val prevCursor = Vec2(cursorPos)
         alignedText("Reference Font", Vec2(0.5), width = controlsWidth)
         cursorPos = prevCursor
@@ -428,8 +459,8 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         fun horizontalLine(pos: Number, col: Int) {
             drawList.addLine(
-                Vec2(canvas.min.x, canvas.min.y + (pos.toFloat() + origin.y) * granularity),
-                Vec2(canvas.max.x, canvas.min.y + (pos.toFloat() + origin.y) * granularity),
+                Vec2(canvas.min.x, canvas.min.y + ((pos.toFloat() + origin.y) * granularity).toInt()),
+                Vec2(canvas.max.x, canvas.min.y + ((pos.toFloat() + origin.y) * granularity).toInt()),
                 col,
                 1f
             )
@@ -437,8 +468,8 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         fun verticalLine(pos: Number, col: Int) {
             drawList.addLine(
-                Vec2(canvas.min.x + (pos.toFloat() + origin.x) * granularity, canvas.min.y),
-                Vec2(canvas.min.x + (pos.toFloat() + origin.x) * granularity, canvas.max.y),
+                Vec2(canvas.min.x + ((pos.toFloat() + origin.x) * granularity).toInt(), canvas.min.y),
+                Vec2(canvas.min.x + ((pos.toFloat() + origin.x) * granularity).toInt(), canvas.max.y),
                 col,
                 1f
             )
@@ -487,9 +518,6 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             horizontalLine(-bitfont.ascender, Colors.editor.guides.u32)
             horizontalLine(bitfont.descender, Colors.editor.guides.u32)
 
-            verticalLine(0, Colors.editor.axes.u32)
-            horizontalLine(0, Colors.editor.axes.u32)
-
             val advanceEnd = Vec2(canvas.min.x + (origin.x + data.glyph.calcAdvance(bitfont.spacing)) * granularity, canvas.min.y + origin.y * granularity)
             drawList.addLine(
                 Vec2(canvas.min.x + origin.x * granularity, canvas.min.y + origin.y * granularity),
@@ -505,6 +533,18 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
                 1f
             )
         }
+
+
+        horizontalGuides.forEach {
+            horizontalLine(it, Colors.maroon.u32)
+        }
+        verticalGuides.forEach {
+            verticalLine(it, Colors.maroon.u32)
+        }
+
+        verticalLine(0, Colors.editor.axes.u32)
+        horizontalLine(0, Colors.editor.axes.u32)
+
 
         (data.enabledCells + nudge.moving).forEach {
             drawCell(it, Col.Text)

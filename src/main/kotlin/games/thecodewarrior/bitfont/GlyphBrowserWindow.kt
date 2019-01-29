@@ -7,6 +7,7 @@ import games.thecodewarrior.bitfont.utils.alignedText
 import games.thecodewarrior.bitfont.utils.extensions.ImGuiDrags
 import games.thecodewarrior.bitfont.utils.extensions.u32
 import games.thecodewarrior.bitfont.utils.opengl.Java2DTexture
+import glm_.func.common.clamp
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import imgui.Dir
@@ -33,13 +34,13 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
 
     var page = 0
         set(value) {
-            if(value != field)
+            if(value.clamp(0, 0x10ff) != field)
                 needsRedraw = true
-            field = value
+            field = value.clamp(0, 0x10ff)
         }
     var needsRedraw = true
     var canvas = Rect()
-    val detail = GlyphDetailPane()
+    val detail = GlyphDetailPane(document)
 
     val cellSize = 32
     val referenceImages = Java2DTexture(cellSize*17, cellSize*17)
@@ -130,10 +131,6 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
 
             if(isWindowHovered() && isMouseClicked(0)) {
                 val codepoint = (page shl 8) or ((cursorPos.y-1) shl 4) or (cursorPos.x-1)
-//                document.editorWindow.codepoint = codepoint
-//                document.editorWindow.codepointHistory.push(codepoint)
-//                document.editorWindow.visible = true
-//                document.editorWindow.focus()
                 detail.codepoint = codepoint
             }
         }

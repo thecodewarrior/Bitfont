@@ -8,6 +8,7 @@ import games.thecodewarrior.bitfont.typesetting.TypesettingOptions
 import games.thecodewarrior.bitfont.utils.Colors
 import games.thecodewarrior.bitfont.utils.Constants
 import games.thecodewarrior.bitfont.utils.extensions.addAll
+import games.thecodewarrior.bitfont.utils.extensions.draw
 import games.thecodewarrior.bitfont.utils.extensions.u32
 import games.thecodewarrior.bitfont.utils.opengl.Java2DTexture
 import glm_.vec2.Vec2
@@ -21,8 +22,8 @@ import kotlin.math.max
 
 class TestingWindow(val document: BitfontDocument): IMWindow() {
     val bitfont: Bitfont = document.bitfont
-    var atlas = BitfontAtlas(bitfont)
-    val atlasTexture = Java2DTexture(atlas.width, atlas.height)
+//    var atlas = BitfontAtlas(bitfont)
+//    val atlasTexture = Java2DTexture(atlas.width, atlas.height)
     val typesetter = Typesetter(bitfont)
 
     override val title: String
@@ -36,10 +37,10 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
     var canvas = Rect()
 
     init {
-        val g = atlasTexture.edit()
-        g.drawImage(atlas.image(), 0, 0, null)
+//        val g = atlasTexture.edit()
+//        g.drawImage(atlas.image(), 0, 0, null)
 
-        atlasTexture.filters = false
+//        atlasTexture.filters = false
     }
 
     override fun main(): Unit = with(ImGui) {
@@ -83,12 +84,13 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
     }
 
     fun drawGlyph(char: TypesetCharacter) {
-        val grid = char.glyph?.image ?: return
-        val minPos = canvas.min + (char.glyphPos + Vec2(bitfont.lineHeight)) * scale
-        val maxPos = minPos + Vec2(scale * grid.width, scale * grid.height)
-        val texCoords = atlas.texCoords(char.codepoint)
-        drawList.addImage(atlasTexture.texID, minPos, maxPos, Vec2(texCoords.xy), Vec2(texCoords.z, texCoords.w))
-        drawList.addRect(minPos, maxPos, Colors.layoutTest.boundingBoxes.u32)
-        drawList.addLine(minPos, maxPos, Colors.layoutTest.boundingBoxes.u32)
+        char.glyph?.draw(canvas.min + char.glyphPos * scale, scale, Colors.layoutTest.boundingBoxes.u32)
+//        val grid = char.glyph?.image ?: return
+//        val minPos = canvas.min + (char.glyphPos + Vec2(bitfont.lineHeight)) * scale
+//        val maxPos = minPos + Vec2(scale * grid.width, scale * grid.height)
+//        val texCoords = atlas.texCoords(char.codepoint)
+//        drawList.addImage(atlasTexture.texID, minPos, maxPos, Vec2(texCoords.xy), Vec2(texCoords.z, texCoords.w))
+//        drawList.addRect(minPos, maxPos, Colors.layoutTest.boundingBoxes.u32)
+//        drawList.addLine(minPos, maxPos, Colors.layoutTest.boundingBoxes.u32)
     }
 }

@@ -14,8 +14,9 @@ import games.thecodewarrior.bitfont.utils.nameslist.NoticeLine
 import games.thecodewarrior.bitfont.utils.nameslist.VariationLine
 import glm_.vec2.Vec2
 import imgui.ImGui
+import imgui.functionalProgramming.button
 
-class GlyphDetailPane {
+class GlyphDetailPane(val document: BitfontDocument) {
     val width: Float
         get() = 175f
     var codepoint = 0
@@ -51,6 +52,13 @@ class GlyphDetailPane {
                 is NoticeLine -> {}
                 is VariationLine -> {}
             }
+        }
+
+        button("Edit") {
+            document.editorWindow.codepoint = codepoint
+            document.editorWindow.codepointHistory.push(codepoint)
+            document.editorWindow.visible = true
+            document.editorWindow.focus()
         }
     }
 

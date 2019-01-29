@@ -4,6 +4,7 @@ import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.typesetting.TypesetCharacter
 import games.thecodewarrior.bitfont.utils.Colors
 import games.thecodewarrior.bitfont.utils.extensions.cString
+import games.thecodewarrior.bitfont.utils.extensions.draw
 import games.thecodewarrior.bitfont.utils.extensions.u32
 import games.thecodewarrior.bitfont.utils.keys
 import glm_.vec2.Vec2
@@ -101,15 +102,7 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
     }
 
     fun drawGlyph(char: TypesetCharacter) {
-        val grid = char.glyph?.image ?: return
-        for(x in 0 until grid.width) {
-            for(y in 0 until grid.height) {
-                if(grid[x, y]) {
-                    val pos = textOrigin + (char.glyphPos + Vec2(x, y)) * scale
-                    drawList.addRectFilled(pos, pos + Vec2(scale), Colors.inputTest.text.u32)
-                }
-
-            }
-        }
+        val glyph = char.glyph ?: return
+        glyph.draw(textOrigin + char.glyphPos * scale, scale, Colors.inputTest.text.u32)
     }
 }
