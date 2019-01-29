@@ -1,0 +1,6 @@
+All the files in the `files/` directory, unless otherwise stated, fall under the CC BY 4.0 license.
+
+The `Unifont_*` files are derivatives of Unifont (http://unifoundry.com/unifont/index.html) and fall under GPLv2 with the font exception. This license is provided in LICENSE-Unifont.txt. The derived files are 1:1 conversions of Unifont 11.0.03.
+- `Unifont_pure.json` is a "pure" conversion, with no modifications.
+- `Unifont_fixed-advance.json` is identical to the pure version except it has each glyph image cropped to its bounds
+- `Unifont_auto-advance.json` is identical to the fixed-advance version except it has the fixed 9 or 17 pixel advance removed so Bitfont's automatic advance algorithm can apply.
