@@ -1,30 +1,27 @@
 package games.thecodewarrior.bitfont
 
 import games.thecodewarrior.bitfont.data.Bitfont
-import games.thecodewarrior.bitfont.typesetting.BitfontAtlas
-import games.thecodewarrior.bitfont.typesetting.TypesetCharacter
-import games.thecodewarrior.bitfont.typesetting.Typesetter
-import games.thecodewarrior.bitfont.typesetting.TypesettingOptions
+import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.utils.Colors
-import games.thecodewarrior.bitfont.utils.Constants
-import games.thecodewarrior.bitfont.utils.extensions.addAll
+import games.thecodewarrior.bitfont.utils.extensions.BitVec2i
 import games.thecodewarrior.bitfont.utils.extensions.draw
+import games.thecodewarrior.bitfont.utils.extensions.toIm
 import games.thecodewarrior.bitfont.utils.extensions.u32
-import games.thecodewarrior.bitfont.utils.opengl.Java2DTexture
+import games.thecodewarrior.bitfont.utils.keys
 import glm_.vec2.Vec2
 import imgui.ImGui
 import imgui.InputTextFlag
-import imgui.WindowFlag
 import imgui.functionalProgramming.withItemWidth
 import imgui.g
 import imgui.internal.Rect
+import org.lwjgl.glfw.GLFW
+import java.awt.Toolkit
+import java.awt.datatransfer.DataFlavor
 import kotlin.math.max
 
 class TestingWindow(val document: BitfontDocument): IMWindow() {
     val bitfont: Bitfont = document.bitfont
-//    var atlas = BitfontAtlas(bitfont)
-//    val atlasTexture = Java2DTexture(atlas.width, atlas.height)
-    val typesetter = Typesetter(bitfont)
+    var typesetString = TypesetString(bitfont, "", -1)
 
     override val title: String
         get() = "${bitfont.name}: Testing"
@@ -37,13 +34,14 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
     var canvas = Rect()
 
     init {
-//        val g = atlasTexture.edit()
-//        g.drawImage(atlas.image(), 0, 0, null)
-
-//        atlasTexture.filters = false
     }
 
     override fun main(): Unit = with(ImGui) {
+        keys {
+            "prim+v" pressed {
+                testString = GLFW.glfwGetClipboardString(0) ?: testString
+            }
+        }
         withItemWidth(win.contentsRegionRect.width - 300f) {
             val arr = testString.replace("\n", "\\n").toCharArray().let { name ->
                 CharArray(name.size + 1000).also { name.copyInto(it) }
@@ -77,20 +75,13 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
         val cursor = canvas.min + Vec2(bitfont.lineHeight) * scale - Vec2(0.5)
         drawList.addTriangleFilled(cursor, cursor + Vec2(-scale, -scale), cursor + Vec2(-scale, scale), Colors.layoutTest.originIndicator.u32)
 
-        val layout = typesetter.typeset(testString)
-        layout.characters.forEach { char ->
-            drawGlyph(char)
+        typesetString = TypesetString(bitfont, testString, (canvas.width / scale).toInt() - bitfont.lineHeight)
+        typesetString.glyphs.forEach {
+            drawGlyph(it)
         }
     }
 
-    fun drawGlyph(char: TypesetCharacter) {
-        char.glyph?.draw(canvas.min + char.glyphPos * scale, scale, Colors.layoutTest.boundingBoxes.u32)
-//        val grid = char.glyph?.image ?: return
-//        val minPos = canvas.min + (char.glyphPos + Vec2(bitfont.lineHeight)) * scale
-//        val maxPos = minPos + Vec2(scale * grid.width, scale * grid.height)
-//        val texCoords = atlas.texCoords(char.codepoint)
-//        drawList.addImage(atlasTexture.texID, minPos, maxPos, Vec2(texCoords.xy), Vec2(texCoords.z, texCoords.w))
-//        drawList.addRect(minPos, maxPos, Colors.layoutTest.boundingBoxes.u32)
-//        drawList.addLine(minPos, maxPos, Colors.layoutTest.boundingBoxes.u32)
+    fun drawGlyph(char: TypesetString.GlyphRender) {
+        char.glyph.draw(canvas.min + Vec2(bitfont.lineHeight * scale) + char.pos.toIm() * scale, scale, Colors.layoutTest.text.u32)
     }
 }

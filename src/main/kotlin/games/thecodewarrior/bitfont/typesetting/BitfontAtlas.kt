@@ -21,6 +21,7 @@ class BitfontAtlas(val font: Bitfont) {
     var height: Int
         private set
     private val rects = Int2ObjectOpenHashMap<RectanglePacker.Rectangle>()
+    private lateinit var defaultRect: RectanglePacker.Rectangle
 
     init {
         width = 128
@@ -45,9 +46,11 @@ class BitfontAtlas(val font: Bitfont) {
     }
 
     fun insert() {
+        defaultRect = packer.insert(font.defaultGlyph.image.width, font.defaultGlyph.image.height, -1)
+            ?: throw AtlasSizeException()
         for((codepoint, glyph) in font.glyphs) {
-            val rect = packer.insert(glyph.image.width, glyph.image.height, codepoint)
-            rects[codepoint] = rect ?: throw AtlasSizeException()
+            rects[codepoint] = packer.insert(glyph.image.width, glyph.image.height, codepoint)
+                ?: throw AtlasSizeException()
         }
     }
 
@@ -61,12 +64,25 @@ class BitfontAtlas(val font: Bitfont) {
     private class AtlasSizeException: RuntimeException()
 
     fun image(): BufferedImage {
-        val image = BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY, IndexColorModel(Colors.transparent, Color.WHITE))
+        val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+        val g = image.createGraphics()
+        g.color = Colors.satan
+        g.fillRect(0, 0, image.width, image.height)
+
+        val colors = listOf(Colors.maroon, Colors.red, Colors.pink, Colors.brown, Colors.orange, Colors.yellow,
+            Colors.beige, Colors.green, Colors.mint, Colors.teal, Colors.cyan, Colors.navy, Colors.blue,
+            Colors.lavender, Colors.magenta)
         for((codepoint, glyph) in font.glyphs) {
+            val hue = Math.random().toFloat()
+            val saturation = 0.25f + Math.random().toFloat() * 0.75f
+            val brightness = 0.75f + Math.random().toFloat() * 0.25f
+//            val bgColor = Color.getHSBColor(hue, saturation * .5f, brightness * .75f)
+            val fgColor = Color.getHSBColor(hue, saturation, brightness)
+//            val fgColor = colors[(Math.random() * colors.size).toInt()]
             val rect = rects[codepoint] ?: continue
             for(x in 0 until min(rect.width, glyph.image.width)) {
                 for(y in 0 until min(rect.height, glyph.image.height)) {
-                    image.setRGB(rect.x + x, rect.y + y, if(glyph.image[x, y]) Color.WHITE.rgb else Colors.transparent.rgb)
+                    image.setRGB(rect.x + x, rect.y + y, if(glyph.image[x, y]) fgColor.rgb else Colors.transparent.rgb)
                 }
             }
         }

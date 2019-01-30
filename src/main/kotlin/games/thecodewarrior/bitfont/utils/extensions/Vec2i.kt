@@ -2,6 +2,10 @@ package games.thecodewarrior.bitfont.utils.extensions
 
 import glm_.vec2.Vec2i
 
+typealias BitVec2i = games.thecodewarrior.bitfont.typesetting.Vec2i
+fun BitVec2i.toIm(): Vec2i = Vec2i(this.x, this.y)
+fun Vec2i.toBit(): BitVec2i = BitVec2i(this.x, this.y)
+
 fun Vec2i.lineTo(other: Vec2i): List<Vec2i> {
     val x1 = x
     val y1 = y

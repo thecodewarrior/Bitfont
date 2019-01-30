@@ -28,19 +28,41 @@ class Bitfont(name: String, lineHeight: Int, ascender: Int, descender: Int, capH
     var capHeight: Int = capHeight.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)
+            defaultGlyph = createDefaultGlyph()
         }
 
     var xHeight: Int = xHeight.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)
+            defaultGlyph = createDefaultGlyph()
         }
 
     var spacing: Int = spacing.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)
+            defaultGlyph = createDefaultGlyph()
         }
 
     val glyphs = Int2ObjectOpenHashMap<Glyph>()
+    var defaultGlyph: Glyph = createDefaultGlyph()
+        private set
+
+    private fun createDefaultGlyph(): Glyph {
+        val glyph = Glyph()
+        glyph.bearingX = 0
+        glyph.bearingY = -capHeight
+        val grid = BitGrid(xHeight, capHeight)
+        for(x in 0 until xHeight) {
+            grid[x, 0] = true
+            grid[x, capHeight-1] = true
+        }
+        for(y in 0 until capHeight) {
+            grid[0, y] = true
+            grid[xHeight-1, y] = true
+        }
+        glyph.image = grid
+        return glyph
+    }
 
     override fun writeJson(): JsonObject = json {
         obj(
