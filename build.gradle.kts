@@ -38,6 +38,7 @@ dependencies {
     "compile"("com.ibm.icu:icu4j:63.1")
     "compile"("com.github.kotlin-graphics:imgui:v1.63-beta-03")
     "compile"("com.beust:klaxon:5.0.1")
+    "compile"("com.google.guava:guava:27.0.1-jre")
     val lwjglNatives = when (OperatingSystem.current()) {
         OperatingSystem.WINDOWS -> "natives-windows"
         OperatingSystem.LINUX   -> "natives-linux"

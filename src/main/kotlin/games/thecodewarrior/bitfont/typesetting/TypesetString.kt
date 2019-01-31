@@ -6,6 +6,9 @@ import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.utils.extensions.characterBreakIterator
 import games.thecodewarrior.bitfont.utils.extensions.lineBreakIterator
 import kotlin.streams.toList
+import org.checkerframework.checker.units.qual.s
+
+
 
 /**
  *
@@ -21,13 +24,21 @@ open class TypesetString(
     /**
      * The string to typeset. TODO: Create attributed string
      */
-    val string: String,
+    val attributedString: AttributedString,
     /**
      * The width to wrap to. TODO: Allow dynamic wrap width (for wrapping around images and stuff)
      */
     val wrapWidth: Int = -1
 ) {
-    protected val codepoints = string.codePoints().toList()
+    val string: String = attributedString.string
+    /**
+     * An array of codepoints representing [string]
+     */
+    protected val codepoints: IntArray
+    /**
+     * An array of equal length to [codepoints] that relates each codepoint to its location in [string]
+     */
+    protected val codepointIndices: IntArray
 
     open var glyphs: List<GlyphRender> = emptyList()
         protected set
@@ -43,6 +54,21 @@ open class TypesetString(
     }
 
     init {
+        val codepoints = mutableListOf<Int>()
+        val codepointIndices = mutableListOf<Int>()
+        var offset = 0
+        while (offset < string.length) {
+            val codepoint = string.codePointAt(offset)
+
+            codepoints.add(codepoint)
+            codepointIndices.add(offset)
+
+            offset += Character.charCount(codepoint)
+        }
+
+        this.codepoints = codepoints.toIntArray()
+        this.codepointIndices = codepointIndices.toIntArray()
+
         @Suppress("LeakingThis")
         if(this.javaClass == TypesetString::class.java)
             typeset()
@@ -74,10 +100,12 @@ open class TypesetString(
         val list = mutableListOf<GlyphRender>()
         var cursor = 0
         range.forEach {
+            if(codepoints[it] in newlines) return@forEach
             val glyph = glyphFor(codepoints[it])
             val advance = glyph.calcAdvance(font.spacing)
             list.add(
-                GlyphRender(it, codepoints[it], glyph, Vec2i(cursor, 0), Vec2i(cursor + advance, 0))
+                GlyphRender(it, codepoints[it], glyph, Vec2i(cursor, 0), Vec2i(cursor + advance, 0),
+                    attributedString.attributesFor(codepointIndices[it]))
             )
             cursor += advance
         }
@@ -145,7 +173,7 @@ open class TypesetString(
 
     data class GlyphRender(
         val index: Int, val codepoint: Int, val glyph: Glyph,
-        val pos: Vec2i, val posAfter: Vec2i)
+        val pos: Vec2i, val posAfter: Vec2i, val attributes: Map<Attribute<*>, Any>)
 
     companion object {
         val newlines = listOf(0x000a, 0x000b, 0x000c, 0x000d, 0x00085, 0x2028, 0x2029)
