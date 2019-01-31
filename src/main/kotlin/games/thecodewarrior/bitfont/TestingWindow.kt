@@ -13,6 +13,7 @@ import games.thecodewarrior.bitfont.utils.extensions.toIm
 import games.thecodewarrior.bitfont.utils.extensions.u32
 import games.thecodewarrior.bitfont.utils.keys
 import glm_.vec2.Vec2
+import imgui.FocusedFlag
 import imgui.ImGui
 import imgui.InputTextFlag
 import imgui.functionalProgramming.withItemWidth
@@ -43,22 +44,39 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
     }
 
     override fun main(): Unit = with(ImGui) {
-        keys {
+
+        if(isWindowFocused(FocusedFlag.RootAndChildWindows)) keys {
             "prim+v" pressed {
                 val clipboard = GLFW.glfwGetClipboardString(0)
                 if(clipboard != null) {
                     testString = AttributedString(clipboard)
-                    (0 until 20).forEach {
-                        val start = random.nextInt(clipboard.length)
-                        val end = start + random.nextInt(min(15, clipboard.length - start))
+                    if("shift".pressed()) {
+                        (0 until (clipboard.length / 40)).forEach {
+                            val start = random.nextInt(clipboard.length)
+                            val end = start + random.nextInt(min(15, clipboard.length - start))
 
-                        val hue = Math.random().toFloat()
-                        val saturation = 0.25f + Math.random().toFloat() * 0.75f
-                        val brightness = 0.75f + Math.random().toFloat() * 0.25f
-                        val color = JColor.getHSBColor(hue, saturation, brightness)
-                        testString.setAttributesForRange(start .. end, mapOf(
-                            Attribute.color to color
-                        ))
+                            val hue = Math.random().toFloat()
+                            val saturation = 0.25f + Math.random().toFloat() * 0.75f
+                            val brightness = 0.75f + Math.random().toFloat() * 0.25f
+                            val color = JColor.getHSBColor(hue, saturation, brightness)
+//                            testString.setAttributesForRange(start..end, mapOf(
+//                                Attribute.color to color
+//                            ))
+                        }
+
+                        val fonts = Main.documents.map { it.bitfont }.filter { it !== bitfont }
+//                        (0 until (clipboard.length / 80)).forEach {
+                            var start = 0
+                            var end = start + 38 // random.nextInt(min(35, clipboard.length - start))
+
+//                            start = clipboard.indexOf(' ', start) + 1
+                            end = clipboard.indexOf(' ', end) - 1
+                            if(start <= end) {
+                                testString.setAttributesForRange(start..end, mapOf(
+                                    Attribute.font to fonts.random()
+                                ))
+                            }
+//                        }
                     }
                 }
             }
@@ -104,6 +122,7 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
 
     fun drawGlyph(char: TypesetString.GlyphRender) {
         val color = char.attributes[Attribute.color] as? JColor ?: Colors.layoutTest.text
+        val font = char.attributes[Attribute.font] as? Bitfont ?: bitfont
         char.glyph.draw(canvas.min + Vec2(bitfont.lineHeight * scale) + char.pos.toIm() * scale, scale, color.u32)
     }
 }

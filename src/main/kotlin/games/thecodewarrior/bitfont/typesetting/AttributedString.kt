@@ -4,6 +4,7 @@ package games.thecodewarrior.bitfont.typesetting
 
 import com.google.common.collect.RangeMap
 import com.google.common.collect.TreeRangeMap
+import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.utils.extensions.toGuava
 import java.awt.Color
 
@@ -45,6 +46,11 @@ class AttributedString(val string: String) {
         }
         return attrs
     }
+
+    operator fun <T> get(attr: Attribute<T>, index: Int): T? {
+        @Suppress("UNCHECKED_CAST")
+        return attributes[attr]?.get(index) as T?
+    }
 }
 
 class Attribute<T> private constructor(val name: String) {
@@ -59,5 +65,6 @@ class Attribute<T> private constructor(val name: String) {
         }
 
         val color = get<Color>("color")
+        val font = get<Bitfont>("font")
     }
 }

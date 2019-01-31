@@ -7,8 +7,7 @@ import games.thecodewarrior.bitfont.utils.extensions.characterBreakIterator
 import games.thecodewarrior.bitfont.utils.extensions.lineBreakIterator
 import kotlin.streams.toList
 import org.checkerframework.checker.units.qual.s
-
-
+import kotlin.math.max
 
 /**
  *
@@ -20,7 +19,7 @@ open class TypesetString(
     /**
      * The default font. TODO: If the attributed string has font attributes they will override this.
      */
-    val font: Bitfont,
+    val defaultFont: Bitfont,
     /**
      * The string to typeset. TODO: Create attributed string
      */
@@ -45,12 +44,17 @@ open class TypesetString(
     open var cursorEnd: Vec2i = Vec2i(0, 0)
         protected set
 
-    protected open fun glyphFor(codepoint: Int): Glyph {
-        return font.glyphs[codepoint] ?: font.defaultGlyph
+    protected open fun fontFor(index: Int): Bitfont {
+        return attributedString[Attribute.font, index] ?: defaultFont
     }
 
-    protected open fun advanceFor(codepoint: Int): Int {
-        return glyphFor(codepoint).calcAdvance(font.spacing)
+    protected open fun glyphFor(index: Int): Glyph {
+        val font = fontFor(index)
+        return font.glyphs[codepoints[index]] ?: font.defaultGlyph
+    }
+
+    protected open fun advanceFor(index: Int): Int {
+        return glyphFor(index).calcAdvance(fontFor(index).spacing)
     }
 
     init {
@@ -84,14 +88,22 @@ open class TypesetString(
         val runGlyphs = runRanges.map { layoutRun(it) }
         val glyphs = mutableListOf<GlyphRender>()
         var y = 0
-        runGlyphs.forEach { run ->
+        runGlyphs.forEachIndexed { i, run ->
+            var maxAscent = 0
+            var maxDescent = 0
+            run.forEach {
+                val font = fontFor(it.codepointIndex)
+                maxAscent = max(maxAscent, font.ascender)
+                maxDescent = max(maxDescent, font.descender)
+            }
+            y += maxAscent
             run.forEach {
                 glyphs.add(it.copy(
                     pos = Vec2i(it.pos.x, y),
                     posAfter = Vec2i(it.posAfter.x, y)
                 ))
             }
-            y += font.lineHeight
+            y += maxDescent
         }
         this.glyphs = glyphs
     }
@@ -101,10 +113,10 @@ open class TypesetString(
         var cursor = 0
         range.forEach {
             if(codepoints[it] in newlines) return@forEach
-            val glyph = glyphFor(codepoints[it])
-            val advance = glyph.calcAdvance(font.spacing)
+            val glyph = glyphFor(it)
+            val advance = glyph.calcAdvance(fontFor(it).spacing)
             list.add(
-                GlyphRender(it, codepoints[it], glyph, Vec2i(cursor, 0), Vec2i(cursor + advance, 0),
+                GlyphRender(codepointIndices[it], it, codepoints[it], glyph, Vec2i(cursor, 0), Vec2i(cursor + advance, 0),
                     attributedString.attributesFor(codepointIndices[it]))
             )
             cursor += advance
@@ -146,7 +158,7 @@ open class TypesetString(
                 else
                     addBreak(i+1)
             } else {
-                x += advanceFor(codepoints[i])
+                x += advanceFor(i)
                 // if we are past the end of the line and aren't whitespace, wrap.
                 // (whitespace shouldn't wrap to the beginning of a line)
                 if(wrapEnabled && x > wrapWidth && !UCharacter.isWhitespace(codepoints[i])) {
@@ -172,7 +184,7 @@ open class TypesetString(
     }
 
     data class GlyphRender(
-        val index: Int, val codepoint: Int, val glyph: Glyph,
+        val characterIndex: Int, val codepointIndex: Int, val codepoint: Int, val glyph: Glyph,
         val pos: Vec2i, val posAfter: Vec2i, val attributes: Map<Attribute<*>, Any>)
 
     companion object {
