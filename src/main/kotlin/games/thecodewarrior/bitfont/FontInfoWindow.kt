@@ -33,6 +33,11 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
         get() = "${bitfont.name}: Font Information"
     var lastSave: Long = System.currentTimeMillis()
 
+    /**
+     * A file-friendly verison of the font name
+     */
+    val fName: String get() = bitfont.name.replace("[^A-Za-z0-9_]+".toRegex(), "_")
+
     init {
         windowFlags.addAll(WindowFlag.MenuBar, WindowFlag.AlwaysAutoResize)
     }
@@ -40,7 +45,7 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
     override fun main() = with(ImGui) {
         if(System.currentTimeMillis() - lastSave > 60_000) {
             val s = bitfont.writeJson().toJsonString(true)
-            File("font-autosave-${LocalDateTime.now().minute % 10}.json").writeText(s)
+            File("font-$fName-autosave-${LocalDateTime.now().minute % 10}.json").writeText(s)
             lastSave = System.currentTimeMillis()
         }
         withItemWidth(150f) {
@@ -119,21 +124,32 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
 //                        menuItem("Sailor")
 //                    }
 //                }
-                if(menuItem("Save", ifMac("Cmd+S", "Ctrl+S"))) {
+                if(menuItem("Save")) {
                     val formatter = DateTimeFormatter.ofPattern("uuuuMMdd.kkmmss")
                     val s = bitfont.writeJson().toJsonString(true)
-                    File("font.json").writeText(s)
-                    File("${bitfont.name.replace("[^A-Za-z0-9_]+".toRegex(), "_")}.json").writeText(s)
-                    File("font-${LocalDateTime.now().format(formatter)}.json").writeText(s)
+                    File("fonts").mkdirs()
+                    File("fonts/$fName.json").writeText(s)
+                    File("font-$fName-${LocalDateTime.now().format(formatter)}.json").writeText(s)
                     lastSave = System.currentTimeMillis()
                 }
-                if(menuItem("Open", ifMac("Cmd+O", "Ctrl+O"))) {
-                    val json = Parser.default().parse(StringBuilder(File("font.json").readText())) as JsonObject
-                    val bitfont = Bitfont.readJson(json)
-                    val newDocument = BitfontDocument(bitfont)
-                    Main.documents.add(newDocument)
+                menu("Open") {
+                    try {
+                        val files = File("fonts").listFiles { _, name -> name.endsWith(".json") }
+                        var opened = false
+                        files.forEach {
+                            if(menuItem(it.name) && !opened) {
+                                opened = true
+                                val json = Parser.default().parse(StringBuilder(it.readText())) as JsonObject
+                                val bitfont = Bitfont.readJson(json)
+                                val newDocument = BitfontDocument(bitfont)
+                                Main.documents.add(newDocument)
+                            }
+                        }
+                    } catch(e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
-                if(menuItem("New", ifMac("Cmd+N", "Ctrl+N"))) {
+                if(menuItem("New")) {
                     val bitfont = Bitfont("Untitled", 16, 10, 4, 9, 6, 2)
                     val newDocument = BitfontDocument(bitfont)
                     Main.documents.add(newDocument)
@@ -150,7 +166,7 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                     val atlas = BitfontAtlas(bitfont)
                     ImageIO.write(atlas.image(), "png", File("atlas.png"))
                 }
-                if(menuItem("Close", ifMac("Cmd+W", "Ctrl+W"))) {
+                if(menuItem("Close")) {
                     Main.documents.remove(document)
                 }
 //                menuItem("Save As..")
