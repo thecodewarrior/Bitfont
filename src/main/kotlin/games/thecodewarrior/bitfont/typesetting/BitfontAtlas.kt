@@ -9,6 +9,8 @@ import imgui.internal.Rect
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.awt.Color
 import java.awt.image.BufferedImage
+import java.io.File
+import javax.imageio.ImageIO
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -21,6 +23,8 @@ class BitfontAtlas(val font: Bitfont) {
     var height: Int
         private set
     private val rects = Int2ObjectOpenHashMap<RectanglePacker.Rectangle>()
+    private val passes = Int2ObjectOpenHashMap<Color>()
+
     private lateinit var defaultRect: RectanglePacker.Rectangle
 
     init {
@@ -46,11 +50,26 @@ class BitfontAtlas(val font: Bitfont) {
     }
 
     fun insert() {
+        val colors = listOf(Colors.maroon, Colors.green, Colors.red, Colors.navy, Colors.pink, Colors.yellow,
+            Colors.mint, Colors.orange, Colors.teal, Colors.beige, Colors.cyan, Colors.blue,
+            Colors.lavender, Colors.brown, Colors.magenta)
+        var pass = 0
+
         defaultRect = packer.insert(font.defaultGlyph.image.width, font.defaultGlyph.image.height, -1)
             ?: throw AtlasSizeException()
+        passes[-1] = colors[pass % colors.size]
         for((codepoint, glyph) in font.glyphs) {
-            rects[codepoint] = packer.insert(glyph.image.width, glyph.image.height, codepoint)
-                ?: throw AtlasSizeException()
+            var newRect: RectanglePacker.Rectangle? = packer.insert(glyph.image.width, glyph.image.height, codepoint)
+            while(newRect == null) {
+                ImageIO.write(image(), "png", File("atlas-pass$pass.png"))
+                width = ceil(width*1.5).toInt()
+                height = ceil(height*1.5).toInt()
+                packer.expand(width, height)
+                pass++
+                newRect = packer.insert(glyph.image.width, glyph.image.height, codepoint)
+            }
+            rects[codepoint] = newRect
+            passes[codepoint] = colors[pass % colors.size]
         }
     }
 
@@ -69,20 +88,15 @@ class BitfontAtlas(val font: Bitfont) {
         g.color = Colors.satan
         g.fillRect(0, 0, image.width, image.height)
 
-        val colors = listOf(Colors.maroon, Colors.red, Colors.pink, Colors.brown, Colors.orange, Colors.yellow,
-            Colors.beige, Colors.green, Colors.mint, Colors.teal, Colors.cyan, Colors.navy, Colors.blue,
-            Colors.lavender, Colors.magenta)
         for((codepoint, glyph) in font.glyphs) {
-            val hue = Math.random().toFloat()
-            val saturation = 0.25f + Math.random().toFloat() * 0.75f
-            val brightness = 0.75f + Math.random().toFloat() * 0.25f
-//            val bgColor = Color.getHSBColor(hue, saturation * .5f, brightness * .75f)
-            val fgColor = Color.getHSBColor(hue, saturation, brightness)
-//            val fgColor = colors[(Math.random() * colors.size).toInt()]
             val rect = rects[codepoint] ?: continue
             for(x in 0 until min(rect.width, glyph.image.width)) {
                 for(y in 0 until min(rect.height, glyph.image.height)) {
-                    image.setRGB(rect.x + x, rect.y + y, if(glyph.image[x, y]) fgColor.rgb else Colors.transparent.rgb)
+                    image.setRGB(rect.x + x, rect.y + y, if(glyph.image[x, y])
+                        (passes[codepoint] ?: Color.WHITE).rgb
+                    else
+                        Colors.transparent.rgb
+                    )
                 }
             }
         }
