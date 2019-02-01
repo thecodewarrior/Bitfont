@@ -4,10 +4,14 @@ import com.beust.klaxon.JsonObject
 import com.beust.klaxon.json
 import games.thecodewarrior.bitfont.utils.serialization.JsonReadable
 import games.thecodewarrior.bitfont.utils.serialization.JsonWritable
+import games.thecodewarrior.bitfont.utils.serialization.MsgPackable
+import games.thecodewarrior.bitfont.utils.serialization.MsgUnpackable
 import glm_.func.common.clamp
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import org.msgpack.core.MessagePacker
+import org.msgpack.core.MessageUnpacker
 
-class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: Int, spacing: Int): JsonWritable<JsonObject> {
+class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: Int, spacing: Int): JsonWritable<JsonObject>, MsgPackable {
     var name: String = name
 
     var ascent: Int = ascent.clamp(0, 65535)
@@ -77,7 +81,23 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
         )
     }
 
-    companion object: JsonReadable<JsonObject, Bitfont> {
+    override fun pack(packer: MessagePacker) {
+        packer.apply {
+            packString(name)
+            packInt(ascent)
+            packInt(descent)
+            packInt(capHeight)
+            packInt(xHeight)
+            packInt(spacing)
+            packMapHeader(glyphs.size)
+            glyphs.forEach { point, glyph ->
+                packInt(point)
+                glyph.pack(packer)
+            }
+        }
+    }
+
+    companion object: JsonReadable<JsonObject, Bitfont>, MsgUnpackable<Bitfont> {
         override fun readJson(j: JsonObject): Bitfont {
             val font = Bitfont(
                 j.string("name")!!,
@@ -91,6 +111,23 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
                 font.glyphs[key.toInt()] = Glyph.readJson(value as JsonObject)
             }
             return font
+        }
+
+        override fun unpack(unpacker: MessageUnpacker): Bitfont {
+            unpacker.apply {
+                val name = unpackString()
+                val ascent = unpackInt()
+                val descent = unpackInt()
+                val capHeight = unpackInt()
+                val xHeight = unpackInt()
+                val spacing = unpackInt()
+                val font = Bitfont(name, ascent, descent, capHeight, xHeight, spacing)
+
+                for(i in 0 until unpackMapHeader()) {
+                    font.glyphs[unpackInt()] = Glyph.unpack(unpacker)
+                }
+                return font
+            }
         }
     }
 }

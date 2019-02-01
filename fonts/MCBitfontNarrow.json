@@ -1,6 +1,5 @@
 {
-  "name": "MCBitfont",
-  "lineHeight": 16,
+  "name": "MCBitfontNarrow",
   "ascent": 12,
   "descent": 4,
   "capHeight": 9,
@@ -8,7 +7,6 @@
   "spacing": 2,
   "glyphs": {
     "66": {
-      "codepoint": 66,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -17,7 +15,6 @@
       }
     },
     "198": {
-      "codepoint": 198,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -26,7 +23,6 @@
       }
     },
     "264": {
-      "codepoint": 264,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -35,7 +31,6 @@
       }
     },
     "396": {
-      "codepoint": 396,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -44,7 +39,6 @@
       }
     },
     "330": {
-      "codepoint": 330,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -53,7 +47,6 @@
       }
     },
     "263": {
-      "codepoint": 263,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -62,7 +55,6 @@
       }
     },
     "67": {
-      "codepoint": 67,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -71,7 +63,6 @@
       }
     },
     "65": {
-      "codepoint": 65,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -80,7 +71,6 @@
       }
     },
     "197": {
-      "codepoint": 197,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -89,7 +79,6 @@
       }
     },
     "265": {
-      "codepoint": 265,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -98,7 +87,6 @@
       }
     },
     "395": {
-      "codepoint": 395,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -107,7 +95,6 @@
       }
     },
     "397": {
-      "codepoint": 397,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -116,7 +103,6 @@
       }
     },
     "200": {
-      "codepoint": 200,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -125,7 +111,6 @@
       }
     },
     "196": {
-      "codepoint": 196,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -134,7 +119,6 @@
       }
     },
     "464": {
-      "codepoint": 464,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -143,7 +127,6 @@
       }
     },
     "394": {
-      "codepoint": 394,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -152,7 +135,6 @@
       }
     },
     "199": {
-      "codepoint": 199,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -161,7 +143,6 @@
       }
     },
     "201": {
-      "codepoint": 201,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -170,7 +151,6 @@
       }
     },
     "465": {
-      "codepoint": 465,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -179,7 +159,6 @@
       }
     },
     "463": {
-      "codepoint": 463,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -188,7 +167,6 @@
       }
     },
     "462": {
-      "codepoint": 462,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -197,7 +175,6 @@
       }
     },
     "458": {
-      "codepoint": 458,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -206,7 +183,6 @@
       }
     },
     "459": {
-      "codepoint": 459,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -215,7 +191,6 @@
       }
     },
     "461": {
-      "codepoint": 461,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -224,7 +199,6 @@
       }
     },
     "460": {
-      "codepoint": 460,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -233,7 +207,6 @@
       }
     },
     "268": {
-      "codepoint": 268,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -242,7 +215,6 @@
       }
     },
     "400": {
-      "codepoint": 400,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -251,7 +223,6 @@
       }
     },
     "70": {
-      "codepoint": 70,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -260,7 +231,6 @@
       }
     },
     "392": {
-      "codepoint": 392,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -269,7 +239,6 @@
       }
     },
     "260": {
-      "codepoint": 260,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -278,7 +247,6 @@
       }
     },
     "325": {
-      "codepoint": 325,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -287,7 +255,6 @@
       }
     },
     "193": {
-      "codepoint": 193,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -296,7 +263,6 @@
       }
     },
     "195": {
-      "codepoint": 195,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -304,17 +270,7 @@
         "data": "9402786118fe61188600"
       }
     },
-    "62": {
-      "codepoint": 62,
-      "bearing": [0, -6],
-      "advance": null,
-      "image": {
-        "size": [5, 7],
-        "data": "8341360000"
-      }
-    },
     "398": {
-      "codepoint": 398,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -322,26 +278,15 @@
         "data": "1f42e821841f00"
       }
     },
-    "266": {
-      "codepoint": 266,
-      "bearing": [0, -11],
+    "62": {
+      "bearing": [0, -6],
       "advance": null,
       "image": {
-        "size": [6, 12],
-        "data": "08e08541100441e801"
-      }
-    },
-    "402": {
-      "codepoint": 402,
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 12],
-        "data": "98104f0821849001"
+        "size": [5, 7],
+        "data": "8341360000"
       }
     },
     "64": {
-      "codepoint": 64,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -349,8 +294,23 @@
         "data": "fe02e62d5ab46cd6401e0000"
       }
     },
+    "402": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 12],
+        "data": "98104f0821849001"
+      }
+    },
+    "266": {
+      "bearing": [0, -11],
+      "advance": null,
+      "image": {
+        "size": [6, 12],
+        "data": "08e08541100441e801"
+      }
+    },
     "270": {
-      "codepoint": 270,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -359,7 +319,6 @@
       }
     },
     "258": {
-      "codepoint": 258,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -368,7 +327,6 @@
       }
     },
     "68": {
-      "codepoint": 68,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -377,7 +335,6 @@
       }
     },
     "323": {
-      "codepoint": 323,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -386,7 +343,6 @@
       }
     },
     "327": {
-      "codepoint": 327,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -395,7 +351,6 @@
       }
     },
     "72": {
-      "codepoint": 72,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -404,7 +359,6 @@
       }
     },
     "262": {
-      "codepoint": 262,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -413,7 +367,6 @@
       }
     },
     "335": {
-      "codepoint": 335,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -422,7 +375,6 @@
       }
     },
     "337": {
-      "codepoint": 337,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -431,7 +383,6 @@
       }
     },
     "333": {
-      "codepoint": 333,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -440,7 +391,6 @@
       }
     },
     "329": {
-      "codepoint": 329,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -449,7 +399,6 @@
       }
     },
     "331": {
-      "codepoint": 331,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -458,7 +407,6 @@
       }
     },
     "338": {
-      "codepoint": 338,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -467,7 +415,6 @@
       }
     },
     "58": {
-      "codepoint": 58,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -476,7 +423,6 @@
       }
     },
     "321": {
-      "codepoint": 321,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -485,7 +431,6 @@
       }
     },
     "387": {
-      "codepoint": 387,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -494,7 +439,6 @@
       }
     },
     "322": {
-      "codepoint": 322,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -503,7 +447,6 @@
       }
     },
     "75": {
-      "codepoint": 75,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -512,7 +455,6 @@
       }
     },
     "74": {
-      "codepoint": 74,
       "bearing": [-1, -9],
       "advance": null,
       "image": {
@@ -521,7 +463,6 @@
       }
     },
     "403": {
-      "codepoint": 403,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -530,7 +471,6 @@
       }
     },
     "59": {
-      "codepoint": 59,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -539,7 +479,6 @@
       }
     },
     "273": {
-      "codepoint": 273,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -548,7 +487,6 @@
       }
     },
     "274": {
-      "codepoint": 274,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -557,7 +495,6 @@
       }
     },
     "189": {
-      "codepoint": 189,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -566,7 +503,6 @@
       }
     },
     "188": {
-      "codepoint": 188,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -575,7 +511,6 @@
       }
     },
     "468": {
-      "codepoint": 468,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -584,7 +519,6 @@
       }
     },
     "192": {
-      "codepoint": 192,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -593,7 +527,6 @@
       }
     },
     "455": {
-      "codepoint": 455,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -602,7 +535,6 @@
       }
     },
     "456": {
-      "codepoint": 456,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -611,7 +543,6 @@
       }
     },
     "204": {
-      "codepoint": 204,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -620,7 +551,6 @@
       }
     },
     "386": {
-      "codepoint": 386,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -629,7 +559,6 @@
       }
     },
     "452": {
-      "codepoint": 452,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -638,7 +567,6 @@
       }
     },
     "390": {
-      "codepoint": 390,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -647,7 +575,6 @@
       }
     },
     "55": {
-      "codepoint": 55,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -656,7 +583,6 @@
       }
     },
     "472": {
-      "codepoint": 472,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -665,7 +591,6 @@
       }
     },
     "451": {
-      "codepoint": 451,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -674,7 +599,6 @@
       }
     },
     "471": {
-      "codepoint": 471,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -683,7 +607,6 @@
       }
     },
     "205": {
-      "codepoint": 205,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -692,7 +615,6 @@
       }
     },
     "467": {
-      "codepoint": 467,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -701,7 +623,6 @@
       }
     },
     "208": {
-      "codepoint": 208,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -710,7 +631,6 @@
       }
     },
     "123": {
-      "codepoint": 123,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -719,7 +639,6 @@
       }
     },
     "209": {
-      "codepoint": 209,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -728,7 +647,6 @@
       }
     },
     "124": {
-      "codepoint": 124,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -737,7 +655,6 @@
       }
     },
     "334": {
-      "codepoint": 334,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -746,7 +663,6 @@
       }
     },
     "342": {
-      "codepoint": 342,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -755,7 +671,6 @@
       }
     },
     "383": {
-      "codepoint": 383,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -764,7 +679,6 @@
       }
     },
     "119": {
-      "codepoint": 119,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -773,7 +687,6 @@
       }
     },
     "391": {
-      "codepoint": 391,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -782,7 +695,6 @@
       }
     },
     "326": {
-      "codepoint": 326,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -791,7 +703,6 @@
       }
     },
     "269": {
-      "codepoint": 269,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -800,7 +711,6 @@
       }
     },
     "71": {
-      "codepoint": 71,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -809,7 +719,6 @@
       }
     },
     "407": {
-      "codepoint": 407,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -818,7 +727,6 @@
       }
     },
     "277": {
-      "codepoint": 277,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -827,7 +735,6 @@
       }
     },
     "184": {
-      "codepoint": 184,
       "bearing": [0, 0],
       "advance": null,
       "image": {
@@ -836,7 +743,6 @@
       }
     },
     "318": {
-      "codepoint": 318,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -845,7 +751,6 @@
       }
     },
     "63": {
-      "codepoint": 63,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -854,7 +759,6 @@
       }
     },
     "399": {
-      "codepoint": 399,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -863,7 +767,6 @@
       }
     },
     "261": {
-      "codepoint": 261,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -872,7 +775,6 @@
       }
     },
     "10": {
-      "codepoint": 10,
       "bearing": [0, 0],
       "advance": 0,
       "image": {
@@ -881,7 +783,6 @@
       }
     },
     "79": {
-      "codepoint": 79,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -890,7 +791,6 @@
       }
     },
     "257": {
-      "codepoint": 257,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -899,7 +799,6 @@
       }
     },
     "253": {
-      "codepoint": 253,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -908,7 +807,6 @@
       }
     },
     "249": {
-      "codepoint": 249,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -916,17 +814,7 @@
         "data": "828018638c1e00"
       }
     },
-    "214": {
-      "codepoint": 214,
-      "bearing": [0, -11],
-      "advance": null,
-      "image": {
-        "size": [6, 12],
-        "data": "12e08561188661e801"
-      }
-    },
     "247": {
-      "codepoint": 247,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -934,17 +822,23 @@
         "data": "047c400000"
       }
     },
-    "280": {
-      "codepoint": 280,
-      "bearing": [0, -9],
+    "214": {
+      "bearing": [0, -11],
       "advance": null,
       "image": {
-        "size": [5, 12],
-        "data": "3f84f042081f110c"
+        "size": [6, 12],
+        "data": "12e08561188661e801"
+      }
+    },
+    "281": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 9],
+        "data": "2efe101d2218"
       }
     },
     "116": {
-      "codepoint": 116,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -953,7 +847,6 @@
       }
     },
     "182": {
-      "codepoint": 182,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -961,17 +854,15 @@
         "data": "fede6b29a51400"
       }
     },
-    "281": {
-      "codepoint": 281,
-      "bearing": [0, -6],
+    "280": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [5, 9],
-        "data": "2efe101d2218"
+        "size": [5, 12],
+        "data": "3f84f042081f110c"
       }
     },
     "181": {
-      "codepoint": 181,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -980,7 +871,6 @@
       }
     },
     "346": {
-      "codepoint": 346,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -989,7 +879,6 @@
       }
     },
     "279": {
-      "codepoint": 279,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -998,7 +887,6 @@
       }
     },
     "312": {
-      "codepoint": 312,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1007,7 +895,6 @@
       }
     },
     "313": {
-      "codepoint": 313,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -1016,7 +903,6 @@
       }
     },
     "443": {
-      "codepoint": 443,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1025,7 +911,6 @@
       }
     },
     "311": {
-      "codepoint": 311,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1033,17 +918,15 @@
         "data": "218498ca49111001"
       }
     },
-    "51": {
-      "codepoint": 51,
-      "bearing": [0, -9],
+    "216": {
+      "bearing": [0, -10],
       "advance": null,
       "image": {
-        "size": [6, 10],
-        "data": "5e08821808861e00"
+        "size": [6, 11],
+        "data": "a017a7695b96a31700"
       }
     },
     "278": {
-      "codepoint": 278,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -1052,7 +935,6 @@
       }
     },
     "117": {
-      "codepoint": 117,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1060,17 +942,15 @@
         "data": "31c6183d00"
       }
     },
-    "216": {
-      "codepoint": 216,
-      "bearing": [0, -10],
+    "51": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [6, 11],
-        "data": "a017a7695b96a31700"
+        "size": [6, 10],
+        "data": "5e08821808861e00"
       }
     },
     "448": {
-      "codepoint": 448,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -1079,7 +959,6 @@
       }
     },
     "118": {
-      "codepoint": 118,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1088,7 +967,6 @@
       }
     },
     "52": {
-      "codepoint": 52,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1097,7 +975,6 @@
       }
     },
     "46": {
-      "codepoint": 46,
       "bearing": [0, -1],
       "advance": null,
       "image": {
@@ -1106,7 +983,6 @@
       }
     },
     "215": {
-      "codepoint": 215,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -1115,7 +991,6 @@
       }
     },
     "213": {
-      "codepoint": 213,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -1123,17 +998,7 @@
         "data": "94027861188661187a00"
       }
     },
-    "377": {
-      "codepoint": 377,
-      "bearing": [0, -12],
-      "advance": null,
-      "image": {
-        "size": [5, 13],
-        "data": "88800f212222840f00"
-      }
-    },
     "378": {
-      "codepoint": 378,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1141,8 +1006,15 @@
         "data": "24f048120f"
       }
     },
+    "377": {
+      "bearing": [0, -12],
+      "advance": null,
+      "image": {
+        "size": [5, 13],
+        "data": "88800f212222840f00"
+      }
+    },
     "376": {
-      "codepoint": 376,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -1151,7 +1023,6 @@
       }
     },
     "375": {
-      "codepoint": 375,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1160,7 +1031,6 @@
       }
     },
     "78": {
-      "codepoint": 78,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1169,7 +1039,6 @@
       }
     },
     "384": {
-      "codepoint": 384,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1178,7 +1047,6 @@
       }
     },
     "54": {
-      "codepoint": 54,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1186,17 +1054,7 @@
         "data": "2e86f0628c0e00"
       }
     },
-    "408": {
-      "codepoint": 408,
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [7, 10],
-        "data": "e148a2302824222100"
-      }
-    },
     "450": {
-      "codepoint": 450,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1204,8 +1062,15 @@
         "data": "92ae4b02"
       }
     },
+    "408": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [7, 10],
+        "data": "e148a2302824222100"
+      }
+    },
     "473": {
-      "codepoint": 473,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -1214,7 +1079,6 @@
       }
     },
     "475": {
-      "codepoint": 475,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -1222,17 +1086,7 @@
         "data": "04220261188661187a00"
       }
     },
-    "110": {
-      "codepoint": 110,
-      "bearing": [0, -6],
-      "advance": null,
-      "image": {
-        "size": [5, 7],
-        "data": "2fc6182300"
-      }
-    },
     "351": {
-      "codepoint": 351,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1240,8 +1094,15 @@
         "data": "2e1a161d4106"
       }
     },
+    "110": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 7],
+        "data": "2fc6182300"
+      }
+    },
     "319": {
-      "codepoint": 319,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1250,7 +1111,6 @@
       }
     },
     "442": {
-      "codepoint": 442,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1259,7 +1119,6 @@
       }
     },
     "440": {
-      "codepoint": 440,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1268,7 +1127,6 @@
       }
     },
     "175": {
-      "codepoint": 175,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -1277,7 +1135,6 @@
       }
     },
     "183": {
-      "codepoint": 183,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1286,7 +1143,6 @@
       }
     },
     "76": {
-      "codepoint": 76,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1294,17 +1150,7 @@
         "data": "21841042081f00"
       }
     },
-    "345": {
-      "codepoint": 345,
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [4, 10],
-        "data": "4ad0131101"
-      }
-    },
     "410": {
-      "codepoint": 410,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1312,8 +1158,15 @@
         "data": "92744902"
       }
     },
+    "345": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [4, 10],
+        "data": "4ad0131101"
+      }
+    },
     "343": {
-      "codepoint": 343,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1321,26 +1174,23 @@
         "data": "3d11112001"
       }
     },
-    "254": {
-      "codepoint": 254,
+    "86": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [7, 10],
+        "data": "c16050241251280800"
+      }
+    },
+    "416": {
       "bearing": [0, -10],
       "advance": null,
       "image": {
-        "size": [5, 14],
-        "data": "2184d0668cb3851002"
-      }
-    },
-    "248": {
-      "codepoint": 248,
-      "bearing": [0, -7],
-      "advance": null,
-      "image": {
-        "size": [5, 8],
-        "data": "d0e55aa70b"
+        "size": [7, 11],
+        "data": "406f28140a8542210f00"
       }
     },
     "246": {
-      "codepoint": 246,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -1349,7 +1199,6 @@
       }
     },
     "84": {
-      "codepoint": 84,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1358,7 +1207,6 @@
       }
     },
     "418": {
-      "codepoint": 418,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1366,35 +1214,23 @@
         "data": "9e8519628821861862881e0200"
       }
     },
-    "416": {
-      "codepoint": 416,
+    "248": {
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "d0e55aa70b"
+      }
+    },
+    "254": {
       "bearing": [0, -10],
       "advance": null,
       "image": {
-        "size": [7, 11],
-        "data": "406f28140a8542210f00"
-      }
-    },
-    "86": {
-      "codepoint": 86,
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [7, 10],
-        "data": "c16050241251280800"
-      }
-    },
-    "206": {
-      "codepoint": 206,
-      "bearing": [0, -12],
-      "advance": null,
-      "image": {
-        "size": [3, 13],
-        "data": "2a2e49920e"
+        "size": [5, 14],
+        "data": "2184d0668cb3851002"
       }
     },
     "239": {
-      "codepoint": 239,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1402,8 +1238,15 @@
         "data": "05244902"
       }
     },
+    "206": {
+      "bearing": [0, -12],
+      "advance": null,
+      "image": {
+        "size": [3, 13],
+        "data": "2a2e49920e"
+      }
+    },
     "256": {
-      "codepoint": 256,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -1412,7 +1255,6 @@
       }
     },
     "222": {
-      "codepoint": 222,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1421,7 +1263,6 @@
       }
     },
     "223": {
-      "codepoint": 223,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1430,7 +1271,6 @@
       }
     },
     "271": {
-      "codepoint": 271,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1439,7 +1279,6 @@
       }
     },
     "238": {
-      "codepoint": 238,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -1448,7 +1287,6 @@
       }
     },
     "353": {
-      "codepoint": 353,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1457,7 +1295,6 @@
       }
     },
     "191": {
-      "codepoint": 191,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1466,7 +1303,6 @@
       }
     },
     "190": {
-      "codepoint": 190,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1475,7 +1311,6 @@
       }
     },
     "272": {
-      "codepoint": 272,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1484,7 +1319,6 @@
       }
     },
     "369": {
-      "codepoint": 369,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1493,7 +1327,6 @@
       }
     },
     "303": {
-      "codepoint": 303,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1502,7 +1335,6 @@
       }
     },
     "60": {
-      "codepoint": 60,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1511,7 +1343,6 @@
       }
     },
     "109": {
-      "codepoint": 109,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1520,7 +1351,6 @@
       }
     },
     "385": {
-      "codepoint": 385,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1529,7 +1359,6 @@
       }
     },
     "287": {
-      "codepoint": 287,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1538,7 +1367,6 @@
       }
     },
     "304": {
-      "codepoint": 304,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -1547,7 +1375,6 @@
       }
     },
     "368": {
-      "codepoint": 368,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -1556,7 +1383,6 @@
       }
     },
     "207": {
-      "codepoint": 207,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -1565,7 +1391,6 @@
       }
     },
     "457": {
-      "codepoint": 457,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1574,7 +1399,6 @@
       }
     },
     "288": {
-      "codepoint": 288,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -1582,17 +1406,15 @@
         "data": "08e08541908761e803"
       }
     },
-    "126": {
-      "codepoint": 126,
-      "bearing": [0, -5],
+    "125": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [6, 6],
-        "data": "6606000000"
+        "size": [3, 12],
+        "data": "9124529202"
       }
     },
     "45": {
-      "codepoint": 45,
       "bearing": [0, -4],
       "advance": null,
       "image": {
@@ -1601,7 +1423,6 @@
       }
     },
     "44": {
-      "codepoint": 44,
       "bearing": [0, -1],
       "advance": null,
       "image": {
@@ -1609,26 +1430,15 @@
         "data": "06"
       }
     },
-    "125": {
-      "codepoint": 125,
-      "bearing": [0, -9],
+    "126": {
+      "bearing": [0, -5],
       "advance": null,
       "image": {
-        "size": [3, 12],
-        "data": "9124529202"
-      }
-    },
-    "474": {
-      "codepoint": 474,
-      "bearing": [0, -11],
-      "advance": null,
-      "image": {
-        "size": [5, 12],
-        "data": "8a0005628c317a00"
+        "size": [6, 6],
+        "data": "6606000000"
       }
     },
     "433": {
-      "codepoint": 433,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1636,8 +1446,15 @@
         "data": "f72a45140c06451c00"
       }
     },
+    "474": {
+      "bearing": [0, -11],
+      "advance": null,
+      "image": {
+        "size": [5, 12],
+        "data": "8a0005628c317a00"
+      }
+    },
     "466": {
-      "codepoint": 466,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1646,7 +1463,6 @@
       }
     },
     "425": {
-      "codepoint": 425,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1655,7 +1471,6 @@
       }
     },
     "449": {
-      "codepoint": 449,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -1664,7 +1479,6 @@
       }
     },
     "53": {
-      "codepoint": 53,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1673,7 +1487,6 @@
       }
     },
     "409": {
-      "codepoint": 409,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1682,7 +1495,6 @@
       }
     },
     "69": {
-      "codepoint": 69,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1691,7 +1503,6 @@
       }
     },
     "61": {
-      "codepoint": 61,
       "bearing": [0, -5],
       "advance": null,
       "image": {
@@ -1700,7 +1511,6 @@
       }
     },
     "401": {
-      "codepoint": 401,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1709,7 +1519,6 @@
       }
     },
     "360": {
-      "codepoint": 360,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -1718,7 +1527,6 @@
       }
     },
     "393": {
-      "codepoint": 393,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1727,7 +1535,6 @@
       }
     },
     "352": {
-      "codepoint": 352,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -1736,7 +1543,6 @@
       }
     },
     "441": {
-      "codepoint": 441,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1745,7 +1551,6 @@
       }
     },
     "336": {
-      "codepoint": 336,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -1754,7 +1559,6 @@
       }
     },
     "101": {
-      "codepoint": 101,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1763,7 +1567,6 @@
       }
     },
     "328": {
-      "codepoint": 328,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1772,7 +1575,6 @@
       }
     },
     "320": {
-      "codepoint": 320,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1781,7 +1583,6 @@
       }
     },
     "344": {
-      "codepoint": 344,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -1790,7 +1591,6 @@
       }
     },
     "93": {
-      "codepoint": 93,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1799,7 +1599,6 @@
       }
     },
     "166": {
-      "codepoint": 166,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1808,7 +1607,6 @@
       }
     },
     "77": {
-      "codepoint": 77,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1817,7 +1615,6 @@
       }
     },
     "174": {
-      "codepoint": 174,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1826,7 +1623,6 @@
       }
     },
     "85": {
-      "codepoint": 85,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1835,7 +1631,6 @@
       }
     },
     "255": {
-      "codepoint": 255,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -1844,7 +1639,6 @@
       }
     },
     "417": {
-      "codepoint": 417,
       "bearing": [0, -7],
       "advance": null,
       "image": {
@@ -1853,7 +1647,6 @@
       }
     },
     "33": {
-      "codepoint": 33,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1862,7 +1655,6 @@
       }
     },
     "99": {
-      "codepoint": 99,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1871,7 +1663,6 @@
       }
     },
     "297": {
-      "codepoint": 297,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -1880,7 +1671,6 @@
       }
     },
     "165": {
-      "codepoint": 165,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1889,7 +1679,6 @@
       }
     },
     "363": {
-      "codepoint": 363,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -1898,7 +1687,6 @@
       }
     },
     "428": {
-      "codepoint": 428,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1907,7 +1695,6 @@
       }
     },
     "429": {
-      "codepoint": 429,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1916,7 +1703,6 @@
       }
     },
     "232": {
-      "codepoint": 232,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1925,7 +1711,6 @@
       }
     },
     "100": {
-      "codepoint": 100,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1934,7 +1719,6 @@
       }
     },
     "98": {
-      "codepoint": 98,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1943,7 +1727,6 @@
       }
     },
     "364": {
-      "codepoint": 364,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -1952,7 +1735,6 @@
       }
     },
     "362": {
-      "codepoint": 362,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -1961,7 +1743,6 @@
       }
     },
     "231": {
-      "codepoint": 231,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1970,7 +1751,6 @@
       }
     },
     "229": {
-      "codepoint": 229,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -1979,7 +1759,6 @@
       }
     },
     "230": {
-      "codepoint": 230,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -1988,7 +1767,6 @@
       }
     },
     "35": {
-      "codepoint": 35,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -1997,7 +1775,6 @@
       }
     },
     "365": {
-      "codepoint": 365,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -2006,7 +1783,6 @@
       }
     },
     "361": {
-      "codepoint": 361,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2015,7 +1791,6 @@
       }
     },
     "299": {
-      "codepoint": 299,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2024,7 +1799,6 @@
       }
     },
     "32": {
-      "codepoint": 32,
       "bearing": [0, 0],
       "advance": 4,
       "image": {
@@ -2033,7 +1807,6 @@
       }
     },
     "300": {
-      "codepoint": 300,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -2042,7 +1815,6 @@
       }
     },
     "296": {
-      "codepoint": 296,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -2051,7 +1823,6 @@
       }
     },
     "34": {
-      "codepoint": 34,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2060,7 +1831,6 @@
       }
     },
     "36": {
-      "codepoint": 36,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -2069,7 +1839,6 @@
       }
     },
     "298": {
-      "codepoint": 298,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -2078,7 +1847,6 @@
       }
     },
     "293": {
-      "codepoint": 293,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -2087,7 +1855,6 @@
       }
     },
     "294": {
-      "codepoint": 294,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2096,7 +1863,6 @@
       }
     },
     "295": {
-      "codepoint": 295,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2105,7 +1871,6 @@
       }
     },
     "301": {
-      "codepoint": 301,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -2114,7 +1879,6 @@
       }
     },
     "169": {
-      "codepoint": 169,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2123,7 +1887,6 @@
       }
     },
     "161": {
-      "codepoint": 161,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2132,7 +1895,6 @@
       }
     },
     "37": {
-      "codepoint": 37,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2141,7 +1903,6 @@
       }
     },
     "102": {
-      "codepoint": 102,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2150,7 +1911,6 @@
       }
     },
     "96": {
-      "codepoint": 96,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -2159,7 +1919,6 @@
       }
     },
     "367": {
-      "codepoint": 367,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -2168,7 +1927,6 @@
       }
     },
     "94": {
-      "codepoint": 94,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2177,7 +1935,6 @@
       }
     },
     "234": {
-      "codepoint": 234,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2186,7 +1943,6 @@
       }
     },
     "434": {
-      "codepoint": 434,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2195,7 +1951,6 @@
       }
     },
     "432": {
-      "codepoint": 432,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2204,7 +1959,6 @@
       }
     },
     "228": {
-      "codepoint": 228,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -2213,7 +1967,6 @@
       }
     },
     "226": {
-      "codepoint": 226,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2222,7 +1975,6 @@
       }
     },
     "236": {
-      "codepoint": 236,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -2231,7 +1983,6 @@
       }
     },
     "359": {
-      "codepoint": 359,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -2240,7 +1991,6 @@
       }
     },
     "357": {
-      "codepoint": 357,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2249,7 +1999,6 @@
       }
     },
     "104": {
-      "codepoint": 104,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2258,7 +2007,6 @@
       }
     },
     "167": {
-      "codepoint": 167,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2267,7 +2015,6 @@
       }
     },
     "171": {
-      "codepoint": 171,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2276,7 +2023,6 @@
       }
     },
     "163": {
-      "codepoint": 163,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2285,7 +2031,6 @@
       }
     },
     "92": {
-      "codepoint": 92,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2294,7 +2039,6 @@
       }
     },
     "430": {
-      "codepoint": 430,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2303,7 +2047,6 @@
       }
     },
     "426": {
-      "codepoint": 426,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2312,7 +2055,6 @@
       }
     },
     "424": {
-      "codepoint": 424,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2321,7 +2063,6 @@
       }
     },
     "422": {
-      "codepoint": 422,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2330,7 +2071,6 @@
       }
     },
     "371": {
-      "codepoint": 371,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2339,7 +2079,6 @@
       }
     },
     "107": {
-      "codepoint": 107,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2348,7 +2087,6 @@
       }
     },
     "91": {
-      "codepoint": 91,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2357,7 +2095,6 @@
       }
     },
     "289": {
-      "codepoint": 289,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -2366,7 +2103,6 @@
       }
     },
     "173": {
-      "codepoint": 173,
       "bearing": [0, -4],
       "advance": null,
       "image": {
@@ -2375,7 +2111,6 @@
       }
     },
     "240": {
-      "codepoint": 240,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -2384,7 +2119,6 @@
       }
     },
     "305": {
-      "codepoint": 305,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2393,7 +2127,6 @@
       }
     },
     "436": {
-      "codepoint": 436,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2402,7 +2135,6 @@
       }
     },
     "306": {
-      "codepoint": 306,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2411,7 +2143,6 @@
       }
     },
     "108": {
-      "codepoint": 108,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2420,7 +2151,6 @@
       }
     },
     "224": {
-      "codepoint": 224,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2429,7 +2159,6 @@
       }
     },
     "355": {
-      "codepoint": 355,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -2438,7 +2167,6 @@
       }
     },
     "354": {
-      "codepoint": 354,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2447,7 +2175,6 @@
       }
     },
     "39": {
-      "codepoint": 39,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2456,7 +2183,6 @@
       }
     },
     "225": {
-      "codepoint": 225,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2465,7 +2191,6 @@
       }
     },
     "286": {
-      "codepoint": 286,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -2474,7 +2199,6 @@
       }
     },
     "302": {
-      "codepoint": 302,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2483,7 +2207,6 @@
       }
     },
     "221": {
-      "codepoint": 221,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -2492,7 +2215,6 @@
       }
     },
     "220": {
-      "codepoint": 220,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -2501,7 +2223,6 @@
       }
     },
     "370": {
-      "codepoint": 370,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2510,7 +2231,6 @@
       }
     },
     "374": {
-      "codepoint": 374,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -2519,7 +2239,6 @@
       }
     },
     "38": {
-      "codepoint": 38,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2528,7 +2247,6 @@
       }
     },
     "290": {
-      "codepoint": 290,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2537,7 +2255,6 @@
       }
     },
     "42": {
-      "codepoint": 42,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2546,7 +2263,6 @@
       }
     },
     "43": {
-      "codepoint": 43,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2555,7 +2271,6 @@
       }
     },
     "103": {
-      "codepoint": 103,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2564,7 +2279,6 @@
       }
     },
     "111": {
-      "codepoint": 111,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2573,7 +2287,6 @@
       }
     },
     "285": {
-      "codepoint": 285,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2582,7 +2295,6 @@
       }
     },
     "350": {
-      "codepoint": 350,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2591,7 +2303,6 @@
       }
     },
     "95": {
-      "codepoint": 95,
       "bearing": [0, 1],
       "advance": null,
       "image": {
@@ -2600,7 +2311,6 @@
       }
     },
     "366": {
-      "codepoint": 366,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -2609,7 +2319,6 @@
       }
     },
     "310": {
-      "codepoint": 310,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2618,7 +2327,6 @@
       }
     },
     "358": {
-      "codepoint": 358,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2627,7 +2335,6 @@
       }
     },
     "237": {
-      "codepoint": 237,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -2636,7 +2343,6 @@
       }
     },
     "439": {
-      "codepoint": 439,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2645,7 +2351,6 @@
       }
     },
     "233": {
-      "codepoint": 233,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2654,7 +2359,6 @@
       }
     },
     "427": {
-      "codepoint": 427,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -2663,7 +2367,6 @@
       }
     },
     "245": {
-      "codepoint": 245,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2672,7 +2375,6 @@
       }
     },
     "435": {
-      "codepoint": 435,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2681,7 +2383,6 @@
       }
     },
     "180": {
-      "codepoint": 180,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -2690,7 +2391,6 @@
       }
     },
     "176": {
-      "codepoint": 176,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2699,7 +2399,6 @@
       }
     },
     "431": {
-      "codepoint": 431,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2708,7 +2407,6 @@
       }
     },
     "241": {
-      "codepoint": 241,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2717,7 +2415,6 @@
       }
     },
     "168": {
-      "codepoint": 168,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2726,7 +2423,6 @@
       }
     },
     "164": {
-      "codepoint": 164,
       "bearing": [0, -7],
       "advance": null,
       "image": {
@@ -2735,7 +2431,6 @@
       }
     },
     "160": {
-      "codepoint": 160,
       "bearing": [0, 0],
       "advance": 5,
       "image": {
@@ -2744,7 +2439,6 @@
       }
     },
     "172": {
-      "codepoint": 172,
       "bearing": [0, -4],
       "advance": null,
       "image": {
@@ -2753,7 +2447,6 @@
       }
     },
     "415": {
-      "codepoint": 415,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2762,7 +2455,6 @@
       }
     },
     "83": {
-      "codepoint": 83,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2771,7 +2463,6 @@
       }
     },
     "419": {
-      "codepoint": 419,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2780,7 +2471,6 @@
       }
     },
     "87": {
-      "codepoint": 87,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2789,7 +2479,6 @@
       }
     },
     "423": {
-      "codepoint": 423,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2798,7 +2487,6 @@
       }
     },
     "478": {
-      "codepoint": 478,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -2807,7 +2495,6 @@
       }
     },
     "412": {
-      "codepoint": 412,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2816,7 +2503,6 @@
       }
     },
     "445": {
-      "codepoint": 445,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2825,7 +2511,6 @@
       }
     },
     "50": {
-      "codepoint": 50,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2834,7 +2519,6 @@
       }
     },
     "49": {
-      "codepoint": 49,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2843,7 +2527,6 @@
       }
     },
     "347": {
-      "codepoint": 347,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2852,7 +2535,6 @@
       }
     },
     "115": {
-      "codepoint": 115,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2861,7 +2543,6 @@
       }
     },
     "444": {
-      "codepoint": 444,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2870,7 +2551,6 @@
       }
     },
     "477": {
-      "codepoint": 477,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2879,7 +2559,6 @@
       }
     },
     "446": {
-      "codepoint": 446,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -2888,7 +2567,6 @@
       }
     },
     "315": {
-      "codepoint": 315,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2897,7 +2575,6 @@
       }
     },
     "314": {
-      "codepoint": 314,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -2906,7 +2583,6 @@
       }
     },
     "476": {
-      "codepoint": 476,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -2915,7 +2591,6 @@
       }
     },
     "282": {
-      "codepoint": 282,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -2924,7 +2599,6 @@
       }
     },
     "447": {
-      "codepoint": 447,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2933,7 +2607,6 @@
       }
     },
     "48": {
-      "codepoint": 48,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2942,7 +2615,6 @@
       }
     },
     "47": {
-      "codepoint": 47,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2951,7 +2623,6 @@
       }
     },
     "217": {
-      "codepoint": 217,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -2960,7 +2631,6 @@
       }
     },
     "114": {
-      "codepoint": 114,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2969,7 +2639,6 @@
       }
     },
     "113": {
-      "codepoint": 113,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -2978,7 +2647,6 @@
       }
     },
     "283": {
-      "codepoint": 283,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2987,7 +2655,6 @@
       }
     },
     "382": {
-      "codepoint": 382,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -2996,7 +2663,6 @@
       }
     },
     "380": {
-      "codepoint": 380,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -3005,7 +2671,6 @@
       }
     },
     "381": {
-      "codepoint": 381,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3014,7 +2679,6 @@
       }
     },
     "212": {
-      "codepoint": 212,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3023,7 +2687,6 @@
       }
     },
     "379": {
-      "codepoint": 379,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -3032,7 +2695,6 @@
       }
     },
     "211": {
-      "codepoint": 211,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3041,7 +2703,6 @@
       }
     },
     "276": {
-      "codepoint": 276,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3050,7 +2711,6 @@
       }
     },
     "284": {
-      "codepoint": 284,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3059,7 +2719,6 @@
       }
     },
     "120": {
-      "codepoint": 120,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -3068,7 +2727,6 @@
       }
     },
     "309": {
-      "codepoint": 309,
       "bearing": [-1, -11],
       "advance": null,
       "image": {
@@ -3077,7 +2735,6 @@
       }
     },
     "218": {
-      "codepoint": 218,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3086,7 +2743,6 @@
       }
     },
     "112": {
-      "codepoint": 112,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -3095,7 +2751,6 @@
       }
     },
     "244": {
-      "codepoint": 244,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3104,7 +2759,6 @@
       }
     },
     "177": {
-      "codepoint": 177,
       "bearing": [0, -7],
       "advance": null,
       "image": {
@@ -3113,7 +2767,6 @@
       }
     },
     "185": {
-      "codepoint": 185,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -3122,7 +2775,6 @@
       }
     },
     "187": {
-      "codepoint": 187,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -3131,7 +2783,6 @@
       }
     },
     "317": {
-      "codepoint": 317,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3140,7 +2791,6 @@
       }
     },
     "406": {
-      "codepoint": 406,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3149,7 +2799,6 @@
       }
     },
     "414": {
-      "codepoint": 414,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -3158,7 +2807,6 @@
       }
     },
     "349": {
-      "codepoint": 349,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3167,7 +2815,6 @@
       }
     },
     "242": {
-      "codepoint": 242,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3176,7 +2823,6 @@
       }
     },
     "179": {
-      "codepoint": 179,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -3185,7 +2831,6 @@
       }
     },
     "420": {
-      "codepoint": 420,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3194,7 +2839,6 @@
       }
     },
     "339": {
-      "codepoint": 339,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -3203,7 +2847,6 @@
       }
     },
     "341": {
-      "codepoint": 341,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3212,7 +2855,6 @@
       }
     },
     "80": {
-      "codepoint": 80,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3221,7 +2863,6 @@
       }
     },
     "90": {
-      "codepoint": 90,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3230,7 +2871,6 @@
       }
     },
     "88": {
-      "codepoint": 88,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3239,7 +2879,6 @@
       }
     },
     "82": {
-      "codepoint": 82,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3248,7 +2887,6 @@
       }
     },
     "252": {
-      "codepoint": 252,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -3257,7 +2895,6 @@
       }
     },
     "250": {
-      "codepoint": 250,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3266,7 +2903,6 @@
       }
     },
     "470": {
-      "codepoint": 470,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -3275,7 +2911,6 @@
       }
     },
     "437": {
-      "codepoint": 437,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3284,7 +2919,6 @@
       }
     },
     "454": {
-      "codepoint": 454,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3293,7 +2927,6 @@
       }
     },
     "404": {
-      "codepoint": 404,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3302,7 +2935,6 @@
       }
     },
     "453": {
-      "codepoint": 453,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3311,7 +2943,6 @@
       }
     },
     "388": {
-      "codepoint": 388,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3320,7 +2951,6 @@
       }
     },
     "405": {
-      "codepoint": 405,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3329,7 +2959,6 @@
       }
     },
     "438": {
-      "codepoint": 438,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -3338,7 +2967,6 @@
       }
     },
     "57": {
-      "codepoint": 57,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3347,7 +2975,6 @@
       }
     },
     "106": {
-      "codepoint": 106,
       "bearing": [-1, -9],
       "advance": null,
       "image": {
@@ -3356,7 +2983,6 @@
       }
     },
     "356": {
-      "codepoint": 356,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3365,7 +2991,6 @@
       }
     },
     "307": {
-      "codepoint": 307,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3374,7 +2999,6 @@
       }
     },
     "56": {
-      "codepoint": 56,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3383,7 +3007,6 @@
       }
     },
     "122": {
-      "codepoint": 122,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -3392,7 +3015,6 @@
       }
     },
     "373": {
-      "codepoint": 373,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3401,7 +3023,6 @@
       }
     },
     "389": {
-      "codepoint": 389,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -3410,7 +3031,6 @@
       }
     },
     "203": {
-      "codepoint": 203,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -3419,7 +3039,6 @@
       }
     },
     "469": {
-      "codepoint": 469,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3428,7 +3047,6 @@
       }
     },
     "121": {
-      "codepoint": 121,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -3437,7 +3055,6 @@
       }
     },
     "372": {
-      "codepoint": 372,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3445,35 +3062,7 @@
         "data": "105000081830604449aa5411210200"
       }
     },
-    "41": {
-      "codepoint": 41,
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [2, 12],
-        "data": "a9aa6a"
-      }
-    },
-    "40": {
-      "codepoint": 40,
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [2, 12],
-        "data": "565595"
-      }
-    },
-    "291": {
-      "codepoint": 291,
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 13],
-        "data": "88001f638c1ec2e800"
-      }
-    },
     "210": {
-      "codepoint": 210,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3481,8 +3070,31 @@
         "data": "04027861188661187a00"
       }
     },
+    "41": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [2, 12],
+        "data": "a9aa6a"
+      }
+    },
+    "291": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 13],
+        "data": "88001f638c1ec2e800"
+      }
+    },
+    "40": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [2, 12],
+        "data": "565595"
+      }
+    },
     "292": {
-      "codepoint": 292,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3491,7 +3103,6 @@
       }
     },
     "235": {
-      "codepoint": 235,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -3500,7 +3111,6 @@
       }
     },
     "202": {
-      "codepoint": 202,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3509,7 +3119,6 @@
       }
     },
     "227": {
-      "codepoint": 227,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3518,7 +3127,6 @@
       }
     },
     "194": {
-      "codepoint": 194,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3527,7 +3135,6 @@
       }
     },
     "219": {
-      "codepoint": 219,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3536,7 +3143,6 @@
       }
     },
     "243": {
-      "codepoint": 243,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3545,7 +3151,6 @@
       }
     },
     "178": {
-      "codepoint": 178,
       "bearing": [0, -10],
       "advance": null,
       "image": {
@@ -3554,7 +3159,6 @@
       }
     },
     "275": {
-      "codepoint": 275,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -3563,7 +3167,6 @@
       }
     },
     "308": {
-      "codepoint": 308,
       "bearing": [-1, -12],
       "advance": null,
       "image": {
@@ -3572,7 +3175,6 @@
       }
     },
     "267": {
-      "codepoint": 267,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -3581,7 +3183,6 @@
       }
     },
     "316": {
-      "codepoint": 316,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3590,7 +3191,6 @@
       }
     },
     "186": {
-      "codepoint": 186,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3599,7 +3199,6 @@
       }
     },
     "105": {
-      "codepoint": 105,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3608,7 +3207,6 @@
       }
     },
     "332": {
-      "codepoint": 332,
       "bearing": [0, -11],
       "advance": null,
       "image": {
@@ -3617,7 +3215,6 @@
       }
     },
     "97": {
-      "codepoint": 97,
       "bearing": [0, -6],
       "advance": null,
       "image": {
@@ -3626,7 +3223,6 @@
       }
     },
     "340": {
-      "codepoint": 340,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3635,7 +3231,6 @@
       }
     },
     "89": {
-      "codepoint": 89,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3644,7 +3239,6 @@
       }
     },
     "348": {
-      "codepoint": 348,
       "bearing": [0, -12],
       "advance": null,
       "image": {
@@ -3653,7 +3247,6 @@
       }
     },
     "324": {
-      "codepoint": 324,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3662,7 +3255,6 @@
       }
     },
     "73": {
-      "codepoint": 73,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3671,7 +3263,6 @@
       }
     },
     "170": {
-      "codepoint": 170,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3680,7 +3271,6 @@
       }
     },
     "259": {
-      "codepoint": 259,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3689,7 +3279,6 @@
       }
     },
     "413": {
-      "codepoint": 413,
       "bearing": [-1, -9],
       "advance": null,
       "image": {
@@ -3698,7 +3287,6 @@
       }
     },
     "162": {
-      "codepoint": 162,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3707,7 +3295,6 @@
       }
     },
     "251": {
-      "codepoint": 251,
       "bearing": [0, -9],
       "advance": null,
       "image": {
@@ -3716,7 +3303,6 @@
       }
     },
     "421": {
-      "codepoint": 421,
       "bearing": [0, -8],
       "advance": null,
       "image": {
@@ -3725,7 +3311,6 @@
       }
     },
     "81": {
-      "codepoint": 81,
       "bearing": [0, -9],
       "advance": null,
       "image": {

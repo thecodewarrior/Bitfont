@@ -1,20 +1,21 @@
 package games.thecodewarrior.bitfont.data
 
-import com.beust.klaxon.Json
 import com.beust.klaxon.JsonObject
-import com.beust.klaxon.KlaxonJson
 import com.beust.klaxon.json
 import games.thecodewarrior.bitfont.utils.IndexColorModel
 import games.thecodewarrior.bitfont.utils.serialization.JsonReadable
 import games.thecodewarrior.bitfont.utils.serialization.JsonWritable
+import games.thecodewarrior.bitfont.utils.serialization.MsgPackable
+import games.thecodewarrior.bitfont.utils.serialization.MsgUnpackable
 import glm_.vec2.Vec2i
-import jdk.nashorn.internal.ir.annotations.Ignore
+import org.msgpack.core.MessagePacker
+import org.msgpack.core.MessageUnpacker
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.util.Arrays
 import kotlin.math.max
 
-class BitGrid(val width: Int, val height: Int): JsonWritable<JsonObject> {
+class BitGrid(val width: Int, val height: Int): JsonWritable<JsonObject>, MsgPackable {
     val size = Vec2i(width, height)
     val data = UByteArray((width*height+7)/8) // (...+7)/8 rounds up
 
@@ -109,12 +110,30 @@ class BitGrid(val width: Int, val height: Int): JsonWritable<JsonObject> {
         )
     }
 
-    companion object: JsonReadable<JsonObject, BitGrid> {
+    override fun pack(packer: MessagePacker) {
+        packer.apply {
+            packInt(width)
+            packInt(height)
+            writePayload(data.toByteArray())
+        }
+    }
+
+    companion object: JsonReadable<JsonObject, BitGrid>, MsgUnpackable<BitGrid> {
         override fun readJson(j: JsonObject): BitGrid {
             val size = j.array<Int>("size")!!
             val grid = BitGrid(size[0], size[1])
             j.string("data")!!.chunkedSequence(2).map { it.toUByte(16) }.forEachIndexed { i, v -> grid.data[i] = v }
             return grid
+        }
+
+        override fun unpack(unpacker: MessageUnpacker): BitGrid {
+            unpacker.apply {
+                val width = unpackInt()
+                val height = unpackInt()
+                val grid = BitGrid(width, height)
+                readPayload(grid.data.size).toUByteArray().copyInto(grid.data)
+                return grid
+            }
         }
     }
 }

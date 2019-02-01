@@ -1,16 +1,18 @@
 package games.thecodewarrior.bitfont.data
 
 import com.beust.klaxon.JsonObject
-import com.beust.klaxon.KlaxonJson
 import com.beust.klaxon.json
 import games.thecodewarrior.bitfont.utils.serialization.JsonReadable
 import games.thecodewarrior.bitfont.utils.serialization.JsonWritable
+import games.thecodewarrior.bitfont.utils.serialization.MsgPackable
+import games.thecodewarrior.bitfont.utils.serialization.MsgUnpackable
 import glm_.func.common.clamp
-import glm_.vec2.Vec2i
+import org.msgpack.core.MessagePacker
+import org.msgpack.core.MessageUnpacker
 import kotlin.math.max
 import kotlin.math.min
 
-class Glyph(): JsonWritable<JsonObject> {
+class Glyph(): JsonWritable<JsonObject>, MsgPackable {
     var bearingX: Int = 0
         set(value) {
             field = value.clamp(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
@@ -72,7 +74,21 @@ class Glyph(): JsonWritable<JsonObject> {
         )
     }
 
-    companion object: JsonReadable<JsonObject, Glyph> {
+    override fun pack(packer: MessagePacker) {
+        packer.apply {
+            packInt(bearingX)
+            packInt(bearingY)
+            advance.also {
+                if(it == null)
+                    packNil()
+                else
+                    packInt(it)
+            }
+            image.pack(packer)
+        }
+    }
+
+    companion object: JsonReadable<JsonObject, Glyph>, MsgUnpackable<Glyph> {
         override fun readJson(j: JsonObject): Glyph {
             val glyph = Glyph()
             j.array<Int>("bearing")!!.also {
@@ -82,6 +98,17 @@ class Glyph(): JsonWritable<JsonObject> {
             glyph.advance = j.int("advance")
             glyph.image = BitGrid.readJson(j.obj("image")!!)
             return glyph
+        }
+
+        override fun unpack(unpacker: MessageUnpacker): Glyph {
+            unpacker.apply {
+                val glyph = Glyph()
+                glyph.bearingX = unpackInt()
+                glyph.bearingY = unpackInt()
+                glyph.advance = if (tryUnpackNil()) null else unpackInt()
+                glyph.image = BitGrid.unpack(unpacker)
+                return glyph
+            }
         }
     }
 }
