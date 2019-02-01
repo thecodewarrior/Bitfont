@@ -1,2 +1,6 @@
 include "editor", "core"
 
+rootProject.name = "bitfont"
+project(":editor").name = "bitfonteditor"
+project(":core").name = "bitfontcore"
+

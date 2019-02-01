@@ -25,3 +25,10 @@ tasks.withType<KotlinCompile> {
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
+
+val sourcesJar by tasks.registering(Jar::class) {
+    classifier = "sources"
+    from(sourceSets["main"].allSource)
+}
+
+tasks["jar"].dependsOn.add(sourcesJar)
