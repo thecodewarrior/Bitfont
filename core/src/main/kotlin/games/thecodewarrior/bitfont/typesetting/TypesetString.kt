@@ -184,7 +184,12 @@ open class TypesetString(
 
     data class GlyphRender(
         val characterIndex: Int, val codepointIndex: Int, val codepoint: Int, val glyph: Glyph,
-        val pos: Vec2i, val posAfter: Vec2i, val attributes: Map<Attribute<*>, Any>)
+        val pos: Vec2i, val posAfter: Vec2i, val attributes: Map<Attribute<*>, Any>) {
+        operator fun <T> get(attribute: Attribute<T>): T? {
+            @Suppress("UNCHECKED_CAST")
+            return attributes[attribute] as T?
+        }
+    }
 
     companion object {
         val newlines = listOf(0x000a, 0x000b, 0x000c, 0x000d, 0x00085, 0x2028, 0x2029)
