@@ -43,9 +43,8 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
 
     override fun main() = with(ImGui) {
         if(System.currentTimeMillis() - lastSave > 60_000) {
-            val s = bitfont.writeJson().toJsonString(true)
             File("autosaves").mkdirs()
-            File("autosaves/font-$fName-${LocalDateTime.now().minute % 10}.json").writeText(s)
+            File("autosaves/font-$fName-${LocalDateTime.now().minute % 10}.bitfont").writeBytes(bitfont.packToBytes())
             lastSave = System.currentTimeMillis()
         }
         withItemWidth(150f) {
@@ -124,35 +123,25 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
 //                }
                 if(menuItem("Save")) {
                     val formatter = DateTimeFormatter.ofPattern("uuuuMMdd.kkmmss")
-                    val s = bitfont.writeJson().toJsonString(true)
                     File("fonts").mkdirs()
-                    File("autosaves").mkdirs()
-                    File("fonts/$fName.json").writeText(s)
-                    File("autosaves/font-$fName-backup-${LocalDateTime.now().format(formatter)}.json").writeText(s)
 
-                    val packer = MessagePack.newDefaultBufferPacker()
-                    bitfont.pack(packer)
-                    File("fonts/$fName.pack").writeBytes(packer.toByteArray())
+                    val bytes = bitfont.packToBytes()
+                    File("fonts/$fName.bitfont").writeBytes(bytes)
+
+                    File("autosaves").mkdirs()
+                    File("autosaves/font-$fName-backup-${LocalDateTime.now().format(formatter)}.bitfont").writeBytes(bytes)
 
                     lastSave = System.currentTimeMillis()
                 }
                 menu("Open") {
                     try {
-                        val files = File("fonts").listFiles { _, name -> name.endsWith(".json") || name.endsWith(".pack") }
+                        val files = File("fonts").listFiles { _, name -> name.endsWith(".bitfont") }
                         var opened = false
                         files.forEach { file ->
                             if(menuItem(file.name) && !opened) {
                                 opened = true
-                                val bitfont: Bitfont = if(file.extension == "pack") {
-                                    file.inputStream().use {
-                                        val unpacker = MessagePack.newDefaultUnpacker(it)
-                                        Bitfont.unpack(unpacker)
-                                    }
-                                } else {
-                                    val json = Parser.default().parse(StringBuilder(file.readText())) as JsonObject
-                                    Bitfont.readJson(json)
-                                }
-                                val newDocument = BitfontDocument(bitfont)
+                                val bytes = file.readBytes()
+                                val newDocument = BitfontDocument(Bitfont.unpack(bytes))
                                 Main.documents.add(newDocument)
                             }
                         }

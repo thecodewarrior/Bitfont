@@ -14,6 +14,7 @@ import games.thecodewarrior.bitfont.editor.utils.extensions.ImGuiDrags
 import games.thecodewarrior.bitfont.editor.utils.extensions.JColor
 import games.thecodewarrior.bitfont.editor.utils.extensions.lineTo
 import games.thecodewarrior.bitfont.editor.utils.extensions.primaryModifier
+import games.thecodewarrior.bitfont.editor.utils.extensions.set
 import games.thecodewarrior.bitfont.editor.utils.extensions.u32
 import games.thecodewarrior.bitfont.editor.utils.glyphProfile
 import games.thecodewarrior.bitfont.editor.utils.ifMac
@@ -173,7 +174,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             val grid = glyph.image
             for(x in 0 until grid.width) {
                 for(y in 0 until grid.height) {
-                    if(grid[Vec2i(x, y)]) {
+                    if(grid[x, y]) {
                         enabledCells.add(Vec2i(x + glyph.bearingX, y + glyph.bearingY))
                     }
                 }
