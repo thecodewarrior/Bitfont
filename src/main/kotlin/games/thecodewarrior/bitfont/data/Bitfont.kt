@@ -7,20 +7,15 @@ import games.thecodewarrior.bitfont.utils.serialization.JsonWritable
 import glm_.func.common.clamp
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 
-class Bitfont(name: String, lineHeight: Int, ascender: Int, descender: Int, capHeight: Int, xHeight: Int, spacing: Int): JsonWritable<JsonObject> {
+class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: Int, spacing: Int): JsonWritable<JsonObject> {
     var name: String = name
 
-    var lineHeight: Int = lineHeight.clamp(0, 65535)
+    var ascent: Int = ascent.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)
         }
 
-    var ascender: Int = ascender.clamp(0, 65535)
-        set(value) {
-            field = value.clamp(0, 65535)
-        }
-
-    var descender: Int = descender.clamp(0, 65535)
+    var descent: Int = descent.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)
         }
@@ -67,9 +62,8 @@ class Bitfont(name: String, lineHeight: Int, ascender: Int, descender: Int, capH
     override fun writeJson(): JsonObject = json {
         obj(
             "name" to name,
-            "lineHeight" to lineHeight,
-            "ascender" to ascender,
-            "descender" to descender,
+            "ascent" to ascent,
+            "descent" to descent,
             "capHeight" to capHeight,
             "xHeight" to xHeight,
             "spacing" to spacing,
@@ -87,9 +81,8 @@ class Bitfont(name: String, lineHeight: Int, ascender: Int, descender: Int, capH
         override fun readJson(j: JsonObject): Bitfont {
             val font = Bitfont(
                 j.string("name")!!,
-                j.int("lineHeight")!!,
-                j.int("ascender")!!,
-                j.int("descender")!!,
+                j.int("ascent")!!,
+                j.int("descent")!!,
                 j.int("capHeight")!!,
                 j.int("xHeight")!!,
                 j.int("spacing")!!

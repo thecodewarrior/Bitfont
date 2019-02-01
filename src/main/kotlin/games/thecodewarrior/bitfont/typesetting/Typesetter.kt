@@ -34,7 +34,7 @@ class Typesetter(val font: Bitfont) {
             if(codepoint in newlines) {
                 val isCrBeforeLf = codepoint == 0x000D && glyphs.getOrNull(glyphI+1)?.second == 0x000A
                 if(!isCrBeforeLf) {
-                    cursor = Vec2i(0, cursor.y + font.lineHeight)
+                    cursor = Vec2i(0, cursor.y + font.ascent + font.descent)
                 }
             } else if(glyph != null){
                 cursor = Vec2i(cursor.x + glyph.calcAdvance(font.spacing), cursor.y)

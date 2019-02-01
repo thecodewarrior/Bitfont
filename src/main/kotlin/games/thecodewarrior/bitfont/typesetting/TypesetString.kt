@@ -5,8 +5,6 @@ import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.utils.extensions.characterBreakIterator
 import games.thecodewarrior.bitfont.utils.extensions.lineBreakIterator
-import kotlin.streams.toList
-import org.checkerframework.checker.units.qual.s
 import kotlin.math.max
 
 /**
@@ -93,8 +91,8 @@ open class TypesetString(
             var maxDescent = 0
             run.forEach {
                 val font = fontFor(it.codepointIndex)
-                maxAscent = max(maxAscent, font.ascender)
-                maxDescent = max(maxDescent, font.descender)
+                maxAscent = max(maxAscent, font.ascent)
+                maxDescent = max(maxDescent, font.descent)
             }
             y += maxAscent
             run.forEach {

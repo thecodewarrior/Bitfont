@@ -515,8 +515,8 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         if(displayGuides) {
             horizontalLine(-bitfont.xHeight, Colors.editor.guides.u32)
             horizontalLine(-bitfont.capHeight, Colors.editor.guides.u32)
-            horizontalLine(-bitfont.ascender, Colors.editor.guides.u32)
-            horizontalLine(bitfont.descender, Colors.editor.guides.u32)
+            horizontalLine(-bitfont.ascent, Colors.editor.guides.u32)
+            horizontalLine(bitfont.descent, Colors.editor.guides.u32)
 
             val advanceEnd = Vec2(canvas.min.x + (origin.x + data.glyph.calcAdvance(bitfont.spacing)) * granularity, canvas.min.y + origin.y * granularity)
             drawList.addLine(

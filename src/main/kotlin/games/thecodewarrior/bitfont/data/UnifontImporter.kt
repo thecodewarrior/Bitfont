@@ -6,9 +6,8 @@ object UnifontImporter {
     fun import(file: File): Bitfont {
         val font = Bitfont(
             name = "Unifont",
-            lineHeight = 16,
-            ascender = 14,
-            descender = 2,
+            ascent = 14,
+            descent = 2,
             capHeight = 10,
             xHeight = 8,
             spacing = 2

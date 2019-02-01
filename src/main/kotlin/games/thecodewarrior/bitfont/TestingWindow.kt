@@ -39,6 +39,8 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
             field = max(value, 1)
         }
     var canvas = Rect()
+    val textOrigin: Vec2
+        get() = canvas.min + Vec2(5, 5)
 
     init {
     }
@@ -111,10 +113,11 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
             Colors.layoutTest.background.u32
         )
 
-        val cursor = canvas.min + Vec2(bitfont.lineHeight) * scale - Vec2(0.5)
+        val cursor = textOrigin - Vec2(0.5)
         drawList.addTriangleFilled(cursor, cursor + Vec2(-scale, -scale), cursor + Vec2(-scale, scale), Colors.layoutTest.originIndicator.u32)
+        val textRegion = Rect(textOrigin, canvas.max)
 
-        typesetString = TypesetString(bitfont, testString, (canvas.width / scale).toInt() - bitfont.lineHeight)
+        typesetString = TypesetString(bitfont, testString, (textRegion.width / scale).toInt())
         typesetString.glyphs.forEach {
             drawGlyph(it)
         }
@@ -123,6 +126,6 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
     fun drawGlyph(char: TypesetString.GlyphRender) {
         val color = char.attributes[Attribute.color] as? JColor ?: Colors.layoutTest.text
         val font = char.attributes[Attribute.font] as? Bitfont ?: bitfont
-        char.glyph.draw(canvas.min + Vec2(bitfont.lineHeight * scale) + char.pos.toIm() * scale, scale, color.u32)
+        char.glyph.draw(textOrigin + char.pos.toIm() * scale, scale, color.u32)
     }
 }

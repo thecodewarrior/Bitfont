@@ -28,7 +28,7 @@ class BitfontDocument(val bitfont: Bitfont) {
 
     companion object {
         fun blank(): BitfontDocument {
-            return BitfontDocument(Bitfont("Untitled", 16, 10, 4, 9, 6, 2))
+            return BitfontDocument(Bitfont("Untitled", 10, 4, 9, 6, 2))
         }
     }
 }

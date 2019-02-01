@@ -7,9 +7,7 @@ import games.thecodewarrior.bitfont.data.UnifontImporter
 import games.thecodewarrior.bitfont.typesetting.BitfontAtlas
 import games.thecodewarrior.bitfont.utils.ReferenceFonts
 import games.thecodewarrior.bitfont.utils.extensions.addAll
-import games.thecodewarrior.bitfont.utils.ifMac
 import games.thecodewarrior.bitfont.utils.keys
-import games.thecodewarrior.bitfont.utils.nameslist.NamesList
 import imgui.ImGui
 import imgui.InputTextFlag
 import imgui.WindowFlag
@@ -45,7 +43,8 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
     override fun main() = with(ImGui) {
         if(System.currentTimeMillis() - lastSave > 60_000) {
             val s = bitfont.writeJson().toJsonString(true)
-            File("font-$fName-autosave-${LocalDateTime.now().minute % 10}.json").writeText(s)
+            File("autosaves").mkdirs()
+            File("autosaves/font-$fName-${LocalDateTime.now().minute % 10}.json").writeText(s)
             lastSave = System.currentTimeMillis()
         }
         withItemWidth(150f) {
@@ -56,12 +55,10 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                 bitfont.name = String(g.inputTextState.textW.sliceArray(0 until g.inputTextState.textW.indexOf('\u0000')))
         }
         withItemWidth(100f) {
-            inputInt("Line Height", bitfont::lineHeight)
-            sameLine(); showHelpMarker("The distance between the baselines of consecutive lines")
-            inputInt("Ascender", bitfont::ascender)
-            sameLine(); showHelpMarker("The height of ascenders (the top of d, l, etc.) above the baseline")
-            inputInt("Descender", bitfont::descender)
-            sameLine(); showHelpMarker("The height of descenders (the bottom of p, g, etc.) below the baseline")
+            inputInt("Ascent", bitfont::ascent)
+            sameLine(); showHelpMarker("The height of the \"top\" of the font above the baseline (added to the descent to get the line spacing)")
+            inputInt("Descent", bitfont::descent)
+            sameLine(); showHelpMarker("The depth of \"bottom\" of the font  below the baseline (added to the ascent to get the line spacing)")
 
             inputInt("Cap height", bitfont::capHeight)
             sameLine(); showHelpMarker("The height of capital letters (X, N, etc.) above the baseline, ignoring letters like A or O which may overshoot this line")
@@ -128,8 +125,9 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                     val formatter = DateTimeFormatter.ofPattern("uuuuMMdd.kkmmss")
                     val s = bitfont.writeJson().toJsonString(true)
                     File("fonts").mkdirs()
+                    File("autosaves").mkdirs()
                     File("fonts/$fName.json").writeText(s)
-                    File("font-$fName-${LocalDateTime.now().format(formatter)}.json").writeText(s)
+                    File("autosaves/font-$fName-backup-${LocalDateTime.now().format(formatter)}.json").writeText(s)
                     lastSave = System.currentTimeMillis()
                 }
                 menu("Open") {
@@ -150,7 +148,7 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                     }
                 }
                 if(menuItem("New")) {
-                    val bitfont = Bitfont("Untitled", 16, 10, 4, 9, 6, 2)
+                    val bitfont = Bitfont("Untitled", 10, 4, 9, 6, 2)
                     val newDocument = BitfontDocument(bitfont)
                     Main.documents.add(newDocument)
                 }

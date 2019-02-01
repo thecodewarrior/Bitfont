@@ -29,7 +29,7 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
         }
     var canvas = Rect()
     val textOrigin: Vec2
-        get() = canvas.min + bitfont.lineHeight * scale
+        get() = canvas.min + Vec2(5, 5)
     var canvasKeyFocused = false
 
     init {
@@ -67,7 +67,7 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
             Colors.inputTest.background.u32
         )
 
-        val cursor = canvas.min + Vec2(bitfont.lineHeight) * scale - Vec2(0.5)
+        val cursor = textOrigin - Vec2(0.5)
         drawList.addTriangleFilled(cursor, cursor + Vec2(-scale, -scale), cursor + Vec2(-scale, scale), Colors.inputTest.originIndicator.u32)
 
         if(canvasKeyFocused) keys {
@@ -94,8 +94,8 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
         }
         if(System.currentTimeMillis() % 1000 > 500) {
             drawList.addRectFilled(
-                textOrigin + (field.rendering.cursor - Vec2(1, bitfont.ascender))*scale,
-                textOrigin + (field.rendering.cursor + Vec2(0, bitfont.descender))*scale,
+                textOrigin + (field.rendering.cursor - Vec2(1, bitfont.ascent))*scale,
+                textOrigin + (field.rendering.cursor + Vec2(0, bitfont.descent))*scale,
                 Colors.inputTest.cursor.u32
             )
         }
