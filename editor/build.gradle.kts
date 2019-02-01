@@ -16,6 +16,7 @@ repositories {
 }
 
 dependencies {
+    "compile"(project(":core"))
     "compile"(kotlin("stdlib-jdk8", "1.3.0"))
     "compile"(kotlin("reflect", "1.3.0"))
     "compile"("it.unimi.dsi:fastutil:8.2.2")
