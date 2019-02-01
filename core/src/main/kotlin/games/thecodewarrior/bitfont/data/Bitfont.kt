@@ -1,8 +1,8 @@
-package games.thecodewarrior.bitfont.editor.data
+package games.thecodewarrior.bitfont.data
 
-import games.thecodewarrior.bitfont.editor.utils.clamp
-import games.thecodewarrior.bitfont.editor.utils.serialization.MsgPackable
-import games.thecodewarrior.bitfont.editor.utils.serialization.MsgUnpackable
+import games.thecodewarrior.bitfont.utils.clamp
+import games.thecodewarrior.bitfont.utils.serialization.MsgPackable
+import games.thecodewarrior.bitfont.utils.serialization.MsgUnpackable
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import org.msgpack.core.MessagePacker
 import org.msgpack.core.MessageUnpacker

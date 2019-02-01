@@ -1,11 +1,11 @@
 @file:Suppress("UnstableApiUsage")
 
-package games.thecodewarrior.bitfont.editor.typesetting
+package games.thecodewarrior.bitfont.typesetting
 
 import com.google.common.collect.RangeMap
 import com.google.common.collect.TreeRangeMap
-import games.thecodewarrior.bitfont.editor.data.Bitfont
-import games.thecodewarrior.bitfont.editor.utils.extensions.toGuava
+import games.thecodewarrior.bitfont.data.Bitfont
+import games.thecodewarrior.bitfont.utils.extensions.toGuava
 import java.awt.Color
 
 class AttributedString(val string: String) {

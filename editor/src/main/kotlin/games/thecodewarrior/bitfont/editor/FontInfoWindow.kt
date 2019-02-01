@@ -2,7 +2,7 @@ package games.thecodewarrior.bitfont.editor
 
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
-import games.thecodewarrior.bitfont.editor.data.Bitfont
+import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.editor.data.UnifontImporter
 import games.thecodewarrior.bitfont.editor.typesetting.BitfontAtlas
 import games.thecodewarrior.bitfont.editor.utils.ReferenceFonts

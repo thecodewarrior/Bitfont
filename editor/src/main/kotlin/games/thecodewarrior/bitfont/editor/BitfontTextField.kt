@@ -1,6 +1,6 @@
 package games.thecodewarrior.bitfont.editor
 
-import games.thecodewarrior.bitfont.editor.data.Bitfont
+import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.editor.typesetting.TextLayout
 import games.thecodewarrior.bitfont.editor.typesetting.Typesetter
 import games.thecodewarrior.bitfont.editor.typesetting.TypesettingOptions

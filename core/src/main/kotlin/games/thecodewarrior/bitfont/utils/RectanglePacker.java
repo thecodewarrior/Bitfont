@@ -23,7 +23,7 @@
 
 // source: https://github.com/7enov/rugl/blob/master/droid/DroidRUGL/src/com/ryanm/droid/rugl/util/RectanglePacker.java
 
-package games.thecodewarrior.bitfont.editor.utils;
+package games.thecodewarrior.bitfont.utils;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

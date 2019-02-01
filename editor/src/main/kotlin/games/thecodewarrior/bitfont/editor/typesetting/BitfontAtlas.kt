@@ -1,8 +1,8 @@
 package games.thecodewarrior.bitfont.editor.typesetting
 
-import games.thecodewarrior.bitfont.editor.data.Bitfont
+import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.editor.utils.Colors
-import games.thecodewarrior.bitfont.editor.utils.RectanglePacker
+import games.thecodewarrior.bitfont.utils.RectanglePacker
 import glm_.vec4.Vec4
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.awt.Color

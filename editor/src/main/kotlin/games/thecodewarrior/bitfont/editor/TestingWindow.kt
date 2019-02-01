@@ -1,10 +1,10 @@
 package games.thecodewarrior.bitfont.editor
 
 import games.thecodewarrior.bitfont.editor.IMWindow
-import games.thecodewarrior.bitfont.editor.data.Bitfont
-import games.thecodewarrior.bitfont.editor.typesetting.Attribute
-import games.thecodewarrior.bitfont.editor.typesetting.AttributedString
-import games.thecodewarrior.bitfont.editor.typesetting.TypesetString
+import games.thecodewarrior.bitfont.data.Bitfont
+import games.thecodewarrior.bitfont.typesetting.Attribute
+import games.thecodewarrior.bitfont.typesetting.AttributedString
+import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.editor.utils.Colors
 import games.thecodewarrior.bitfont.editor.utils.extensions.JColor
 import games.thecodewarrior.bitfont.editor.utils.extensions.draw

@@ -1,4 +1,4 @@
-package games.thecodewarrior.bitfont.editor.utils
+package games.thecodewarrior.bitfont.utils
 
 import kotlin.math.max
 import kotlin.math.min

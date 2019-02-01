@@ -2,7 +2,7 @@ package games.thecodewarrior.bitfont.editor.utils.extensions
 
 import glm_.vec2.Vec2i
 
-typealias BitVec2i = games.thecodewarrior.bitfont.editor.utils.Vec2i
+typealias BitVec2i = games.thecodewarrior.bitfont.utils.Vec2i
 fun BitVec2i.toIm(): Vec2i = Vec2i(this.x, this.y)
 fun Vec2i.toBit(): BitVec2i = BitVec2i(this.x, this.y)
 

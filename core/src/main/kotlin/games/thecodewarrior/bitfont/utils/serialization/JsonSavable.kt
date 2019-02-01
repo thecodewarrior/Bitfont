@@ -1,4 +1,4 @@
-package games.thecodewarrior.bitfont.editor.utils.serialization
+package games.thecodewarrior.bitfont.utils.serialization
 
 import org.msgpack.core.MessagePack
 import org.msgpack.core.MessagePacker

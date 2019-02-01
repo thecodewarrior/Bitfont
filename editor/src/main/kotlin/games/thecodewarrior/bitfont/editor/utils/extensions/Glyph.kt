@@ -1,6 +1,6 @@
 package games.thecodewarrior.bitfont.editor.utils.extensions
 
-import games.thecodewarrior.bitfont.editor.data.Glyph
+import games.thecodewarrior.bitfont.data.Glyph
 import glm_.vec2.Vec2
 import imgui.ImGui
 

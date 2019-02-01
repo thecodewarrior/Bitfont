@@ -1,6 +1,6 @@
 package games.thecodewarrior.bitfont.editor
 
-import games.thecodewarrior.bitfont.editor.data.Bitfont
+import games.thecodewarrior.bitfont.data.Bitfont
 import glm_.func.common.clamp
 
 class BitfontDocument(val bitfont: Bitfont) {

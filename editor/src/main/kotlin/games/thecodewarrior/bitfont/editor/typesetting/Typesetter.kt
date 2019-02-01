@@ -1,7 +1,7 @@
 package games.thecodewarrior.bitfont.editor.typesetting
 
-import games.thecodewarrior.bitfont.editor.data.Bitfont
-import games.thecodewarrior.bitfont.editor.data.Glyph
+import games.thecodewarrior.bitfont.data.Bitfont
+import games.thecodewarrior.bitfont.data.Glyph
 import glm_.vec2.Vec2i
 import kotlin.streams.asSequence
 

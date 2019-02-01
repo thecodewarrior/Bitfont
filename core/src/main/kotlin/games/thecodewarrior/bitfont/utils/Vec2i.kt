@@ -1,4 +1,4 @@
-package games.thecodewarrior.bitfont.editor.utils
+package games.thecodewarrior.bitfont.utils
 
 data class Vec2i(val x: Int, val y: Int) {
     operator fun plus(other: Vec2i): Vec2i {

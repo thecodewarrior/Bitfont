@@ -1,4 +1,4 @@
-package games.thecodewarrior.bitfont.editor.utils.extensions
+package games.thecodewarrior.bitfont.utils.extensions
 
 import com.google.common.collect.Range
 

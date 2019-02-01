@@ -1,4 +1,4 @@
-package games.thecodewarrior.bitfont.editor.utils.extensions
+package games.thecodewarrior.bitfont.utils.extensions
 
 import com.ibm.icu.text.BreakIterator
 import kotlin.concurrent.getOrSet

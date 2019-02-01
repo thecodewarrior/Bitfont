@@ -2,9 +2,9 @@ package games.thecodewarrior.bitfont.editor
 
 import com.ibm.icu.lang.UCharacter
 import games.thecodewarrior.bitfont.editor.IMWindow
-import games.thecodewarrior.bitfont.editor.data.Bitfont
-import games.thecodewarrior.bitfont.editor.data.BitGrid
-import games.thecodewarrior.bitfont.editor.data.Glyph
+import games.thecodewarrior.bitfont.data.Bitfont
+import games.thecodewarrior.bitfont.data.BitGrid
+import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.editor.utils.Colors
 import games.thecodewarrior.bitfont.editor.utils.HistoryTracker
 import games.thecodewarrior.bitfont.editor.utils.ReferenceFonts

@@ -1,7 +1,7 @@
 package games.thecodewarrior.bitfont.editor
 
 import games.thecodewarrior.bitfont.editor.IMWindow
-import games.thecodewarrior.bitfont.editor.data.Bitfont
+import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.editor.typesetting.TypesetCharacter
 import games.thecodewarrior.bitfont.editor.utils.Colors
 import games.thecodewarrior.bitfont.editor.utils.extensions.cString

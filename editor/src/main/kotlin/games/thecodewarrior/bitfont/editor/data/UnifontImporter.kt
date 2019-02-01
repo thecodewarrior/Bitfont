@@ -1,5 +1,8 @@
 package games.thecodewarrior.bitfont.editor.data
 
+import games.thecodewarrior.bitfont.data.BitGrid
+import games.thecodewarrior.bitfont.data.Bitfont
+import games.thecodewarrior.bitfont.data.Glyph
 import java.io.File
 
 object UnifontImporter {
