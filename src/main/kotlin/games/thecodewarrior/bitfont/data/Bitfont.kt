@@ -72,10 +72,10 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
             "xHeight" to xHeight,
             "spacing" to spacing,
             "glyphs" to obj(
-                *glyphs.filter {
+                *glyphs.int2ObjectEntrySet().filter {
                     !it.value.isEmpty()
-                }.map {
-                    "${it.key}" to it.value.writeJson()
+                }.sortedBy { it.intKey }.map {
+                    "${it.intKey}" to it.value.writeJson()
                 }.toTypedArray()
             )
         )
@@ -90,7 +90,10 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
             packInt(xHeight)
             packInt(spacing)
             packMapHeader(glyphs.size)
-            glyphs.forEach { point, glyph ->
+            glyphs.int2ObjectEntrySet()
+                .filter { !it.value.isEmpty() }
+                .sortedBy { it.intKey }
+                .forEach { (point, glyph) ->
                 packInt(point)
                 glyph.pack(packer)
             }
