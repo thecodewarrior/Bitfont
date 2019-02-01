@@ -1,8 +1,7 @@
 {
   "name": "MCBitfont",
-  "lineHeight": 16,
-  "ascender": 12,
-  "descender": 4,
+  "ascent": 12,
+  "descent": 4,
   "capHeight": 9,
   "xHeight": 6,
   "spacing": 2,
@@ -63,12 +62,12 @@
         "data": "1f22e2a0cd0e02"
       }
     },
-    "660": {
+    "263": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
         "size": [5, 10],
-        "data": "2e428808210400"
+        "data": "88001743880e00"
       }
     },
     "10422": {
@@ -87,12 +86,12 @@
         "data": "800103060c183060c0ffff03000000"
       }
     },
-    "263": {
+    "660": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
         "size": [5, 10],
-        "data": "88001743880e00"
+        "data": "2e428808210400"
       }
     },
     "10421": {
@@ -101,22 +100,6 @@
       "image": {
         "size": [4, 10],
         "data": "0180000980"
-      }
-    },
-    "529": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "49823642080100"
-      }
-    },
-    "265": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "44011743880e00"
       }
     },
     "395": {
@@ -133,6 +116,22 @@
       "image": {
         "size": [16, 16],
         "data": "00ff00ff00ff00ff00ff00ff00ff00ffffffffffffffffffffffffffffffffff"
+      }
+    },
+    "265": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "44011743880e00"
+      }
+    },
+    "529": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "49823642080100"
       }
     },
     "9629": {
@@ -287,20 +286,20 @@
         "data": "ff00ff00ff00ff00ff00ff00ff00ff0000ff00ff00ff00ff00ff00ff00ff00ff"
       }
     },
-    "392": {
-      "bearing": [0, -8],
-      "advance": null,
-      "image": {
-        "size": [6, 9],
-        "data": "30e44441103900"
-      }
-    },
     "9494": {
       "bearing": [7, -12],
       "advance": 16,
       "image": {
         "size": [10, 13],
         "data": "030c30c000030c30c000ff030000000000"
+      }
+    },
+    "392": {
+      "bearing": [0, -8],
+      "advance": null,
+      "image": {
+        "size": [6, 9],
+        "data": "30e44441103900"
       }
     },
     "9502": {
@@ -359,12 +358,12 @@
         "data": "0990000880"
       }
     },
-    "9504": {
-      "bearing": [7, -12],
-      "advance": 16,
+    "523": {
+      "bearing": [0, -10],
+      "advance": null,
       "image": {
-        "size": [10, 17],
-        "data": "030c30c000030c30c000ff0f30c000030c30c0000300"
+        "size": [5, 11],
+        "data": "2e024008218400"
       }
     },
     "655": {
@@ -375,12 +374,12 @@
         "data": "312a420800"
       }
     },
-    "523": {
-      "bearing": [0, -10],
-      "advance": null,
+    "9504": {
+      "bearing": [7, -12],
+      "advance": 16,
       "image": {
-        "size": [5, 11],
-        "data": "2e024008218400"
+        "size": [10, 17],
+        "data": "030c30c000030c30c000ff0f30c000030c30c0000300"
       }
     },
     "9636": {
@@ -391,20 +390,20 @@
         "data": "ff0fe0ff03f8ff00fe3f80ff0fe0ff01"
       }
     },
-    "525": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "490217638c0e00"
-      }
-    },
     "398": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
         "size": [5, 10],
         "data": "1f42e821841f00"
+      }
+    },
+    "525": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "490217638c0e00"
       }
     },
     "9634": {
@@ -455,12 +454,12 @@
         "data": "010204081020408000ff0100000000"
       }
     },
-    "9496": {
-      "bearing": [0, -12],
-      "advance": 16,
+    "10423": {
+      "bearing": [0, -8],
+      "advance": null,
       "image": {
-        "size": [9, 13],
-        "data": "000102040810204080ff0100000000"
+        "size": [4, 10],
+        "data": "0190000980"
       }
     },
     "657": {
@@ -487,20 +486,12 @@
         "data": "0190000880"
       }
     },
-    "10423": {
-      "bearing": [0, -8],
-      "advance": null,
+    "9496": {
+      "bearing": [0, -12],
+      "advance": 16,
       "image": {
-        "size": [4, 10],
-        "data": "0190000980"
-      }
-    },
-    "661": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "2e862008210400"
+        "size": [9, 13],
+        "data": "000102040810204080ff0100000000"
       }
     },
     "262": {
@@ -511,12 +502,20 @@
         "data": "880017430821440700"
       }
     },
-    "667": {
+    "661": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2e862008210400"
+      }
+    },
+    "10417": {
       "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [7, 9],
-        "data": "60902b12e8443c00"
+        "size": [4, 10],
+        "data": "0180000880"
       }
     },
     "665": {
@@ -527,12 +526,12 @@
         "data": "97977900"
       }
     },
-    "10417": {
+    "667": {
       "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [4, 10],
-        "data": "0180000880"
+        "size": [7, 9],
+        "data": "60902b12e8443c00"
       }
     },
     "10415": {
@@ -567,20 +566,20 @@
         "data": "2f8417638c0f00"
       }
     },
-    "403": {
-      "bearing": [0, -11],
-      "advance": null,
-      "image": {
-        "size": [6, 12],
-        "data": "30e44441904551e401"
-      }
-    },
     "10431": {
       "bearing": [0, -8],
       "advance": null,
       "image": {
         "size": [4, 10],
         "data": "0990000980"
+      }
+    },
+    "403": {
+      "bearing": [0, -11],
+      "advance": null,
+      "image": {
+        "size": [6, 12],
+        "data": "30e44441904551e401"
       }
     },
     "10297": {
@@ -615,14 +614,6 @@
         "data": "030c30c000030c30c000ffff3fc000030c30c0000300"
       }
     },
-    "9637": {
-      "bearing": [2, -10],
-      "advance": null,
-      "image": {
-        "size": [11, 11],
-        "data": "ffaf6a55ab5ad5aa56b5aa55adeaff01"
-      }
-    },
     "653": {
       "bearing": [0, -6],
       "advance": null,
@@ -631,12 +622,20 @@
         "data": "148a4a950c0200"
       }
     },
-    "273": {
-      "bearing": [0, -9],
+    "9637": {
+      "bearing": [2, -10],
       "advance": null,
       "image": {
-        "size": [6, 10],
-        "data": "100f795114451e00"
+        "size": [11, 11],
+        "data": "ffaf6a55ab5ad5aa56b5aa55adeaff01"
+      }
+    },
+    "650": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 7],
+        "data": "5bc5181d00"
       }
     },
     "274": {
@@ -647,12 +646,12 @@
         "data": "0efc10c20b217c00"
       }
     },
-    "650": {
-      "bearing": [0, -6],
+    "273": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [5, 7],
-        "data": "5bc5181d00"
+        "size": [6, 10],
+        "data": "100f795114451e00"
       }
     },
     "9508": {
@@ -791,12 +790,12 @@
         "data": "498218638c31460700"
       }
     },
-    "10418": {
-      "bearing": [0, -5],
+    "516": {
+      "bearing": [0, -12],
       "advance": null,
       "image": {
-        "size": [4, 7],
-        "data": "09800008"
+        "size": [5, 13],
+        "data": "49821f427821840f00"
       }
     },
     "540": {
@@ -823,14 +822,6 @@
         "data": "4e92240900"
       }
     },
-    "516": {
-      "bearing": [0, -12],
-      "advance": null,
-      "image": {
-        "size": [5, 13],
-        "data": "49821f427821840f00"
-      }
-    },
     "119": {
       "bearing": [0, -6],
       "advance": null,
@@ -845,6 +836,14 @@
       "image": {
         "size": [6, 12],
         "data": "30e44441100441e400"
+      }
+    },
+    "10418": {
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [4, 7],
+        "data": "09800008"
       }
     },
     "269": {
@@ -871,20 +870,20 @@
         "data": "97744907"
       }
     },
-    "646": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 12],
-        "data": "9810420821c41501"
-      }
-    },
     "277": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
         "size": [5, 10],
         "data": "d101177f880e00"
+      }
+    },
+    "646": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 12],
+        "data": "9810420821c41501"
       }
     },
     "10301": {
@@ -983,20 +982,20 @@
         "data": "1f22e2208c0e"
       }
     },
-    "662": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "841082208c0e00"
-      }
-    },
     "261": {
       "bearing": [0, -6],
       "advance": null,
       "image": {
         "size": [5, 9],
         "data": "0efa183d2218"
+      }
+    },
+    "662": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "841082208c0e00"
       }
     },
     "10": {
@@ -1095,20 +1094,20 @@
         "data": "2c222222222201"
       }
     },
-    "247": {
-      "bearing": [0, -6],
-      "advance": null,
-      "image": {
-        "size": [5, 7],
-        "data": "047c400000"
-      }
-    },
     "676": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
         "size": [10, 12],
         "data": "10400081ff11461449741e02082270"
+      }
+    },
+    "247": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 7],
+        "data": "047c400000"
       }
     },
     "116": {
@@ -1119,14 +1118,6 @@
         "data": "222f22c200"
       }
     },
-    "281": {
-      "bearing": [0, -6],
-      "advance": null,
-      "image": {
-        "size": [5, 9],
-        "data": "2efe101d2218"
-      }
-    },
     "280": {
       "bearing": [0, -9],
       "advance": null,
@@ -1135,12 +1126,20 @@
         "data": "3f84f042081f110c"
       }
     },
-    "644": {
-      "bearing": [0, -9],
+    "281": {
+      "bearing": [0, -6],
       "advance": null,
       "image": {
-        "size": [5, 13],
-        "data": "9810421c2184103200"
+        "size": [5, 9],
+        "data": "2efe101d2218"
+      }
+    },
+    "279": {
+      "bearing": [0, -8],
+      "advance": null,
+      "image": {
+        "size": [5, 9],
+        "data": "04b8f8437400"
       }
     },
     "642": {
@@ -1167,20 +1166,20 @@
         "data": "0110000190"
       }
     },
-    "279": {
-      "bearing": [0, -8],
+    "644": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [5, 9],
-        "data": "04b8f8437400"
+        "size": [5, 13],
+        "data": "9810421c2184103200"
       }
     },
-    "10440": {
-      "bearing": [0, -8],
+    "10272": {
+      "bearing": [3, -2],
       "advance": null,
       "image": {
-        "size": [4, 10],
-        "data": "0800000090"
+        "size": [1, 3],
+        "data": "01"
       }
     },
     "9517": {
@@ -1207,12 +1206,12 @@
         "data": "0990000100"
       }
     },
-    "10272": {
-      "bearing": [3, -2],
+    "8593": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [1, 3],
-        "data": "01"
+        "size": [5, 10],
+        "data": "c4554208210400"
       }
     },
     "645": {
@@ -1247,20 +1246,20 @@
         "data": "4000fd070404000000"
       }
     },
-    "8593": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "c4554208210400"
-      }
-    },
     "118": {
       "bearing": [0, -6],
       "advance": null,
       "image": {
         "size": [5, 7],
         "data": "3146a50800"
+      }
+    },
+    "10440": {
+      "bearing": [0, -8],
+      "advance": null,
+      "image": {
+        "size": [4, 10],
+        "data": "0800000090"
       }
     },
     "10441": {
@@ -1271,12 +1270,12 @@
         "data": "0900000090"
       }
     },
-    "376": {
-      "bearing": [0, -11],
+    "547": {
+      "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [5, 12],
-        "data": "0ac4189522841000"
+        "size": [5, 9],
+        "data": "314617637400"
       }
     },
     "9615": {
@@ -1285,22 +1284,6 @@
       "image": {
         "size": [2, 16],
         "data": "ffffffff"
-      }
-    },
-    "9614": {
-      "bearing": [0, -12],
-      "advance": 16,
-      "image": {
-        "size": [4, 16],
-        "data": "ffffffffffffffff"
-      }
-    },
-    "378": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [4, 10],
-        "data": "24f048120f"
       }
     },
     "546": {
@@ -1319,14 +1302,6 @@
         "data": "1f224484081f4204"
       }
     },
-    "545": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [9, 10],
-        "data": "102040f0102142a4a8ee8000"
-      }
-    },
     "377": {
       "bearing": [0, -12],
       "advance": null,
@@ -1335,12 +1310,36 @@
         "data": "88800f212222840f00"
       }
     },
-    "547": {
-      "bearing": [0, -8],
+    "545": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [5, 9],
-        "data": "314617637400"
+        "size": [9, 10],
+        "data": "102040f0102142a4a8ee8000"
+      }
+    },
+    "378": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [4, 10],
+        "data": "24f048120f"
+      }
+    },
+    "9614": {
+      "bearing": [0, -12],
+      "advance": 16,
+      "image": {
+        "size": [4, 16],
+        "data": "ffffffffffffffff"
+      }
+    },
+    "376": {
+      "bearing": [0, -11],
+      "advance": null,
+      "image": {
+        "size": [5, 12],
+        "data": "0ac4189522841000"
       }
     },
     "9613": {
@@ -1399,12 +1398,12 @@
         "data": "0980000100"
       }
     },
-    "9518": {
-      "bearing": [0, -4],
-      "advance": 16,
+    "408": {
+      "bearing": [0, -9],
+      "advance": null,
       "image": {
-        "size": [17, 9],
-        "data": "ffff01fe03040008001000200040008000000100"
+        "size": [6, 10],
+        "data": "7194144391441100"
       }
     },
     "384": {
@@ -1415,12 +1414,12 @@
         "data": "c22378a2288a1e00"
       }
     },
-    "9478": {
-      "bearing": [8, -10],
-      "advance": 16,
+    "515": {
+      "bearing": [0, -9],
+      "advance": null,
       "image": {
-        "size": [1, 13],
-        "data": "e71c"
+        "size": [5, 10],
+        "data": "2e02077d8c1e00"
       }
     },
     "10277": {
@@ -1431,28 +1430,28 @@
         "data": "0100000900"
       }
     },
+    "9518": {
+      "bearing": [0, -4],
+      "advance": 16,
+      "image": {
+        "size": [17, 9],
+        "data": "ffff01fe03040008001000200040008000000100"
+      }
+    },
+    "9478": {
+      "bearing": [8, -10],
+      "advance": 16,
+      "image": {
+        "size": [1, 13],
+        "data": "e71c"
+      }
+    },
     "10401": {
       "bearing": [0, -8],
       "advance": null,
       "image": {
         "size": [4, 10],
         "data": "0100000880"
-      }
-    },
-    "515": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "2e02077d8c1e00"
-      }
-    },
-    "408": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [6, 10],
-        "data": "7194144391441100"
       }
     },
     "8595": {
@@ -1559,12 +1558,12 @@
         "data": "0800000010"
       }
     },
-    "683": {
+    "410": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [5, 10],
-        "data": "21841f53191f00"
+        "size": [3, 10],
+        "data": "92744902"
       }
     },
     "513": {
@@ -1575,12 +1574,12 @@
         "data": "4902077d8c1e00"
       }
     },
-    "410": {
+    "683": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [3, 10],
-        "data": "92744902"
+        "size": [5, 10],
+        "data": "21841f53191f00"
       }
     },
     "9476": {
@@ -1615,12 +1614,12 @@
         "data": "04404444e425"
       }
     },
-    "248": {
-      "bearing": [0, -7],
+    "416": {
+      "bearing": [0, -10],
       "advance": null,
       "image": {
-        "size": [5, 8],
-        "data": "d0e55aa70b"
+        "size": [6, 11],
+        "data": "a01b45511445910300"
       }
     },
     "677": {
@@ -1647,20 +1646,20 @@
         "data": "ce62468c183162c4880e0100"
       }
     },
-    "416": {
-      "bearing": [0, -10],
-      "advance": null,
-      "image": {
-        "size": [6, 11],
-        "data": "a01b45511445910300"
-      }
-    },
     "10409": {
       "bearing": [0, -8],
       "advance": null,
       "image": {
         "size": [4, 10],
         "data": "0900000880"
+      }
+    },
+    "248": {
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "d0e55aa70b"
       }
     },
     "254": {
@@ -1679,14 +1678,6 @@
         "data": "ffffffffffffffff"
       }
     },
-    "668": {
-      "bearing": [0, -6],
-      "advance": null,
-      "image": {
-        "size": [5, 7],
-        "data": "31fe182300"
-      }
-    },
     "239": {
       "bearing": [0, -9],
       "advance": null,
@@ -1695,12 +1686,12 @@
         "data": "05244902"
       }
     },
-    "635": {
+    "668": {
       "bearing": [0, -6],
       "advance": null,
       "image": {
-        "size": [6, 10],
-        "data": "088220cc8220080c"
+        "size": [5, 7],
+        "data": "31fe182300"
       }
     },
     "256": {
@@ -1711,6 +1702,14 @@
         "data": "0eb818e38f314600"
       }
     },
+    "635": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [6, 10],
+        "data": "088220cc8220080c"
+      }
+    },
     "9606": {
       "bearing": [0, -8],
       "advance": 16,
@@ -1719,20 +1718,20 @@
         "data": "ffffffffffffffffffffffffffffffffffffffffffffffff"
       }
     },
-    "685": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "3f4600c08f1100"
-      }
-    },
     "684": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
         "size": [7, 10],
         "data": "41958a0208aa541400"
+      }
+    },
+    "685": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "3f4600c08f1100"
       }
     },
     "271": {
@@ -1751,12 +1750,12 @@
         "data": "2a20491200"
       }
     },
-    "652": {
-      "bearing": [0, -6],
+    "9638": {
+      "bearing": [2, -10],
       "advance": null,
       "image": {
-        "size": [5, 7],
-        "data": "8428152300"
+        "size": [11, 11],
+        "data": "ffafeaffabfaffaafebfaaffafeaff01"
       }
     },
     "9639": {
@@ -1767,44 +1766,12 @@
         "data": "ff1f71111319d111173191111df1ff01"
       }
     },
-    "9638": {
-      "bearing": [2, -10],
-      "advance": null,
-      "image": {
-        "size": [11, 11],
-        "data": "ffafeaffabfaffaafebfaaffafeaff01"
-      }
-    },
-    "538": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 12],
-        "data": "9f10420821041001"
-      }
-    },
-    "651": {
+    "652": {
       "bearing": [0, -6],
       "advance": null,
       "image": {
         "size": [5, 7],
-        "data": "29c6181d00"
-      }
-    },
-    "272": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [6, 10],
-        "data": "9e288aa7288a1e00"
-      }
-    },
-    "10432": {
-      "bearing": [0, 1],
-      "advance": null,
-      "image": {
-        "size": [4, 1],
-        "data": "09"
+        "data": "8428152300"
       }
     },
     "369": {
@@ -1815,52 +1782,44 @@
         "data": "328118638c1e00"
       }
     },
+    "272": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [6, 10],
+        "data": "9e288aa7288a1e00"
+      }
+    },
+    "651": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 7],
+        "data": "29c6181d00"
+      }
+    },
+    "10432": {
+      "bearing": [0, 1],
+      "advance": null,
+      "image": {
+        "size": [4, 1],
+        "data": "09"
+      }
+    },
+    "538": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 12],
+        "data": "9f10420821041001"
+      }
+    },
     "9525": {
       "bearing": [0, -12],
       "advance": 16,
       "image": {
         "size": [17, 13],
         "data": "0001000200040008001000200040008000ffffff0300000000000000"
-      }
-    },
-    "555": {
-      "bearing": [0, -10],
-      "advance": null,
-      "image": {
-        "size": [5, 11],
-        "data": "0e28e0628cd101"
-      }
-    },
-    "109": {
-      "bearing": [0, -6],
-      "advance": null,
-      "image": {
-        "size": [7, 7],
-        "data": "b76432994c0200"
-      }
-    },
-    "554": {
-      "bearing": [0, -12],
-      "advance": null,
-      "image": {
-        "size": [5, 13],
-        "data": "0e28e0628c31460700"
-      }
-    },
-    "385": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [7, 10],
-        "data": "be6291c82312893c00"
-      }
-    },
-    "9607": {
-      "bearing": [0, -10],
-      "advance": 16,
-      "image": {
-        "size": [16, 14],
-        "data": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
       }
     },
     "10279": {
@@ -1871,6 +1830,46 @@
         "data": "0110000900"
       }
     },
+    "109": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [7, 7],
+        "data": "b76432994c0200"
+      }
+    },
+    "555": {
+      "bearing": [0, -10],
+      "advance": null,
+      "image": {
+        "size": [5, 11],
+        "data": "0e28e0628cd101"
+      }
+    },
+    "9607": {
+      "bearing": [0, -10],
+      "advance": 16,
+      "image": {
+        "size": [16, 14],
+        "data": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    },
+    "385": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [7, 10],
+        "data": "be6291c82312893c00"
+      }
+    },
+    "554": {
+      "bearing": [0, -12],
+      "advance": null,
+      "image": {
+        "size": [5, 13],
+        "data": "0e28e0628c31460700"
+      }
+    },
     "287": {
       "bearing": [0, -9],
       "advance": null,
@@ -1879,12 +1878,20 @@
         "data": "d1011f638c1ec2e800"
       }
     },
-    "636": {
-      "bearing": [0, -6],
+    "368": {
+      "bearing": [0, -12],
       "advance": null,
       "image": {
-        "size": [4, 10],
-        "data": "3d11111111"
+        "size": [5, 13],
+        "data": "328118638c31460700"
+      }
+    },
+    "10295": {
+      "bearing": [0, -8],
+      "advance": null,
+      "image": {
+        "size": [4, 9],
+        "data": "0190000900"
       }
     },
     "539": {
@@ -1903,20 +1910,12 @@
         "data": "ffffffffffffffff"
       }
     },
-    "10295": {
-      "bearing": [0, -8],
+    "636": {
+      "bearing": [0, -6],
       "advance": null,
       "image": {
-        "size": [4, 9],
-        "data": "0190000900"
-      }
-    },
-    "368": {
-      "bearing": [0, -12],
-      "advance": null,
-      "image": {
-        "size": [5, 13],
-        "data": "328118638c31460700"
+        "size": [4, 10],
+        "data": "3d11111111"
       }
     },
     "9526": {
@@ -2015,12 +2014,12 @@
         "data": "091000"
       }
     },
-    "401": {
-      "bearing": [0, -9],
+    "10303": {
+      "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [7, 13],
-        "data": "7c0281c02310080402813000"
+        "size": [4, 9],
+        "data": "0990000900"
       }
     },
     "10392": {
@@ -2031,12 +2030,12 @@
         "data": "0902"
       }
     },
-    "10303": {
-      "bearing": [0, -8],
+    "401": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [4, 9],
-        "data": "0990000900"
+        "size": [7, 13],
+        "data": "7c0281c02310080402813000"
       }
     },
     "10270": {
@@ -2045,6 +2044,14 @@
       "image": {
         "size": [4, 9],
         "data": "0890000100"
+      }
+    },
+    "10311": {
+      "bearing": [0, -8],
+      "advance": null,
+      "image": {
+        "size": [1, 10],
+        "data": "4902"
       }
     },
     "5777": {
@@ -2061,14 +2068,6 @@
       "image": {
         "size": [6, 10],
         "data": "9e288aa7288a1e00"
-      }
-    },
-    "10311": {
-      "bearing": [0, -8],
-      "advance": null,
-      "image": {
-        "size": [1, 10],
-        "data": "4902"
       }
     },
     "522": {
@@ -2119,20 +2118,20 @@
         "data": "010204081020408000ff03040810204080000100"
       }
     },
-    "514": {
-      "bearing": [0, -12],
-      "advance": null,
-      "image": {
-        "size": [5, 13],
-        "data": "2e021763fc31c60800"
-      }
-    },
     "10400": {
       "bearing": [3, -2],
       "advance": null,
       "image": {
         "size": [1, 4],
         "data": "09"
+      }
+    },
+    "514": {
+      "bearing": [0, -12],
+      "advance": null,
+      "image": {
+        "size": [5, 13],
+        "data": "2e021763fc31c60800"
       }
     },
     "5785": {
@@ -2175,12 +2174,12 @@
         "data": "0f884004221fc1084524128f0700"
       }
     },
-    "417": {
-      "bearing": [0, -7],
+    "10408": {
+      "bearing": [3, -8],
       "advance": null,
       "image": {
-        "size": [6, 8],
-        "data": "a01b4551e400"
+        "size": [1, 10],
+        "data": "4102"
       }
     },
     "255": {
@@ -2191,12 +2190,12 @@
         "data": "0ac41863f4104607"
       }
     },
-    "10408": {
-      "bearing": [3, -8],
+    "417": {
+      "bearing": [0, -7],
       "advance": null,
       "image": {
-        "size": [1, 10],
-        "data": "4102"
+        "size": [6, 8],
+        "data": "a01b4551e400"
       }
     },
     "99": {
@@ -2239,20 +2238,20 @@
         "data": "8a800f1183303a00"
       }
     },
-    "9596": {
-      "bearing": [0, -4],
-      "advance": 16,
-      "image": {
-        "size": [17, 5],
-        "data": "ffff01fe03000000000000"
-      }
-    },
-    "10256": {
-      "bearing": [3, -5],
+    "560": {
+      "bearing": [0, -12],
       "advance": null,
       "image": {
-        "size": [1, 6],
-        "data": "01"
+        "size": [5, 13],
+        "data": "0e10e0628c31460700"
+      }
+    },
+    "562": {
+      "bearing": [0, -11],
+      "advance": null,
+      "image": {
+        "size": [5, 12],
+        "data": "0ec4189522841000"
       }
     },
     "232": {
@@ -2271,12 +2270,12 @@
         "data": "d18118638c31460700"
       }
     },
-    "562": {
-      "bearing": [0, -11],
+    "10256": {
+      "bearing": [3, -5],
       "advance": null,
       "image": {
-        "size": [5, 12],
-        "data": "0ec4189522841000"
+        "size": [1, 6],
+        "data": "01"
       }
     },
     "9598": {
@@ -2287,12 +2286,12 @@
         "data": "ffffff0300000000000000"
       }
     },
-    "560": {
-      "bearing": [0, -12],
-      "advance": null,
+    "9596": {
+      "bearing": [0, -4],
+      "advance": 16,
       "image": {
-        "size": [5, 13],
-        "data": "0e10e0628c31460700"
+        "size": [17, 5],
+        "data": "ffff01fe03000000000000"
       }
     },
     "10258": {
@@ -2319,12 +2318,12 @@
         "data": "aa5295aa54f57f00000000000000"
       }
     },
-    "10390": {
-      "bearing": [0, -5],
-      "advance": null,
+    "5772": {
+      "bearing": [0, -9],
+      "advance": 7,
       "image": {
-        "size": [4, 7],
-        "data": "09100008"
+        "size": [7, 10],
+        "data": "281485f2a750140a00"
       }
     },
     "693": {
@@ -2359,12 +2358,12 @@
         "data": "88c80b0000"
       }
     },
-    "5772": {
-      "bearing": [0, -9],
-      "advance": 7,
+    "10390": {
+      "bearing": [0, -5],
+      "advance": null,
       "image": {
-        "size": [7, 10],
-        "data": "281485f2a750140a00"
+        "size": [4, 7],
+        "data": "09100008"
       }
     },
     "35": {
@@ -2375,12 +2374,12 @@
         "data": "92f44b92f44b1200"
       }
     },
-    "10457": {
-      "bearing": [0, -8],
-      "advance": null,
+    "9599": {
+      "bearing": [7, -12],
+      "advance": 16,
       "image": {
-        "size": [4, 10],
-        "data": "0980000090"
+        "size": [2, 17],
+        "data": "ffffabaa02"
       }
     },
     "563": {
@@ -2391,12 +2390,12 @@
         "data": "0ec41863f4104607"
       }
     },
-    "9599": {
-      "bearing": [7, -12],
-      "advance": 16,
+    "10457": {
+      "bearing": [0, -8],
+      "advance": null,
       "image": {
-        "size": [2, 17],
-        "data": "ffffabaa02"
+        "size": [4, 10],
+        "data": "0980000090"
       }
     },
     "558": {
@@ -2415,12 +2414,12 @@
         "data": "d10147082184100700"
       }
     },
-    "9528": {
-      "bearing": [0, -12],
-      "advance": 16,
+    "10454": {
+      "bearing": [0, -5],
+      "advance": null,
       "image": {
-        "size": [17, 13],
-        "data": "800100030006000c00180030006000c000ffff010000000000000000"
+        "size": [4, 7],
+        "data": "09100009"
       }
     },
     "296": {
@@ -2439,12 +2438,12 @@
         "data": "0880000090"
       }
     },
-    "9530": {
-      "bearing": [0, -12],
-      "advance": 16,
+    "295": {
+      "bearing": [0, -9],
+      "advance": null,
       "image": {
-        "size": [17, 13],
-        "data": "800100030006000c00180030006000c000ffff01ff03000000000000"
+        "size": [6, 10],
+        "data": "c22378a2288a2200"
       }
     },
     "298": {
@@ -2479,12 +2478,12 @@
         "data": "3c2291482412088401"
       }
     },
-    "295": {
-      "bearing": [0, -9],
+    "629": {
+      "bearing": [0, -7],
       "advance": null,
       "image": {
-        "size": [6, 10],
-        "data": "c22378a2288a2200"
+        "size": [5, 8],
+        "data": "2ec61fa303"
       }
     },
     "9532": {
@@ -2495,20 +2494,20 @@
         "data": "0001000200040008001000200040008000ffff010200040008001000200040008000000100"
       }
     },
-    "629": {
-      "bearing": [0, -7],
-      "advance": null,
+    "9530": {
+      "bearing": [0, -12],
+      "advance": 16,
       "image": {
-        "size": [5, 8],
-        "data": "2ec61fa303"
+        "size": [17, 13],
+        "data": "800100030006000c00180030006000c000ffff01ff03000000000000"
       }
     },
-    "10454": {
-      "bearing": [0, -5],
-      "advance": null,
+    "9528": {
+      "bearing": [0, -12],
+      "advance": 16,
       "image": {
-        "size": [4, 7],
-        "data": "09100009"
+        "size": [17, 13],
+        "data": "800100030006000c00180030006000c000ffff010000000000000000"
       }
     },
     "10452": {
@@ -2527,20 +2526,12 @@
         "data": "0980000080"
       }
     },
-    "499": {
-      "bearing": [0, -9],
-      "advance": null,
+    "9535": {
+      "bearing": [0, -12],
+      "advance": 16,
       "image": {
-        "size": [10, 10],
-        "data": "10400081f71146144914de0300"
-      }
-    },
-    "5776": {
-      "bearing": [0, -6],
-      "advance": 4,
-      "image": {
-        "size": [4, 7],
-        "data": "f6060000"
+        "size": [17, 17],
+        "data": "0001000200040008001000200040008000ffffffff03040008001000200040008000000100"
       }
     },
     "161": {
@@ -2551,12 +2542,20 @@
         "data": "fd03"
       }
     },
-    "9535": {
-      "bearing": [0, -12],
-      "advance": 16,
+    "5776": {
+      "bearing": [0, -6],
+      "advance": 4,
       "image": {
-        "size": [17, 17],
-        "data": "0001000200040008001000200040008000ffffffff03040008001000200040008000000100"
+        "size": [4, 7],
+        "data": "f6060000"
+      }
+    },
+    "499": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [10, 10],
+        "data": "10400081f71146144914de0300"
       }
     },
     "622": {
@@ -2623,12 +2622,12 @@
         "data": "09aa0a"
       }
     },
-    "359": {
-      "bearing": [0, -8],
+    "695": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [4, 9],
-        "data": "222f2fc200"
+        "size": [5, 10],
+        "data": "b1560500000000"
       }
     },
     "5774": {
@@ -2639,20 +2638,12 @@
         "data": "a8421555a8f27faa504515aa0000"
       }
     },
-    "695": {
-      "bearing": [0, -9],
+    "359": {
+      "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [5, 10],
-        "data": "b1560500000000"
-      }
-    },
-    "104": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "218417638c1100"
+        "size": [4, 9],
+        "data": "222f2fc200"
       }
     },
     "357": {
@@ -2661,6 +2652,14 @@
       "image": {
         "size": [5, 10],
         "data": "508a2784100c00"
+      }
+    },
+    "104": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "218417638c1100"
       }
     },
     "10263": {
@@ -2759,20 +2758,12 @@
         "data": "08000001"
       }
     },
-    "371": {
-      "bearing": [0, -6],
+    "10265": {
+      "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [5, 9],
-        "data": "31c6183d2218"
-      }
-    },
-    "9523": {
-      "bearing": [0, -4],
-      "advance": 16,
-      "image": {
-        "size": [17, 9],
-        "data": "ffffffff0306000c00180030006000c000800100"
+        "size": [4, 9],
+        "data": "0980000000"
       }
     },
     "503": {
@@ -2783,20 +2774,20 @@
         "data": "6dc618632a23841000"
       }
     },
+    "9523": {
+      "bearing": [0, -4],
+      "advance": 16,
+      "image": {
+        "size": [17, 9],
+        "data": "ffffffff0306000c00180030006000c000800100"
+      }
+    },
     "10326": {
       "bearing": [0, -5],
       "advance": null,
       "image": {
         "size": [4, 7],
         "data": "09100001"
-      }
-    },
-    "9589": {
-      "bearing": [8, -12],
-      "advance": 16,
-      "image": {
-        "size": [1, 13],
-        "data": "ff01"
       }
     },
     "10397": {
@@ -2807,12 +2798,20 @@
         "data": "0980000180"
       }
     },
-    "10265": {
-      "bearing": [0, -8],
+    "9589": {
+      "bearing": [8, -12],
+      "advance": 16,
+      "image": {
+        "size": [1, 13],
+        "data": "ff01"
+      }
+    },
+    "371": {
+      "bearing": [0, -6],
       "advance": null,
       "image": {
-        "size": [4, 9],
-        "data": "0980000000"
+        "size": [5, 9],
+        "data": "31c6183d2218"
       }
     },
     "569": {
@@ -2831,14 +2830,6 @@
         "data": "800100030006000c00180030006000c000ffffff0300040008001000200040008000000100"
       }
     },
-    "289": {
-      "bearing": [0, -8],
-      "advance": null,
-      "image": {
-        "size": [5, 12],
-        "data": "04f81863f4104607"
-      }
-    },
     "10249": {
       "bearing": [0, -8],
       "advance": null,
@@ -2847,12 +2838,12 @@
         "data": "0900000000"
       }
     },
-    "10381": {
+    "289": {
       "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [4, 10],
-        "data": "0900000180"
+        "size": [5, 12],
+        "data": "04f81863f4104607"
       }
     },
     "10447": {
@@ -2861,6 +2852,14 @@
       "image": {
         "size": [4, 10],
         "data": "0910000190"
+      }
+    },
+    "10381": {
+      "bearing": [0, -8],
+      "advance": null,
+      "image": {
+        "size": [4, 10],
+        "data": "0900000180"
       }
     },
     "553": {
@@ -2903,20 +2902,20 @@
         "data": "0990000190"
       }
     },
-    "5779": {
-      "bearing": [0, -6],
-      "advance": 13,
-      "image": {
-        "size": [13, 7],
-        "data": "b6edffdb3600000000000000"
-      }
-    },
     "108": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
         "size": [1, 10],
         "data": "ff01"
+      }
+    },
+    "5779": {
+      "bearing": [0, -6],
+      "advance": 13,
+      "image": {
+        "size": [13, 7],
+        "data": "b6edffdb3600000000000000"
       }
     },
     "487": {
@@ -2935,20 +2934,12 @@
         "data": "222f22c28406"
       }
     },
-    "8597": {
-      "bearing": [0, -9],
+    "286": {
+      "bearing": [0, -12],
       "advance": null,
       "image": {
-        "size": [5, 10],
-        "data": "c4554248750400"
-      }
-    },
-    "633": {
-      "bearing": [0, -6],
-      "advance": null,
-      "image": {
-        "size": [4, 7],
-        "data": "8888bc00"
+        "size": [5, 13],
+        "data": "d1011743e831460f00"
       }
     },
     "8284": {
@@ -2959,12 +2950,12 @@
         "data": "957c520100"
       }
     },
-    "225": {
-      "bearing": [0, -9],
+    "633": {
+      "bearing": [0, -6],
       "advance": null,
       "image": {
-        "size": [5, 10],
-        "data": "8800077d8c1e00"
+        "size": [4, 7],
+        "data": "8888bc00"
       }
     },
     "9608": {
@@ -2975,12 +2966,20 @@
         "data": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
       }
     },
-    "286": {
-      "bearing": [0, -12],
+    "225": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [5, 13],
-        "data": "d1011743e831460f00"
+        "size": [5, 10],
+        "data": "8800077d8c1e00"
+      }
+    },
+    "8597": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "c4554248750400"
       }
     },
     "617": {
@@ -2991,12 +2990,12 @@
         "data": "491203"
       }
     },
-    "302": {
-      "bearing": [0, -9],
+    "638": {
+      "bearing": [0, -6],
       "advance": null,
       "image": {
-        "size": [3, 12],
-        "data": "972449570c"
+        "size": [3, 7],
+        "data": "4e9200"
       }
     },
     "220": {
@@ -3007,12 +3006,12 @@
         "data": "0ac418638c313a00"
       }
     },
-    "638": {
-      "bearing": [0, -6],
+    "302": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [3, 7],
-        "data": "4e9200"
+        "size": [3, 12],
+        "data": "972449570c"
       }
     },
     "38": {
@@ -3095,20 +3094,20 @@
         "data": "2e86e0208c8e2003"
       }
     },
-    "5783": {
-      "bearing": [0, -5],
-      "advance": 6,
-      "image": {
-        "size": [6, 6],
-        "data": "bfa0491e00"
-      }
-    },
     "95": {
       "bearing": [0, 1],
       "advance": null,
       "image": {
         "size": [6, 1],
         "data": "3f"
+      }
+    },
+    "5783": {
+      "bearing": [0, -5],
+      "advance": 6,
+      "image": {
+        "size": [6, 6],
+        "data": "bfa0491e00"
       }
     },
     "9519": {
@@ -3239,20 +3238,20 @@
         "data": "ffffffff03"
       }
     },
-    "10317": {
-      "bearing": [0, -8],
-      "advance": null,
-      "image": {
-        "size": [4, 10],
-        "data": "0900000110"
-      }
-    },
     "492": {
       "bearing": [0, -11],
       "advance": null,
       "image": {
         "size": [5, 14],
         "data": "0eb818638c313a2218"
+      }
+    },
+    "10317": {
+      "bearing": [0, -8],
+      "advance": null,
+      "image": {
+        "size": [4, 10],
+        "data": "0900000110"
       }
     },
     "241": {
@@ -3335,22 +3334,6 @@
         "data": "2e42e842880e00"
       }
     },
-    "10438": {
-      "bearing": [0, -5],
-      "advance": null,
-      "image": {
-        "size": [4, 7],
-        "data": "01100009"
-      }
-    },
-    "10372": {
-      "bearing": [0, -2],
-      "advance": null,
-      "image": {
-        "size": [4, 4],
-        "data": "0180"
-      }
-    },
     "478": {
       "bearing": [0, -12],
       "advance": null,
@@ -3365,6 +3348,22 @@
       "image": {
         "size": [9, 10],
         "data": "1123468c183162c4c86e0100"
+      }
+    },
+    "10372": {
+      "bearing": [0, -2],
+      "advance": null,
+      "image": {
+        "size": [4, 4],
+        "data": "0180"
+      }
+    },
+    "10438": {
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [4, 7],
+        "data": "01100009"
       }
     },
     "5788": {
@@ -3391,12 +3390,12 @@
         "data": "aeaa02"
       }
     },
-    "9580": {
+    "512": {
       "bearing": [0, -12],
-      "advance": 16,
+      "advance": null,
       "image": {
-        "size": [17, 17],
-        "data": "80020005000a00140028005000a0807fff0000fefd030a00140028005000a0004001800200"
+        "size": [5, 13],
+        "data": "49021763fc31c60800"
       }
     },
     "8592": {
@@ -3415,12 +3414,12 @@
         "data": "0910"
       }
     },
-    "512": {
+    "9580": {
       "bearing": [0, -12],
-      "advance": null,
+      "advance": 16,
       "image": {
-        "size": [5, 13],
-        "data": "49021763fc31c60800"
+        "size": [17, 17],
+        "data": "80020005000a00140028005000a0807fff0000fefd030a00140028005000a0004001800200"
       }
     },
     "10274": {
@@ -3439,20 +3438,20 @@
         "data": "2e1a161d00"
       }
     },
-    "444": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "5f0807218c0e00"
-      }
-    },
     "9514": {
       "bearing": [0, -12],
       "advance": 16,
       "image": {
         "size": [9, 17],
         "data": "000102040810204080ffff03060c183060c08001"
+      }
+    },
+    "444": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "5f0807218c0e00"
       }
     },
     "10470": {
@@ -3607,20 +3606,20 @@
         "data": "048f24f100"
       }
     },
-    "544": {
-      "bearing": [0, -6],
-      "advance": null,
-      "image": {
-        "size": [5, 9],
-        "data": "2fc618238410"
-      }
-    },
     "211": {
       "bearing": [0, -12],
       "advance": null,
       "image": {
         "size": [5, 13],
         "data": "880017638c31460700"
+      }
+    },
+    "544": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 9],
+        "data": "2fc618238410"
       }
     },
     "9585": {
@@ -3767,20 +3766,20 @@
         "data": "333300000000000000"
       }
     },
-    "9587": {
-      "bearing": [0, -12],
-      "advance": 16,
-      "image": {
-        "size": [17, 17],
-        "data": "01000500110041000101010401100140010001000500110041000101010401100140010001"
-      }
-    },
     "414": {
       "bearing": [0, -6],
       "advance": null,
       "image": {
         "size": [5, 10],
         "data": "2fc61823841002"
+      }
+    },
+    "9587": {
+      "bearing": [0, -12],
+      "advance": 16,
+      "image": {
+        "size": [17, 17],
+        "data": "01000500110041000101010401100140010001000500110041000101010401100140010001"
       }
     },
     "517": {
@@ -3815,12 +3814,12 @@
         "data": "a338000000"
       }
     },
-    "10413": {
-      "bearing": [0, -8],
+    "8227": {
+      "bearing": [0, -6],
       "advance": null,
       "image": {
-        "size": [4, 10],
-        "data": "0900000980"
+        "size": [4, 7],
+        "data": "f3030000"
       }
     },
     "339": {
@@ -3839,12 +3838,12 @@
         "data": "6089e4239148241c088401"
       }
     },
-    "8227": {
-      "bearing": [0, -6],
+    "10413": {
+      "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [4, 7],
-        "data": "f3030000"
+        "size": [4, 10],
+        "data": "0900000980"
       }
     },
     "90": {
@@ -3927,12 +3926,12 @@
         "data": "0910000010"
       }
     },
-    "8599": {
-      "bearing": [0, -8],
-      "advance": null,
+    "9473": {
+      "bearing": [0, -4],
+      "advance": 16,
       "image": {
-        "size": [7, 9],
-        "data": "7830144910040000"
+        "size": [17, 5],
+        "data": "ffffffff03000000000000"
       }
     },
     "519": {
@@ -3951,12 +3950,12 @@
         "data": "8f461441f41146144914cf0300"
       }
     },
-    "9473": {
-      "bearing": [0, -4],
-      "advance": 16,
+    "8599": {
+      "bearing": [0, -8],
+      "advance": null,
       "image": {
-        "size": [17, 5],
-        "data": "ffffffff03000000000000"
+        "size": [7, 9],
+        "data": "7830144910040000"
       }
     },
     "535": {
@@ -4031,12 +4030,12 @@
         "data": "2449921c"
       }
     },
-    "10461": {
+    "10267": {
       "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [4, 10],
-        "data": "0980000190"
+        "size": [4, 9],
+        "data": "0990000000"
       }
     },
     "9521": {
@@ -4047,14 +4046,6 @@
         "data": "ffffff030006000c00180030006000c000800100"
       }
     },
-    "10267": {
-      "bearing": [0, -8],
-      "advance": null,
-      "image": {
-        "size": [4, 9],
-        "data": "0990000000"
-      }
-    },
     "307": {
       "bearing": [0, -9],
       "advance": null,
@@ -4063,12 +4054,12 @@
         "data": "09909999898806"
       }
     },
-    "56": {
-      "bearing": [0, -9],
+    "10461": {
+      "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [5, 10],
-        "data": "2ec6e8628c0e00"
+        "size": [4, 10],
+        "data": "0980000190"
       }
     },
     "122": {
@@ -4079,6 +4070,14 @@
         "data": "1f32133e00"
       }
     },
+    "56": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2ec6e8628c0e00"
+      }
+    },
     "373": {
       "bearing": [0, -9],
       "advance": null,
@@ -4087,12 +4086,12 @@
         "data": "080a20184caa541400"
       }
     },
-    "10445": {
-      "bearing": [0, -8],
-      "advance": null,
+    "9537": {
+      "bearing": [0, -12],
+      "advance": 16,
       "image": {
-        "size": [4, 10],
-        "data": "0900000190"
+        "size": [17, 17],
+        "data": "0001000200040008001000200040008000ffff01030006000c00180030006000c000800100"
       }
     },
     "389": {
@@ -4111,12 +4110,12 @@
         "data": "ff5795aa54a52a0000"
       }
     },
-    "9537": {
-      "bearing": [0, -12],
-      "advance": 16,
+    "10445": {
+      "bearing": [0, -8],
+      "advance": null,
       "image": {
-        "size": [17, 17],
-        "data": "0001000200040008001000200040008000ffff01030006000c00180030006000c000800100"
+        "size": [4, 10],
+        "data": "0900000190"
       }
     },
     "10379": {
@@ -4151,20 +4150,20 @@
         "data": "0e2810638c31460700"
       }
     },
-    "9619": {
-      "bearing": [0, -12],
-      "advance": 16,
-      "image": {
-        "size": [16, 16],
-        "data": "5555aaaa5555aaaa5555aaaa5555aaaa5555aaaa5555aaaa5555aaaa5555aaaa"
-      }
-    },
     "551": {
       "bearing": [0, -8],
       "advance": null,
       "image": {
         "size": [5, 9],
         "data": "0438e863f400"
+      }
+    },
+    "9619": {
+      "bearing": [0, -12],
+      "advance": 16,
+      "image": {
+        "size": [16, 16],
+        "data": "5555aaaa5555aaaa5555aaaa5555aaaa5555aaaa5555aaaa5555aaaa5555aaaa"
       }
     },
     "10283": {
@@ -4351,20 +4350,20 @@
         "data": "440117437010460700"
       }
     },
-    "9562": {
-      "bearing": [7, -12],
-      "advance": 16,
-      "image": {
-        "size": [10, 13],
-        "data": "051450400105145040ff01fc0f00000000"
-      }
-    },
     "5781": {
       "bearing": [0, -9],
       "advance": 5,
       "image": {
         "size": [5, 10],
         "data": "4a11f209510a00"
+      }
+    },
+    "9562": {
+      "bearing": [7, -12],
+      "advance": 16,
+      "image": {
+        "size": [10, 13],
+        "data": "051450400105145040ff01fc0f00000000"
       }
     },
     "599": {
@@ -4703,6 +4702,14 @@
         "data": "08800001"
       }
     },
+    "598": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [7, 13],
+        "data": "1008c4138944221e08040206"
+      }
+    },
     "10484": {
       "bearing": [0, -5],
       "advance": null,
@@ -4717,14 +4724,6 @@
       "image": {
         "size": [10, 13],
         "data": "05145040010514504001ff030000000000"
-      }
-    },
-    "598": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [7, 13],
-        "data": "1008c4138944221e08040206"
       }
     },
     "325": {
@@ -4807,12 +4806,12 @@
         "data": "0890000890"
       }
     },
-    "10486": {
-      "bearing": [0, -5],
-      "advance": null,
+    "9563": {
+      "bearing": [0, -12],
+      "advance": 16,
       "image": {
-        "size": [4, 7],
-        "data": "09900009"
+        "size": [9, 13],
+        "data": "00010204081020c0ff00ff03000000"
       }
     },
     "592": {
@@ -4839,12 +4838,12 @@
         "data": "09800009"
       }
     },
-    "9563": {
-      "bearing": [0, -12],
-      "advance": 16,
+    "10486": {
+      "bearing": [0, -5],
+      "advance": null,
       "image": {
-        "size": [9, 13],
-        "data": "00010204081020c0ff00ff03000000"
+        "size": [4, 7],
+        "data": "09900009"
       }
     },
     "323": {
@@ -5399,6 +5398,14 @@
         "data": "0100000910"
       }
     },
+    "79": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2ec618638c0e00"
+      }
+    },
     "9576": {
       "bearing": [0, -12],
       "advance": 16,
@@ -5421,14 +5428,6 @@
       "image": {
         "size": [5, 7],
         "data": "3ec6183d00"
-      }
-    },
-    "79": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "2ec618638c0e00"
       }
     },
     "9572": {
@@ -5551,22 +5550,6 @@
         "data": "1fffe3030000000000"
       }
     },
-    "10473": {
-      "bearing": [0, -8],
-      "advance": null,
-      "image": {
-        "size": [4, 10],
-        "data": "0900000890"
-      }
-    },
-    "10472": {
-      "bearing": [0, -8],
-      "advance": null,
-      "image": {
-        "size": [4, 10],
-        "data": "0800000890"
-      }
-    },
     "9548": {
       "bearing": [2, -4],
       "advance": 16,
@@ -5583,6 +5566,22 @@
         "data": "0e10e062fc31c60800"
       }
     },
+    "313": {
+      "bearing": [0, -12],
+      "advance": null,
+      "image": {
+        "size": [5, 13],
+        "data": "228010420821840f00"
+      }
+    },
+    "10473": {
+      "bearing": [0, -8],
+      "advance": null,
+      "image": {
+        "size": [4, 10],
+        "data": "0900000890"
+      }
+    },
     "312": {
       "bearing": [0, -6],
       "advance": null,
@@ -5591,20 +5590,20 @@
         "data": "3195932200"
       }
     },
+    "10472": {
+      "bearing": [0, -8],
+      "advance": null,
+      "image": {
+        "size": [4, 10],
+        "data": "0800000890"
+      }
+    },
     "610": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
         "size": [5, 10],
         "data": "2e8690638c1e00"
-      }
-    },
-    "313": {
-      "bearing": [0, -12],
-      "advance": null,
-      "image": {
-        "size": [5, 13],
-        "data": "228010420821840f00"
       }
     },
     "443": {
@@ -5713,18 +5712,10 @@
     },
     "78": {
       "bearing": [0, -9],
-      "advance": 9,
+      "advance": null,
       "image": {
         "size": [5, 10],
         "data": "71ce5a6bce1100"
-      }
-    },
-    "9543": {
-      "bearing": [0, -12],
-      "advance": 16,
-      "image": {
-        "size": [17, 17],
-        "data": "800100030006000c00180030006000c000ffffffff03040008001000200040008000000100"
       }
     },
     "54": {
@@ -5733,6 +5724,14 @@
       "image": {
         "size": [5, 10],
         "data": "2e86f0628c0e00"
+      }
+    },
+    "9543": {
+      "bearing": [0, -12],
+      "advance": 16,
+      "image": {
+        "size": [17, 17],
+        "data": "800100030006000c00180030006000c000ffffffff03040008001000200040008000000100"
       }
     },
     "10377": {
@@ -5831,6 +5830,30 @@
         "data": "0800000810"
       }
     },
+    "9551": {
+      "bearing": [7, -10],
+      "advance": 16,
+      "image": {
+        "size": [2, 13],
+        "data": "ff03ff03"
+      }
+    },
+    "440": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "3f08e242880e00"
+      }
+    },
+    "442": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "1f22062174c100"
+      }
+    },
     "481": {
       "bearing": [0, -10],
       "advance": null,
@@ -5845,30 +5868,6 @@
       "image": {
         "size": [9, 9],
         "data": "7c00b883e83f4244770000"
-      }
-    },
-    "9551": {
-      "bearing": [7, -10],
-      "advance": 16,
-      "image": {
-        "size": [2, 13],
-        "data": "ff03ff03"
-      }
-    },
-    "442": {
-      "bearing": [0, -6],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "1f22062174c100"
-      }
-    },
-    "440": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "3f08e242880e00"
       }
     },
     "10474": {
@@ -5911,14 +5910,6 @@
         "data": "21841042081f00"
       }
     },
-    "9583": {
-      "bearing": [0, -12],
-      "advance": 17,
-      "image": {
-        "size": [9, 13],
-        "data": "00010204040808080c070000000000"
-      }
-    },
     "345": {
       "bearing": [0, -9],
       "advance": null,
@@ -5927,28 +5918,12 @@
         "data": "4ad0131101"
       }
     },
-    "580": {
-      "bearing": [0, -9],
-      "advance": null,
+    "9583": {
+      "bearing": [0, -12],
+      "advance": 17,
       "image": {
-        "size": [7, 10],
-        "data": "22914824fa8b441c00"
-      }
-    },
-    "10334": {
-      "bearing": [0, -8],
-      "advance": null,
-      "image": {
-        "size": [4, 10],
-        "data": "0890000110"
-      }
-    },
-    "10245": {
-      "bearing": [0, -8],
-      "advance": null,
-      "image": {
-        "size": [1, 9],
-        "data": "4100"
+        "size": [9, 13],
+        "data": "00010204040808080c070000000000"
       }
     },
     "343": {
@@ -5959,12 +5934,12 @@
         "data": "3d11112001"
       }
     },
-    "9575": {
-      "bearing": [0, -12],
-      "advance": 16,
+    "10334": {
+      "bearing": [0, -8],
+      "advance": null,
       "image": {
-        "size": [17, 13],
-        "data": "000100020004000800100020004080ffff0000feff03000000000000"
+        "size": [4, 10],
+        "data": "0890000110"
       }
     },
     "9573": {
@@ -5975,12 +5950,12 @@
         "data": "ffff0105000a00140028005000a0004001800200"
       }
     },
-    "84": {
+    "580": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [5, 10],
-        "data": "9f104208210400"
+        "size": [7, 10],
+        "data": "22914824fa8b441c00"
       }
     },
     "8229": {
@@ -5989,6 +5964,30 @@
       "image": {
         "size": [4, 6],
         "data": "090000"
+      }
+    },
+    "84": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "9f104208210400"
+      }
+    },
+    "10245": {
+      "bearing": [0, -8],
+      "advance": null,
+      "image": {
+        "size": [1, 9],
+        "data": "4100"
+      }
+    },
+    "9575": {
+      "bearing": [0, -12],
+      "advance": 16,
+      "image": {
+        "size": [17, 13],
+        "data": "000100020004000800100020004080ffff0000feff03000000000000"
       }
     },
     "10247": {
@@ -6055,14 +6054,6 @@
         "data": "0890"
       }
     },
-    "9590": {
-      "bearing": [8, -4],
-      "advance": 16,
-      "image": {
-        "size": [9, 5],
-        "data": "ff0100000000"
-      }
-    },
     "619": {
       "bearing": [0, -9],
       "advance": null,
@@ -6077,6 +6068,14 @@
       "image": {
         "size": [5, 13],
         "data": "08b95cebaf754e2100"
+      }
+    },
+    "9590": {
+      "bearing": [8, -4],
+      "advance": 16,
+      "image": {
+        "size": [9, 5],
+        "data": "ff0100000000"
       }
     },
     "9557": {
@@ -6143,6 +6142,14 @@
         "data": "d804830100"
       }
     },
+    "10383": {
+      "bearing": [0, -8],
+      "advance": null,
+      "image": {
+        "size": [4, 10],
+        "data": "0910000180"
+      }
+    },
     "620": {
       "bearing": [0, -9],
       "advance": null,
@@ -6157,14 +6164,6 @@
       "image": {
         "size": [17, 17],
         "data": "0001000200040008001000200040008000ffffff030006000c00180030006000c000800100"
-      }
-    },
-    "10383": {
-      "bearing": [0, -8],
-      "advance": null,
-      "image": {
-        "size": [4, 10],
-        "data": "0910000180"
       }
     },
     "9542": {
@@ -6224,7 +6223,7 @@
       }
     },
     "44": {
-      "bearing": [0, -1],
+      "bearing": [-1, -1],
       "advance": null,
       "image": {
         "size": [2, 2],
@@ -6239,20 +6238,20 @@
         "data": "01"
       }
     },
-    "474": {
-      "bearing": [0, -11],
-      "advance": null,
-      "image": {
-        "size": [5, 12],
-        "data": "8a0005628c317a00"
-      }
-    },
     "433": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
         "size": [7, 10],
         "data": "f72a45140c06451c00"
+      }
+    },
+    "474": {
+      "bearing": [0, -11],
+      "advance": null,
+      "image": {
+        "size": [5, 12],
+        "data": "8a0005628c317a00"
       }
     },
     "10335": {
@@ -6279,20 +6278,20 @@
         "data": "0110000910"
       }
     },
-    "449": {
-      "bearing": [0, -10],
-      "advance": null,
-      "image": {
-        "size": [3, 11],
-        "data": "6ddbb62d00"
-      }
-    },
     "10376": {
       "bearing": [3, -8],
       "advance": null,
       "image": {
         "size": [1, 10],
         "data": "0102"
+      }
+    },
+    "449": {
+      "bearing": [0, -10],
+      "advance": null,
+      "image": {
+        "size": [3, 11],
+        "data": "6ddbb62d00"
       }
     },
     "490": {
@@ -6303,20 +6302,20 @@
         "data": "2ec618638c8e0806"
       }
     },
-    "53": {
-      "bearing": [0, -9],
-      "advance": 8,
-      "image": {
-        "size": [5, 10],
-        "data": "3f8407218c0e00"
-      }
-    },
     "10359": {
       "bearing": [0, -8],
       "advance": null,
       "image": {
         "size": [4, 10],
         "data": "0190000910"
+      }
+    },
+    "53": {
+      "bearing": [0, -9],
+      "advance": 8,
+      "image": {
+        "size": [5, 10],
+        "data": "3f8407218c0e00"
       }
     },
     "69": {
@@ -6375,12 +6374,12 @@
         "data": "0910000910"
       }
     },
-    "571": {
-      "bearing": [0, -11],
+    "336": {
+      "bearing": [0, -12],
       "advance": null,
       "image": {
         "size": [5, 13],
-        "data": "08b95c4a29653a2100"
+        "data": "320117638c31460700"
       }
     },
     "482": {
@@ -6407,12 +6406,12 @@
         "data": "1f1f"
       }
     },
-    "336": {
-      "bearing": [0, -12],
+    "571": {
+      "bearing": [0, -11],
       "advance": null,
       "image": {
         "size": [5, 13],
-        "data": "320117638c31460700"
+        "data": "08b95c4a29653a2100"
       }
     },
     "9558": {
@@ -6455,6 +6454,14 @@
         "data": "0180000890"
       }
     },
+    "344": {
+      "bearing": [0, -12],
+      "advance": null,
+      "image": {
+        "size": [5, 13],
+        "data": "8a8017637c31c60800"
+      }
+    },
     "579": {
       "bearing": [0, -9],
       "advance": null,
@@ -6469,14 +6476,6 @@
       "image": {
         "size": [5, 10],
         "data": "268417638c0f00"
-      }
-    },
-    "344": {
-      "bearing": [0, -12],
-      "advance": null,
-      "image": {
-        "size": [5, 13],
-        "data": "8a8017637c31c60800"
       }
     },
     "10254": {
@@ -6583,12 +6582,12 @@
         "data": "0190000110"
       }
     },
-    "363": {
+    "10323": {
       "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [5, 9],
-        "data": "0ec41863f400"
+        "size": [4, 10],
+        "data": "0190000010"
       }
     },
     "297": {
@@ -6607,20 +6606,20 @@
         "data": "aaaaffff03"
       }
     },
+    "363": {
+      "bearing": [0, -8],
+      "advance": null,
+      "image": {
+        "size": [5, 9],
+        "data": "0ec41863f400"
+      }
+    },
     "10257": {
       "bearing": [0, -8],
       "advance": null,
       "image": {
         "size": [4, 9],
         "data": "0180000000"
-      }
-    },
-    "10323": {
-      "bearing": [0, -8],
-      "advance": null,
-      "image": {
-        "size": [4, 10],
-        "data": "0190000010"
       }
     },
     "561": {
@@ -6631,20 +6630,20 @@
         "data": "0e10e0628cd101"
       }
     },
-    "495": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 11],
-        "data": "8a800f1183303a"
-      }
-    },
     "429": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
         "size": [4, 10],
         "data": "24f222220c"
+      }
+    },
+    "495": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 11],
+        "data": "8a800f1183303a"
       }
     },
     "100": {
@@ -6711,20 +6710,20 @@
         "data": "0180000180"
       }
     },
-    "231": {
-      "bearing": [0, -6],
-      "advance": null,
-      "image": {
-        "size": [5, 9],
-        "data": "2e86101d4106"
-      }
-    },
     "230": {
       "bearing": [0, -6],
       "advance": null,
       "image": {
         "size": [9, 7],
         "data": "ee20fa8f10d11d00"
+      }
+    },
+    "231": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 9],
+        "data": "2e86101d4106"
       }
     },
     "365": {
@@ -6807,12 +6806,12 @@
         "data": "6d010000"
       }
     },
-    "9531": {
-      "bearing": [0, -12],
-      "advance": 16,
+    "10455": {
+      "bearing": [0, -8],
+      "advance": null,
       "image": {
-        "size": [17, 13],
-        "data": "800100030006000c00180030006000c000ffffffff03000000000000"
+        "size": [4, 10],
+        "data": "0190000190"
       }
     },
     "36": {
@@ -6847,20 +6846,20 @@
         "data": "22d15fe41389442200"
       }
     },
-    "630": {
-      "bearing": [0, -7],
-      "advance": null,
-      "image": {
-        "size": [8, 8],
-        "data": "fe1111f11111fe00"
-      }
-    },
     "10451": {
       "bearing": [0, -8],
       "advance": null,
       "image": {
         "size": [4, 10],
         "data": "0190000090"
+      }
+    },
+    "9531": {
+      "bearing": [0, -12],
+      "advance": 16,
+      "image": {
+        "size": [17, 13],
+        "data": "800100030006000c00180030006000c000ffffffff03000000000000"
       }
     },
     "627": {
@@ -6871,12 +6870,12 @@
         "data": "8f4824128940201030"
       }
     },
-    "10455": {
-      "bearing": [0, -8],
+    "630": {
+      "bearing": [0, -7],
       "advance": null,
       "image": {
-        "size": [4, 10],
-        "data": "0190000190"
+        "size": [8, 8],
+        "data": "fe1111f11111fe00"
       }
     },
     "628": {
@@ -6959,14 +6958,6 @@
         "data": "0810000110"
       }
     },
-    "367": {
-      "bearing": [0, -10],
-      "advance": null,
-      "image": {
-        "size": [5, 11],
-        "data": "441110638cd103"
-      }
-    },
     "94": {
       "bearing": [0, -9],
       "advance": null,
@@ -6975,12 +6966,20 @@
         "data": "44a91801000000"
       }
     },
-    "228": {
-      "bearing": [0, -8],
+    "367": {
+      "bearing": [0, -10],
       "advance": null,
       "image": {
-        "size": [5, 9],
-        "data": "0a38e863f400"
+        "size": [5, 11],
+        "data": "441110638cd103"
+      }
+    },
+    "564": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [4, 10],
+        "data": "111111b526"
       }
     },
     "434": {
@@ -6999,12 +6998,12 @@
         "data": "8908000000"
       }
     },
-    "564": {
-      "bearing": [0, -9],
+    "228": {
+      "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [4, 10],
-        "data": "111111b526"
+        "size": [5, 9],
+        "data": "0a38e863f400"
       }
     },
     "226": {
@@ -7047,12 +7046,12 @@
         "data": "2a954af50700000000"
       }
     },
-    "566": {
-      "bearing": [0, -8],
-      "advance": null,
+    "9593": {
+      "bearing": [7, -12],
+      "advance": 16,
       "image": {
-        "size": [5, 9],
-        "data": "423c21946504"
+        "size": [2, 13],
+        "data": "ffff0300"
       }
     },
     "10391": {
@@ -7063,12 +7062,12 @@
         "data": "0190000180"
       }
     },
-    "9593": {
-      "bearing": [7, -12],
-      "advance": 16,
+    "566": {
+      "bearing": [0, -8],
+      "advance": null,
       "image": {
-        "size": [2, 13],
-        "data": "ffff0300"
+        "size": [5, 9],
+        "data": "423c21946504"
       }
     },
     "167": {
@@ -7399,12 +7398,12 @@
         "data": "888018a35284100200"
       }
     },
-    "9520": {
-      "bearing": [0, -4],
-      "advance": 16,
+    "10462": {
+      "bearing": [0, -8],
+      "advance": null,
       "image": {
-        "size": [17, 9],
-        "data": "ffff01030006000c00180030006000c000800100"
+        "size": [4, 10],
+        "data": "0890000190"
       }
     },
     "370": {
@@ -7415,12 +7414,12 @@
         "data": "31c618638c0e110c"
       }
     },
-    "10462": {
-      "bearing": [0, -8],
-      "advance": null,
+    "9520": {
+      "bearing": [0, -4],
+      "advance": 16,
       "image": {
-        "size": [4, 10],
-        "data": "0890000190"
+        "size": [17, 9],
+        "data": "ffff01030006000c00180030006000c000800100"
       }
     },
     "374": {
@@ -7503,12 +7502,12 @@
         "data": "0001000200040008001000200040008000ffffffff03000000000000"
       }
     },
-    "557": {
-      "bearing": [0, -11],
-      "advance": null,
+    "9536": {
+      "bearing": [0, -12],
+      "advance": 16,
       "image": {
-        "size": [5, 12],
-        "data": "1e50055c8c313a00"
+        "size": [17, 17],
+        "data": "800100030006000c00180030006000c000ffff010200040008001000200040008000000100"
       }
     },
     "8596": {
@@ -7527,12 +7526,12 @@
         "data": "44011f638c1ec2e800"
       }
     },
-    "9536": {
-      "bearing": [0, -12],
-      "advance": 16,
+    "557": {
+      "bearing": [0, -11],
+      "advance": null,
       "image": {
-        "size": [17, 17],
-        "data": "800100030006000c00180030006000c000ffff010200040008001000200040008000000100"
+        "size": [5, 12],
+        "data": "1e50055c8c313a00"
       }
     },
     "10252": {
@@ -7583,12 +7582,12 @@
         "data": "0880000100"
       }
     },
-    "5775": {
-      "bearing": [0, -9],
-      "advance": 13,
+    "10309": {
+      "bearing": [0, -8],
+      "advance": null,
       "image": {
-        "size": [13, 10],
-        "data": "a80a555115aaf2ffa90a555115aa020000"
+        "size": [1, 10],
+        "data": "4102"
       }
     },
     "484": {
@@ -7599,12 +7598,12 @@
         "data": "4e14045994471e00"
       }
     },
-    "10309": {
-      "bearing": [0, -8],
-      "advance": null,
+    "5775": {
+      "bearing": [0, -9],
+      "advance": 13,
       "image": {
-        "size": [1, 10],
-        "data": "4102"
+        "size": [13, 10],
+        "data": "a80a555115aaf2ffa90a555115aa020000"
       }
     },
     "358": {
@@ -7663,12 +7662,12 @@
         "data": "0204fc93284698407e0000"
       }
     },
-    "9479": {
-      "bearing": [7, -10],
-      "advance": 16,
+    "10337": {
+      "bearing": [0, -8],
+      "advance": null,
       "image": {
-        "size": [2, 13],
-        "data": "3ffcf003"
+        "size": [4, 10],
+        "data": "0100000810"
       }
     },
     "180": {
@@ -7687,12 +7686,12 @@
         "data": "9669000000"
       }
     },
-    "10337": {
-      "bearing": [0, -8],
-      "advance": null,
+    "9479": {
+      "bearing": [7, -10],
+      "advance": 16,
       "image": {
-        "size": [4, 10],
-        "data": "0100000810"
+        "size": [2, 13],
+        "data": "3ffcf003"
       }
     },
     "431": {
@@ -7703,12 +7702,12 @@
         "data": "d1682c128944220e00"
       }
     },
-    "504": {
-      "bearing": [0, -12],
-      "advance": null,
+    "5787": {
+      "bearing": [0, -9],
+      "advance": 3,
       "image": {
-        "size": [5, 13],
-        "data": "82803867ad35e70800"
+        "size": [3, 10],
+        "data": "89442901"
       }
     },
     "682": {
@@ -7719,20 +7718,12 @@
         "data": "81402057ccc4823f00"
       }
     },
-    "5787": {
-      "bearing": [0, -9],
-      "advance": 3,
-      "image": {
-        "size": [3, 10],
-        "data": "89442901"
-      }
-    },
-    "164": {
-      "bearing": [0, -7],
+    "504": {
+      "bearing": [0, -12],
       "advance": null,
       "image": {
-        "size": [5, 8],
-        "data": "d129170100"
+        "size": [5, 13],
+        "data": "82803867ad35e70800"
       }
     },
     "500": {
@@ -7741,6 +7732,14 @@
       "image": {
         "size": [5, 13],
         "data": "88001743c831460f00"
+      }
+    },
+    "164": {
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "d129170100"
       }
     },
     "160": {
@@ -7791,12 +7790,12 @@
         "data": "01"
       }
     },
-    "445": {
-      "bearing": [0, -6],
+    "10405": {
+      "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [5, 7],
-        "data": "5f38181d00"
+        "size": [4, 10],
+        "data": "0100000980"
       }
     },
     "511": {
@@ -7807,12 +7806,12 @@
         "data": "8840976b9d2e00"
       }
     },
-    "10405": {
-      "bearing": [0, -8],
+    "445": {
+      "bearing": [0, -6],
       "advance": null,
       "image": {
-        "size": [4, 10],
-        "data": "0100000980"
+        "size": [5, 7],
+        "data": "5f38181d00"
       }
     },
     "9515": {
@@ -7831,12 +7830,12 @@
         "data": "2e428888081f00"
       }
     },
-    "347": {
-      "bearing": [0, -9],
+    "10273": {
+      "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [5, 10],
-        "data": "8800170d8b0e00"
+        "size": [4, 9],
+        "data": "0100000800"
       }
     },
     "10339": {
@@ -7847,20 +7846,12 @@
         "data": "0110000810"
       }
     },
-    "10273": {
-      "bearing": [0, -8],
+    "347": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [4, 9],
-        "data": "0100000800"
-      }
-    },
-    "479": {
-      "bearing": [0, -10],
-      "advance": null,
-      "image": {
-        "size": [5, 11],
-        "data": "0e28e0a08fd103"
+        "size": [5, 10],
+        "data": "8800170d8b0e00"
       }
     },
     "9547": {
@@ -7871,12 +7862,12 @@
         "data": "800100030006000c00180030006000c000ffffffff0306000c00180030006000c000800100"
       }
     },
-    "477": {
-      "bearing": [0, -6],
+    "479": {
+      "bearing": [0, -10],
       "advance": null,
       "image": {
-        "size": [5, 7],
-        "data": "2ec21f1d00"
+        "size": [5, 11],
+        "data": "0e28e0a08fd103"
       }
     },
     "10437": {
@@ -7885,6 +7876,14 @@
       "image": {
         "size": [4, 10],
         "data": "0100000190"
+      }
+    },
+    "477": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 7],
+        "data": "2ec21f1d00"
       }
     },
     "315": {
@@ -7951,12 +7950,12 @@
         "data": "0100000990"
       }
     },
-    "114": {
-      "bearing": [0, -6],
+    "48": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [4, 7],
-        "data": "3d111100"
+        "size": [5, 10],
+        "data": "2ec618638c0e00"
       }
     },
     "217": {
@@ -7967,12 +7966,12 @@
         "data": "828018638c31460700"
       }
     },
-    "48": {
-      "bearing": [0, -9],
+    "114": {
+      "bearing": [0, -6],
       "advance": null,
       "image": {
-        "size": [5, 10],
-        "data": "2ec618638c0e00"
+        "size": [4, 7],
+        "data": "3d111100"
       }
     },
     "10275": {
@@ -8015,20 +8014,20 @@
         "data": "2e4226216403"
       }
     },
-    "381": {
-      "bearing": [0, -12],
-      "advance": null,
-      "image": {
-        "size": [5, 13],
-        "data": "8a800f212222840f00"
-      }
-    },
     "9611": {
       "bearing": [0, -12],
       "advance": 16,
       "image": {
         "size": [10, 16],
         "data": "ffffffffffffffffffffffffffffffffffffffff"
+      }
+    },
+    "381": {
+      "bearing": [0, -12],
+      "advance": null,
+      "image": {
+        "size": [5, 13],
+        "data": "8a800f212222840f00"
       }
     },
     "212": {
@@ -8063,14 +8062,6 @@
         "data": "23499224"
       }
     },
-    "276": {
-      "bearing": [0, -12],
-      "advance": null,
-      "image": {
-        "size": [5, 13],
-        "data": "d1811f427821840f00"
-      }
-    },
     "614": {
       "bearing": [0, -9],
       "advance": null,
@@ -8079,12 +8070,12 @@
         "data": "268417638c1100"
       }
     },
-    "9577": {
+    "276": {
       "bearing": [0, -12],
-      "advance": 16,
+      "advance": null,
       "image": {
-        "size": [17, 13],
-        "data": "80020005000a00140028005000a0807fff0000feff03000000000000"
+        "size": [5, 13],
+        "data": "d1811f427821840f00"
       }
     },
     "9618": {
@@ -8093,6 +8084,14 @@
       "image": {
         "size": [16, 16],
         "data": "4992922424494992922424494992922424494992922424494992922424494992"
+      }
+    },
+    "9577": {
+      "bearing": [0, -12],
+      "advance": 16,
+      "image": {
+        "size": [17, 13],
+        "data": "80020005000a00140028005000a0807fff0000feff03000000000000"
       }
     },
     "112": {
@@ -8239,20 +8238,20 @@
         "data": "2e428888230400"
       }
     },
-    "584": {
-      "bearing": [-1, -9],
+    "10241": {
+      "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [4, 12],
-        "data": "4444e4444434"
+        "size": [1, 9],
+        "data": "0100"
       }
     },
-    "82": {
+    "80": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
         "size": [5, 10],
-        "data": "2fc6f8628c1100"
+        "data": "2fc6f842080100"
       }
     },
     "582": {
@@ -8279,20 +8278,20 @@
         "data": "be6291c82310080400"
       }
     },
-    "80": {
+    "82": {
       "bearing": [0, -9],
       "advance": null,
       "image": {
         "size": [5, 10],
-        "data": "2fc6f842080100"
+        "data": "2fc6f8628c1100"
       }
     },
-    "10241": {
-      "bearing": [0, -8],
+    "584": {
+      "bearing": [-1, -9],
       "advance": null,
       "image": {
-        "size": [1, 9],
-        "data": "0100"
+        "size": [4, 12],
+        "data": "4444e4444434"
       }
     },
     "470": {
@@ -8319,12 +8318,12 @@
         "data": "0880000910"
       }
     },
-    "9490": {
-      "bearing": [0, -4],
-      "advance": 16,
+    "10298": {
+      "bearing": [0, -8],
+      "advance": null,
       "image": {
-        "size": [9, 9],
-        "data": "ff0103060c183060c08001"
+        "size": [4, 9],
+        "data": "0890000800"
       }
     },
     "5780": {
@@ -8335,20 +8334,20 @@
         "data": "b66dffffb66d0000000000000000"
       }
     },
-    "10298": {
+    "9490": {
+      "bearing": [0, -4],
+      "advance": 16,
+      "image": {
+        "size": [9, 9],
+        "data": "ff0103060c183060c08001"
+      }
+    },
+    "10380": {
       "bearing": [0, -8],
       "advance": null,
       "image": {
-        "size": [4, 9],
-        "data": "0890000800"
-      }
-    },
-    "454": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [10, 10],
-        "data": "90420481f71146144914de0300"
+        "size": [4, 10],
+        "data": "0800000180"
       }
     },
     "404": {
@@ -8359,12 +8358,12 @@
         "data": "c1605024125128080a0501"
       }
     },
-    "10380": {
-      "bearing": [0, -8],
+    "454": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [4, 10],
-        "data": "0800000180"
+        "size": [10, 10],
+        "data": "90420481f71146144914de0300"
       }
     },
     "5764": {
@@ -8423,20 +8422,20 @@
         "data": "2ec6e8218c0e00"
       }
     },
-    "9506": {
-      "bearing": [7, -12],
-      "advance": 16,
-      "image": {
-        "size": [10, 17],
-        "data": "02082080000208208000ffff3fc000030c30c0000300"
-      }
-    },
     "486": {
       "bearing": [0, -12],
       "advance": null,
       "image": {
         "size": [5, 13],
         "data": "8a001743c831460f00"
+      }
+    },
+    "9506": {
+      "bearing": [7, -12],
+      "advance": 16,
+      "image": {
+        "size": [10, 17],
+        "data": "02082080000208208000ffff3fc000030c30c0000300"
       }
     },
     "356": {
@@ -8551,12 +8550,12 @@
         "data": "105000081830604449aa5411210200"
       }
     },
-    "210": {
-      "bearing": [0, -12],
+    "41": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [5, 13],
-        "data": "820017638c31460700"
+        "size": [2, 12],
+        "data": "a9aa6a"
       }
     },
     "10282": {
@@ -8567,12 +8566,12 @@
         "data": "0810000800"
       }
     },
-    "41": {
-      "bearing": [0, -9],
+    "210": {
+      "bearing": [0, -12],
       "advance": null,
       "image": {
-        "size": [2, 12],
-        "data": "a9aa6a"
+        "size": [5, 13],
+        "data": "820017638c31460700"
       }
     },
     "292": {
@@ -8607,12 +8606,12 @@
         "data": "2ec658638c0e00"
       }
     },
-    "8801": {
-      "bearing": [0, -7],
+    "219": {
+      "bearing": [0, -12],
       "advance": null,
       "image": {
-        "size": [5, 8],
-        "data": "1f7cf00100"
+        "size": [5, 13],
+        "data": "448118638c31460700"
       }
     },
     "194": {
@@ -8623,12 +8622,12 @@
         "data": "44011763fc31c60800"
       }
     },
-    "219": {
-      "bearing": [0, -12],
+    "8801": {
+      "bearing": [0, -7],
       "advance": null,
       "image": {
-        "size": [5, 13],
-        "data": "448118638c31460700"
+        "size": [5, 8],
+        "data": "1f7cf00100"
       }
     },
     "623": {
@@ -8823,12 +8822,12 @@
         "data": "111111919f9191916100"
       }
     },
-    "9570": {
-      "bearing": [0, -12],
-      "advance": 16,
+    "10412": {
+      "bearing": [0, -8],
+      "advance": null,
       "image": {
-        "size": [10, 17],
-        "data": "80020a28a080020a28a0ff020a28a080020a28a08002"
+        "size": [4, 10],
+        "data": "0800000980"
       }
     },
     "9481": {
@@ -8855,14 +8854,6 @@
         "data": "c4c51042740400"
       }
     },
-    "251": {
-      "bearing": [0, -9],
-      "advance": null,
-      "image": {
-        "size": [5, 10],
-        "data": "448118638c1e00"
-      }
-    },
     "8226": {
       "bearing": [0, -6],
       "advance": null,
@@ -8871,12 +8862,20 @@
         "data": "ba0000"
       }
     },
-    "10412": {
-      "bearing": [0, -8],
+    "251": {
+      "bearing": [0, -9],
       "advance": null,
       "image": {
-        "size": [4, 10],
-        "data": "0800000980"
+        "size": [5, 10],
+        "data": "448118638c1e00"
+      }
+    },
+    "9570": {
+      "bearing": [0, -12],
+      "advance": 16,
+      "image": {
+        "size": [10, 17],
+        "data": "80020a28a080020a28a0ff020a28a080020a28a08002"
       }
     },
     "591": {

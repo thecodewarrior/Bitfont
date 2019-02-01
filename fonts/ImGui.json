@@ -1,0 +1,555 @@
+{
+  "name": "ImGui",
+  "lineHeight": 16,
+  "ascent": 10,
+  "descent": 4,
+  "capHeight": 9,
+  "xHeight": 7,
+  "spacing": 2,
+  "glyphs": {
+    "66": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2fc6f8628c0f00"
+      }
+    },
+    "58": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [1, 7],
+        "data": "21"
+      }
+    },
+    "91": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [3, 12],
+        "data": "4f9224490e"
+      }
+    },
+    "50": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2e424444081f00"
+      }
+    },
+    "49": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [2, 10],
+        "data": "aeaa02"
+      }
+    },
+    "75": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "31a6324a8a1100"
+      }
+    },
+    "74": {
+      "bearing": [-1, -9],
+      "advance": null,
+      "image": {
+        "size": [3, 12],
+        "data": "2449922407"
+      }
+    },
+    "67": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2e861042880e00"
+      }
+    },
+    "100": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "10421f638c1e00"
+      }
+    },
+    "98": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "218417638c0f00"
+      }
+    },
+    "65": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2ec6f8638c1100"
+      }
+    },
+    "57": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2ec6e8218c0e00"
+      }
+    },
+    "59": {
+      "bearing": [-1, -6],
+      "advance": null,
+      "image": {
+        "size": [2, 7],
+        "data": "0218"
+      }
+    },
+    "35": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "4a7da5d4570a00"
+      }
+    },
+    "60": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 7],
+        "data": "d804830100"
+      }
+    },
+    "39": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [1, 10],
+        "data": "0700"
+      }
+    },
+    "56": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2ec6e8628c0e00"
+      }
+    },
+    "47": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "10214484100100"
+      }
+    },
+    "51": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2e42c8208c0e00"
+      }
+    },
+    "48": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2ec618638c0e00"
+      }
+    },
+    "55": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "1f428410210400"
+      }
+    },
+    "52": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [6, 10],
+        "data": "18454952f4431000"
+      }
+    },
+    "34": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [3, 10],
+        "data": "6d010000"
+      }
+    },
+    "46": {
+      "bearing": [0, -1],
+      "advance": null,
+      "image": {
+        "size": [1, 2],
+        "data": "01"
+      }
+    },
+    "38": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [6, 10],
+        "data": "469224469a462e00"
+      }
+    },
+    "36": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "c4d5e268750400"
+      }
+    },
+    "45": {
+      "bearing": [0, -4],
+      "advance": null,
+      "image": {
+        "size": [5, 5],
+        "data": "1f000000"
+      }
+    },
+    "44": {
+      "bearing": [-1, -1],
+      "advance": null,
+      "image": {
+        "size": [2, 2],
+        "data": "06"
+      }
+    },
+    "40": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [3, 10],
+        "data": "54924404"
+      }
+    },
+    "41": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [3, 10],
+        "data": "11495201"
+      }
+    },
+    "42": {
+      "bearing": [0, -10],
+      "advance": null,
+      "image": {
+        "size": [5, 11],
+        "data": "a43aa222000000"
+      }
+    },
+    "43": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 7],
+        "data": "847c420000"
+      }
+    },
+    "70": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "3f84f042080100"
+      }
+    },
+    "78": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "71ce5a6bce1100"
+      }
+    },
+    "37": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [7, 10],
+        "data": "a24a45822051a92200"
+      }
+    },
+    "54": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2e86f0628c0e00"
+      }
+    },
+    "61": {
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "1f7c0000"
+      }
+    },
+    "53": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "3f8407218c0e00"
+      }
+    },
+    "95": {
+      "bearing": [0, 1],
+      "advance": 5,
+      "image": {
+        "size": [5, 1],
+        "data": "1f"
+      }
+    },
+    "94": {
+      "bearing": [0, -10],
+      "advance": null,
+      "image": {
+        "size": [5, 11],
+        "data": "44a91801000000"
+      }
+    },
+    "71": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2e8690638c1e00"
+      }
+    },
+    "69": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "3f84f042081f00"
+      }
+    },
+    "96": {
+      "bearing": [0, -10],
+      "advance": null,
+      "image": {
+        "size": [2, 11],
+        "data": "250000"
+      }
+    },
+    "63": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2e428808000400"
+      }
+    },
+    "62": {
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 7],
+        "data": "8341360000"
+      }
+    },
+    "64": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [7, 10],
+        "data": "be60b65aada6023e00"
+      }
+    },
+    "97": {
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "0ffa18b305"
+      }
+    },
+    "89": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "3146a508210400"
+      }
+    },
+    "68": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2fc618638c0f00"
+      }
+    },
+    "72": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "31c6f8638c1100"
+      }
+    },
+    "76": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "21841042081f00"
+      }
+    },
+    "92": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "41084110421000"
+      }
+    },
+    "93": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [3, 12],
+        "data": "274992240f"
+      }
+    },
+    "73": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [3, 10],
+        "data": "97244907"
+      }
+    },
+    "84": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "9f104208210400"
+      }
+    },
+    "79": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2ec618638c0e00"
+      }
+    },
+    "86": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [7, 10],
+        "data": "c16050241251280800"
+      }
+    },
+    "85": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "31c618638c0e00"
+      }
+    },
+    "90": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "1f224484081f00"
+      }
+    },
+    "77": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [7, 10],
+        "data": "c1f1b85a4d26834100"
+      }
+    },
+    "88": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "312a45948a1100"
+      }
+    },
+    "83": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2e86e0208c0e00"
+      }
+    },
+    "82": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2fc6f8628c1100"
+      }
+    },
+    "80": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2fc6f842080100"
+      }
+    },
+    "87": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [9, 10],
+        "data": "01030614244912152a280000"
+      }
+    },
+    "81": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [5, 10],
+        "data": "2ec61863cd0e02"
+      }
+    },
+    "99": {
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2e8610a203"
+      }
+    },
+    "33": {
+      "bearing": [0, -9],
+      "advance": null,
+      "image": {
+        "size": [1, 10],
+        "data": "3f01"
+      }
+    }
+  }
+}

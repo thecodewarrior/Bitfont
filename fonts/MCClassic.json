@@ -1,0 +1,2009 @@
+{
+  "name": "MCClassic",
+  "lineHeight": 9,
+  "ascent": 7,
+  "descent": 1,
+  "capHeight": 7,
+  "xHeight": 5,
+  "spacing": 1,
+  "glyphs": {
+    "66": {
+      "codepoint": 66,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2fbe18e303"
+      }
+    },
+    "9564": {
+      "codepoint": 9564,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [7, 8],
+        "data": "6c369bfd070000"
+      }
+    },
+    "67": {
+      "codepoint": 67,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2e8610a203"
+      }
+    },
+    "65": {
+      "codepoint": 65,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2efe186304"
+      }
+    },
+    "197": {
+      "codepoint": 197,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "04b8f86304"
+      }
+    },
+    "9632": {
+      "codepoint": 9632,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [4, 6],
+        "data": "ffff00"
+      }
+    },
+    "196": {
+      "codepoint": 196,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "d1c51f6304"
+      }
+    },
+    "201": {
+      "codepoint": 201,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "18fc70c207"
+      }
+    },
+    "199": {
+      "codepoint": 199,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2e86101d64"
+      }
+    },
+    "8776": {
+      "codepoint": 8776,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [7, 7],
+        "data": "ee1dc0bd030000"
+      }
+    },
+    "70": {
+      "codepoint": 70,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "3f9c104200"
+      }
+    },
+    "9561": {
+      "codepoint": 9561,
+      "bearing": [2, -7],
+      "advance": 8,
+      "image": {
+        "size": [6, 8],
+        "data": "dbb66d3f0000"
+      }
+    },
+    "9559": {
+      "codepoint": 9559,
+      "bearing": [0, -5],
+      "advance": 8,
+      "image": {
+        "size": [7, 6],
+        "data": "7ff09bcd6603"
+      }
+    },
+    "8709": {
+      "codepoint": 8709,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [8, 8],
+        "data": "60307edbdb7e0603"
+      }
+    },
+    "62": {
+      "codepoint": 62,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [4, 8],
+        "data": "21842401"
+      }
+    },
+    "64": {
+      "codepoint": 64,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [6, 8],
+        "data": "5ed8b67de001"
+      }
+    },
+    "402": {
+      "codepoint": 402,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "8812474811"
+      }
+    },
+    "9492": {
+      "codepoint": 9492,
+      "bearing": [3, -7],
+      "advance": 8,
+      "image": {
+        "size": [5, 8],
+        "data": "638cf10100"
+      }
+    },
+    "68": {
+      "codepoint": 68,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2fc618e303"
+      }
+    },
+    "9500": {
+      "codepoint": 9500,
+      "bearing": [3, -7],
+      "advance": 8,
+      "image": {
+        "size": [5, 8],
+        "data": "638cf1c718"
+      }
+    },
+    "9496": {
+      "codepoint": 9496,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [5, 8],
+        "data": "1863fc0100"
+      }
+    },
+    "9563": {
+      "codepoint": 9563,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [5, 8],
+        "data": "187ffc0100"
+      }
+    },
+    "72": {
+      "codepoint": 72,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "31fe186304"
+      }
+    },
+    "9565": {
+      "codepoint": 9565,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [7, 8],
+        "data": "6cf61bfc070000"
+      }
+    },
+    "9567": {
+      "codepoint": 9567,
+      "bearing": [2, -7],
+      "advance": 8,
+      "image": {
+        "size": [6, 8],
+        "data": "dbb66dfbb66d"
+      }
+    },
+    "920": {
+      "codepoint": 920,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [7, 8],
+        "data": "1cdbf83fb67100"
+      }
+    },
+    "9569": {
+      "codepoint": 9569,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [5, 8],
+        "data": "187ffc31c6"
+      }
+    },
+    "9571": {
+      "codepoint": 9571,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [7, 8],
+        "data": "6cf61bfc66b3d9"
+      }
+    },
+    "9556": {
+      "codepoint": 9556,
+      "bearing": [2, -6],
+      "advance": 8,
+      "image": {
+        "size": [6, 7],
+        "data": "ffb06fdbb601"
+      }
+    },
+    "58": {
+      "codepoint": 58,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [1, 7],
+        "data": "33"
+      }
+    },
+    "75": {
+      "codepoint": 75,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "319d146304"
+      }
+    },
+    "74": {
+      "codepoint": 74,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "104208a303"
+      }
+    },
+    "9555": {
+      "codepoint": 9555,
+      "bearing": [2, -4],
+      "advance": 8,
+      "image": {
+        "size": [6, 5],
+        "data": "ffb66d1b"
+      }
+    },
+    "59": {
+      "codepoint": 59,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [1, 7],
+        "data": "73"
+      }
+    },
+    "189": {
+      "codepoint": 189,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "3121225506"
+      }
+    },
+    "188": {
+      "codepoint": 188,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "3121a27504"
+      }
+    },
+    "9508": {
+      "codepoint": 9508,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [5, 8],
+        "data": "1863fc31c6"
+      }
+    },
+    "55": {
+      "codepoint": 55,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "3f42440801"
+      }
+    },
+    "209": {
+      "codepoint": 209,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "1fc4597304"
+      }
+    },
+    "123": {
+      "codepoint": 123,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [4, 8],
+        "data": "2c12220c"
+      }
+    },
+    "124": {
+      "codepoint": 124,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [1, 8],
+        "data": "77"
+      }
+    },
+    "9552": {
+      "codepoint": 9552,
+      "bearing": [0, -5],
+      "advance": 8,
+      "image": {
+        "size": [8, 6],
+        "data": "ff00ff000000"
+      }
+    },
+    "119": {
+      "codepoint": 119,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "31d6ea01"
+      }
+    },
+    "9560": {
+      "codepoint": 9560,
+      "bearing": [3, -7],
+      "advance": 8,
+      "image": {
+        "size": [5, 8],
+        "data": "63fcf10100"
+      }
+    },
+    "937": {
+      "codepoint": 937,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [7, 8],
+        "data": "1cdb786cb3dd01"
+      }
+    },
+    "71": {
+      "codepoint": 71,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "3ee418a303"
+      }
+    },
+    "63": {
+      "codepoint": 63,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2e42440001"
+      }
+    },
+    "79": {
+      "codepoint": 79,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2ec618a303"
+      }
+    },
+    "9576": {
+      "codepoint": 9576,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [8, 8],
+        "data": "6c6c6c6cff000000"
+      }
+    },
+    "9572": {
+      "codepoint": 9572,
+      "bearing": [0, -5],
+      "advance": 8,
+      "image": {
+        "size": [8, 6],
+        "data": "ff00ff181800"
+      }
+    },
+    "9568": {
+      "codepoint": 9568,
+      "bearing": [2, -7],
+      "advance": 8,
+      "image": {
+        "size": [6, 8],
+        "data": "dbb6edc3be6d"
+      }
+    },
+    "249": {
+      "codepoint": 249,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "03c418a307"
+      }
+    },
+    "214": {
+      "codepoint": 214,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "d1c518a303"
+      }
+    },
+    "247": {
+      "codepoint": 247,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [6, 8],
+        "data": "0c03fc00c300"
+      }
+    },
+    "116": {
+      "codepoint": 116,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [3, 8],
+        "data": "d22511"
+      }
+    },
+    "9516": {
+      "codepoint": 9516,
+      "bearing": [0, -3],
+      "advance": 8,
+      "image": {
+        "size": [8, 4],
+        "data": "ff181818"
+      }
+    },
+    "9616": {
+      "codepoint": 9616,
+      "bearing": [4, -7],
+      "advance": 8,
+      "image": {
+        "size": [4, 8],
+        "data": "ffffffff"
+      }
+    },
+    "216": {
+      "codepoint": 216,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2ee63aa303"
+      }
+    },
+    "117": {
+      "codepoint": 117,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "31c6e801"
+      }
+    },
+    "51": {
+      "codepoint": 51,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2e4206a303"
+      }
+    },
+    "118": {
+      "codepoint": 118,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "31464500"
+      }
+    },
+    "52": {
+      "codepoint": 52,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "98caf82104"
+      }
+    },
+    "46": {
+      "codepoint": 46,
+      "bearing": [0, -2],
+      "advance": null,
+      "image": {
+        "size": [1, 3],
+        "data": "03"
+      }
+    },
+    "215": {
+      "codepoint": 215,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [3, 6],
+        "data": "550100"
+      }
+    },
+    "78": {
+      "codepoint": 78,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "71d61c6304"
+      }
+    },
+    "54": {
+      "codepoint": 54,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "4c8417a303"
+      }
+    },
+    "8992": {
+      "codepoint": 8992,
+      "bearing": [3, -7],
+      "advance": 9,
+      "image": {
+        "size": [5, 8],
+        "data": "6eef31c618"
+      }
+    },
+    "110": {
+      "codepoint": 110,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "2fc61801"
+      }
+    },
+    "9484": {
+      "codepoint": 9484,
+      "bearing": [3, -3],
+      "advance": 8,
+      "image": {
+        "size": [5, 4],
+        "data": "7f8c01"
+      }
+    },
+    "183": {
+      "codepoint": 183,
+      "bearing": [0, -3],
+      "advance": null,
+      "image": {
+        "size": [2, 4],
+        "data": "03"
+      }
+    },
+    "76": {
+      "codepoint": 76,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "218410c207"
+      }
+    },
+    "934": {
+      "codepoint": 934,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [6, 8],
+        "data": "3fe3cdb3c7fc"
+      }
+    },
+    "86": {
+      "codepoint": 86,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "31c6a81401"
+      }
+    },
+    "84": {
+      "codepoint": 84,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "9f10420801"
+      }
+    },
+    "246": {
+      "codepoint": 246,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "0ab818a303"
+      }
+    },
+    "9573": {
+      "codepoint": 9573,
+      "bearing": [0, -3],
+      "advance": 8,
+      "image": {
+        "size": [8, 4],
+        "data": "ff6c6c00"
+      }
+    },
+    "9575": {
+      "codepoint": 9575,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [8, 8],
+        "data": "1818ff00ff000000"
+      }
+    },
+    "248": {
+      "codepoint": 248,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "2ed7e900"
+      }
+    },
+    "239": {
+      "codepoint": 239,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [3, 8],
+        "data": "852409"
+      }
+    },
+    "8319": {
+      "codepoint": 8319,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "6fef0d0000"
+      }
+    },
+    "9557": {
+      "codepoint": 9557,
+      "bearing": [0, -5],
+      "advance": 8,
+      "image": {
+        "size": [5, 6],
+        "data": "1f7f8c31"
+      }
+    },
+    "238": {
+      "codepoint": 238,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2e12420801"
+      }
+    },
+    "191": {
+      "codepoint": 191,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "041011a203"
+      }
+    },
+    "60": {
+      "codepoint": 60,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [4, 8],
+        "data": "48124208"
+      }
+    },
+    "109": {
+      "codepoint": 109,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "abd61801"
+      }
+    },
+    "45": {
+      "codepoint": 45,
+      "bearing": [0, -4],
+      "advance": null,
+      "image": {
+        "size": [5, 5],
+        "data": "1f000000"
+      }
+    },
+    "44": {
+      "codepoint": 44,
+      "bearing": [0, -2],
+      "advance": null,
+      "image": {
+        "size": [1, 3],
+        "data": "07"
+      }
+    },
+    "125": {
+      "codepoint": 125,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [4, 8],
+        "data": "43844403"
+      }
+    },
+    "126": {
+      "codepoint": 126,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [6, 8],
+        "data": "660600000000"
+      }
+    },
+    "53": {
+      "codepoint": 53,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "3f3c08a303"
+      }
+    },
+    "69": {
+      "codepoint": 69,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "3f9c10c207"
+      }
+    },
+    "61": {
+      "codepoint": 61,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "1f800f00"
+      }
+    },
+    "101": {
+      "codepoint": 101,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "2efee001"
+      }
+    },
+    "9558": {
+      "codepoint": 9558,
+      "bearing": [0, -3],
+      "advance": 8,
+      "image": {
+        "size": [7, 4],
+        "data": "7f369b0d"
+      }
+    },
+    "9566": {
+      "codepoint": 9566,
+      "bearing": [3, -7],
+      "advance": 8,
+      "image": {
+        "size": [5, 8],
+        "data": "638c3ffe18"
+      }
+    },
+    "93": {
+      "codepoint": 93,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [3, 8],
+        "data": "27491e"
+      }
+    },
+    "174": {
+      "codepoint": 174,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [6, 7],
+        "data": "5e5bae1e0000"
+      }
+    },
+    "77": {
+      "codepoint": 77,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "71d7186304"
+      }
+    },
+    "85": {
+      "codepoint": 85,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "31c618a303"
+      }
+    },
+    "255": {
+      "codepoint": 255,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "0ac4183d7c"
+      }
+    },
+    "9574": {
+      "codepoint": 9574,
+      "bearing": [0, -5],
+      "advance": 8,
+      "image": {
+        "size": [8, 6],
+        "data": "ff00ef6c6c6c"
+      }
+    },
+    "99": {
+      "codepoint": 99,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "2e86e800"
+      }
+    },
+    "33": {
+      "codepoint": 33,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [1, 8],
+        "data": "5f"
+      }
+    },
+    "956": {
+      "codepoint": 956,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [7, 7],
+        "data": "66b3d9ec330c00"
+      }
+    },
+    "8805": {
+      "codepoint": 8805,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [6, 8],
+        "data": "06833106f003"
+      }
+    },
+    "98": {
+      "codepoint": 98,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "21b419e303"
+      }
+    },
+    "100": {
+      "codepoint": 100,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "10da1ca307"
+      }
+    },
+    "232": {
+      "codepoint": 232,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "03b8f88307"
+      }
+    },
+    "230": {
+      "codepoint": 230,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "8afae201"
+      }
+    },
+    "229": {
+      "codepoint": 229,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "0438e8a307"
+      }
+    },
+    "231": {
+      "codepoint": 231,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 7],
+        "data": "2e86e82003"
+      }
+    },
+    "35": {
+      "codepoint": 35,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "4a7df59502"
+      }
+    },
+    "9600": {
+      "codepoint": 9600,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [8, 8],
+        "data": "ffffffff00000000"
+      }
+    },
+    "32": {
+      "codepoint": 32,
+      "bearing": [0, 0],
+      "advance": 4,
+      "image": {
+        "size": [1, 1],
+        "data": "00"
+      }
+    },
+    "34": {
+      "codepoint": 34,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [4, 8],
+        "data": "aa050000"
+      }
+    },
+    "36": {
+      "codepoint": 36,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "c407071f01"
+      }
+    },
+    "960": {
+      "codepoint": 960,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [7, 7],
+        "data": "7f9bcd66b30100"
+      }
+    },
+    "9532": {
+      "codepoint": 9532,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [8, 8],
+        "data": "18181818ff181818"
+      }
+    },
+    "37": {
+      "codepoint": 37,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "3121226404"
+      }
+    },
+    "161": {
+      "codepoint": 161,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [1, 7],
+        "data": "3d"
+      }
+    },
+    "8745": {
+      "codepoint": 8745,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [6, 8],
+        "data": "de3ccff33c03"
+      }
+    },
+    "94": {
+      "codepoint": 94,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "4445000000"
+      }
+    },
+    "234": {
+      "codepoint": 234,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2ebaf88307"
+      }
+    },
+    "102": {
+      "codepoint": 102,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [4, 8],
+        "data": "2c2f2202"
+      }
+    },
+    "96": {
+      "codepoint": 96,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [2, 8],
+        "data": "2500"
+      }
+    },
+    "228": {
+      "codepoint": 228,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "0a38e8a307"
+      }
+    },
+    "226": {
+      "codepoint": 226,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2e3ae8a307"
+      }
+    },
+    "236": {
+      "codepoint": 236,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [2, 8],
+        "data": "a32a"
+      }
+    },
+    "104": {
+      "codepoint": 104,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "21b4196304"
+      }
+    },
+    "171": {
+      "codepoint": 171,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 7],
+        "data": "5415450100"
+      }
+    },
+    "163": {
+      "codepoint": 163,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "4c8a27c407"
+      }
+    },
+    "9472": {
+      "codepoint": 9472,
+      "bearing": [0, -3],
+      "advance": 8,
+      "image": {
+        "size": [8, 4],
+        "data": "ff000000"
+      }
+    },
+    "8804": {
+      "codepoint": 8804,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [6, 8],
+        "data": "18633018f003"
+      }
+    },
+    "92": {
+      "codepoint": 92,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "4108821004"
+      }
+    },
+    "107": {
+      "codepoint": 107,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [4, 8],
+        "data": "11595309"
+      }
+    },
+    "91": {
+      "codepoint": 91,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [3, 8],
+        "data": "4f921c"
+      }
+    },
+    "9474": {
+      "codepoint": 9474,
+      "bearing": [3, -7],
+      "advance": 8,
+      "image": {
+        "size": [2, 8],
+        "data": "ffff"
+      }
+    },
+    "108": {
+      "codepoint": 108,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [2, 8],
+        "data": "5525"
+      }
+    },
+    "224": {
+      "codepoint": 224,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "0338e8a307"
+      }
+    },
+    "946": {
+      "codepoint": 946,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [6, 7],
+        "data": "defccddf3000"
+      }
+    },
+    "39": {
+      "codepoint": 39,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [2, 8],
+        "data": "1a00"
+      }
+    },
+    "225": {
+      "codepoint": 225,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "1838e8a307"
+      }
+    },
+    "9608": {
+      "codepoint": 9608,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [8, 8],
+        "data": "ffffffffffffffff"
+      }
+    },
+    "9604": {
+      "codepoint": 9604,
+      "bearing": [0, -3],
+      "advance": 8,
+      "image": {
+        "size": [8, 4],
+        "data": "ffffffff"
+      }
+    },
+    "220": {
+      "codepoint": 220,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "11c418a303"
+      }
+    },
+    "38": {
+      "codepoint": 38,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "4411db9205"
+      }
+    },
+    "9524": {
+      "codepoint": 9524,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [8, 8],
+        "data": "18181818ff000000"
+      }
+    },
+    "42": {
+      "codepoint": 42,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [4, 6],
+        "data": "690900"
+      }
+    },
+    "43": {
+      "codepoint": 43,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 7],
+        "data": "847c420000"
+      }
+    },
+    "103": {
+      "codepoint": 103,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "3e460f1f"
+      }
+    },
+    "111": {
+      "codepoint": 111,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "2ec6e800"
+      }
+    },
+    "95": {
+      "codepoint": 95,
+      "bearing": [0, 0],
+      "advance": null,
+      "image": {
+        "size": [5, 1],
+        "data": "1f"
+      }
+    },
+    "945": {
+      "codepoint": 945,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [7, 6],
+        "data": "eedd64e70600"
+      }
+    },
+    "237": {
+      "codepoint": 237,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [2, 8],
+        "data": "5315"
+      }
+    },
+    "233": {
+      "codepoint": 233,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "18b8f88307"
+      }
+    },
+    "8993": {
+      "codepoint": 8993,
+      "bearing": [0, -7],
+      "advance": 9,
+      "image": {
+        "size": [5, 8],
+        "data": "18638cf776"
+      }
+    },
+    "176": {
+      "codepoint": 176,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "6e6f070000"
+      }
+    },
+    "241": {
+      "codepoint": 241,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "1fbc186304"
+      }
+    },
+    "172": {
+      "codepoint": 172,
+      "bearing": [0, -4],
+      "advance": null,
+      "image": {
+        "size": [5, 5],
+        "data": "1f420000"
+      }
+    },
+    "83": {
+      "codepoint": 83,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "3e3808a303"
+      }
+    },
+    "8730": {
+      "codepoint": 8730,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [8, 8],
+        "data": "f030303033363c38"
+      }
+    },
+    "87": {
+      "codepoint": 87,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "31c6587704"
+      }
+    },
+    "8734": {
+      "codepoint": 8734,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [8, 6],
+        "data": "7edbdb7e0000"
+      }
+    },
+    "49": {
+      "codepoint": 49,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "c41042c807"
+      }
+    },
+    "50": {
+      "codepoint": 50,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2e4226e207"
+      }
+    },
+    "9580": {
+      "codepoint": 9580,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [8, 8],
+        "data": "6c6cef00ef6c6c6c"
+      }
+    },
+    "115": {
+      "codepoint": 115,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "3e38f800"
+      }
+    },
+    "47": {
+      "codepoint": 47,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "1021224400"
+      }
+    },
+    "48": {
+      "codepoint": 48,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2ee63aa303"
+      }
+    },
+    "114": {
+      "codepoint": 114,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "6d861000"
+      }
+    },
+    "113": {
+      "codepoint": 113,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "36470f21"
+      }
+    },
+    "9617": {
+      "codepoint": 9617,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [7, 8],
+        "data": "c40831428c1023"
+      }
+    },
+    "9612": {
+      "codepoint": 9612,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [4, 8],
+        "data": "ffffffff"
+      }
+    },
+    "120": {
+      "codepoint": 120,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "51111501"
+      }
+    },
+    "9618": {
+      "codepoint": 9618,
+      "bearing": [0, -8],
+      "advance": null,
+      "image": {
+        "size": [8, 9],
+        "data": "aa55aa55aa55aa5500"
+      }
+    },
+    "9577": {
+      "codepoint": 9577,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [8, 8],
+        "data": "6c6cef00ff000000"
+      }
+    },
+    "112": {
+      "codepoint": 112,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "6dc61702"
+      }
+    },
+    "244": {
+      "codepoint": 244,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2eba18a303"
+      }
+    },
+    "177": {
+      "codepoint": 177,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [6, 8],
+        "data": "0cf3330cf003"
+      }
+    },
+    "9553": {
+      "codepoint": 9553,
+      "bearing": [2, -7],
+      "advance": 8,
+      "image": {
+        "size": [5, 8],
+        "data": "7befbdf7de"
+      }
+    },
+    "187": {
+      "codepoint": 187,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [5, 7],
+        "data": "4551550000"
+      }
+    },
+    "9488": {
+      "codepoint": 9488,
+      "bearing": [0, -3],
+      "advance": 8,
+      "image": {
+        "size": [5, 4],
+        "data": "1f630c"
+      }
+    },
+    "9579": {
+      "codepoint": 9579,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [8, 8],
+        "data": "6c6c6c6cff6c6c6c"
+      }
+    },
+    "242": {
+      "codepoint": 242,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "03b818a303"
+      }
+    },
+    "80": {
+      "codepoint": 80,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2fbe104200"
+      }
+    },
+    "90": {
+      "codepoint": 90,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "1f2222c207"
+      }
+    },
+    "88": {
+      "codepoint": 88,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "5111156304"
+      }
+    },
+    "82": {
+      "codepoint": 82,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2fbe186304"
+      }
+    },
+    "252": {
+      "codepoint": 252,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "0ac418a307"
+      }
+    },
+    "250": {
+      "codepoint": 250,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "18c418a307"
+      }
+    },
+    "8729": {
+      "codepoint": 8729,
+      "bearing": [0, -4],
+      "advance": null,
+      "image": {
+        "size": [2, 5],
+        "data": "0f00"
+      }
+    },
+    "948": {
+      "codepoint": 948,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [6, 8],
+        "data": "3883f9f3ec01"
+      }
+    },
+    "915": {
+      "codepoint": 915,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [6, 7],
+        "data": "ff3c0cc30000"
+      }
+    },
+    "931": {
+      "codepoint": 931,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [6, 8],
+        "data": "ff6c30c6fc03"
+      }
+    },
+    "57": {
+      "codepoint": 57,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2e460f9101"
+      }
+    },
+    "106": {
+      "codepoint": 106,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "1040086374"
+      }
+    },
+    "56": {
+      "codepoint": 56,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2e4617a303"
+      }
+    },
+    "122": {
+      "codepoint": 122,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "1f11f101"
+      }
+    },
+    "121": {
+      "codepoint": 121,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "31460f1f"
+      }
+    },
+    "9619": {
+      "codepoint": 9619,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [8, 8],
+        "data": "dbeedb77dbeedb77"
+      }
+    },
+    "963": {
+      "codepoint": 963,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [7, 6],
+        "data": "fecd66e30000"
+      }
+    },
+    "40": {
+      "codepoint": 40,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [4, 8],
+        "data": "2c11210c"
+      }
+    },
+    "41": {
+      "codepoint": 41,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [4, 8],
+        "data": "43884803"
+      }
+    },
+    "964": {
+      "codepoint": 964,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [7, 7],
+        "data": "ee1d0683c10000"
+      }
+    },
+    "235": {
+      "codepoint": 235,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "0ab8f88307"
+      }
+    },
+    "8801": {
+      "codepoint": 8801,
+      "bearing": [0, -6],
+      "advance": null,
+      "image": {
+        "size": [6, 7],
+        "data": "3ff0033f0000"
+      }
+    },
+    "243": {
+      "codepoint": 243,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "18b818a303"
+      }
+    },
+    "178": {
+      "codepoint": 178,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [4, 8],
+        "data": "c7360f00"
+      }
+    },
+    "8712": {
+      "codepoint": 8712,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "dc8c3f0c07"
+      }
+    },
+    "186": {
+      "codepoint": 186,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2e46073e00"
+      }
+    },
+    "105": {
+      "codepoint": 105,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [1, 8],
+        "data": "7d"
+      }
+    },
+    "9554": {
+      "codepoint": 9554,
+      "bearing": [3, -5],
+      "advance": 8,
+      "image": {
+        "size": [5, 6],
+        "data": "7ffc3106"
+      }
+    },
+    "97": {
+      "codepoint": 97,
+      "bearing": [0, -5],
+      "advance": null,
+      "image": {
+        "size": [5, 6],
+        "data": "0efae801"
+      }
+    },
+    "89": {
+      "codepoint": 89,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "5111420801"
+      }
+    },
+    "9562": {
+      "codepoint": 9562,
+      "bearing": [2, -7],
+      "advance": 8,
+      "image": {
+        "size": [6, 8],
+        "data": "dbb6edc30f00"
+      }
+    },
+    "73": {
+      "codepoint": 73,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [3, 8],
+        "data": "97241d"
+      }
+    },
+    "170": {
+      "codepoint": 170,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "0e7e0f3e00"
+      }
+    },
+    "9578": {
+      "codepoint": 9578,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [8, 8],
+        "data": "1818ff18ff181818"
+      }
+    },
+    "251": {
+      "codepoint": 251,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2e8218a307"
+      }
+    },
+    "9570": {
+      "codepoint": 9570,
+      "bearing": [0, -7],
+      "advance": 8,
+      "image": {
+        "size": [7, 8],
+        "data": "6c369bfd66b3d9"
+      }
+    },
+    "81": {
+      "codepoint": 81,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "2ec6189305"
+      }
+    },
+    "198": {
+      "codepoint": 198,
+      "bearing": [0, -7],
+      "advance": null,
+      "image": {
+        "size": [5, 8],
+        "data": "bebc524a07"
+      }
+    }
+  }
+}
