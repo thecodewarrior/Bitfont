@@ -181,12 +181,23 @@ public class RectanglePacker<P>
     }
 
     public void expand(int newWidth, int newHeight) {
-        root.expand(root.rect.width, newWidth, root.rect.height, newHeight);
+        if(newWidth == getWidth() && newHeight == getHeight()) return;
+
+        Node newRoot = new Node(new Rectangle(0, 0, newWidth, newHeight));
+        newRoot.split(getWidth(), getHeight());
+        Node parent = newRoot;
+        if(newRoot.left.rect.width != getWidth() || newRoot.left.rect.height != getHeight()) {
+            newRoot.left.split(getWidth(), getHeight());
+            parent = newRoot.left;
+        }
+
+        parent.left = root;
+        root = newRoot;
     }
 
     private class Node
     {
-        private Rectangle rect;
+        private final Rectangle rect;
 
         private P occupier = null;
 
@@ -197,35 +208,6 @@ public class RectanglePacker<P>
         private Node( final Rectangle r )
         {
             this.rect = r;
-        }
-
-        private void expand(int oldWidth, int newWidth, int oldHeight, int newHeight) {
-            if(left != null) left.expand(oldWidth, newWidth, oldHeight, newHeight);
-            if(right != null) right.expand(oldWidth, newWidth, oldHeight, newHeight);
-
-            if(rect.x + rect.width == oldWidth) {
-                Rectangle oldRect = rect;
-                P oldOccupier = occupier;
-
-                rect = new Rectangle(rect.x, rect.y, newWidth - rect.x, rect.height);
-                if (occupier != null) {
-                    occupier = null;
-                    split(oldRect.width, oldRect.height);
-                    left.insert(oldRect.width, oldRect.height, oldOccupier);
-                }
-            }
-
-            if(rect.y + rect.height == oldHeight) {
-                Rectangle oldRect = rect;
-                P oldOccupier = occupier;
-
-                rect = new Rectangle(rect.x, rect.y, rect.width, newHeight - rect.y);
-                if (occupier != null) {
-                    occupier = null;
-                    split(oldRect.width, oldRect.height);
-                    left.insert(oldRect.width, oldRect.height, oldOccupier);
-                }
-            }
         }
 
         private Rectangle findRectange( final P item )
