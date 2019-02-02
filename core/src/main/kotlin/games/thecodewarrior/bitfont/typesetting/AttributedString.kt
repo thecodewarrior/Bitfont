@@ -35,6 +35,9 @@ class AttributedString(val string: String) {
         @Suppress("UNCHECKED_CAST")
         return attributes[attr]?.get(index) as T?
     }
+
+    companion object {
+    }
 }
 
 class Attribute<T> private constructor(val name: String) {

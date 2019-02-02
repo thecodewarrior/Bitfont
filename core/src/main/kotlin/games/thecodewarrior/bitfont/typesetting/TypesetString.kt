@@ -16,17 +16,21 @@ import kotlin.math.max
  */
 open class TypesetString(
     /**
-     * The default font. TODO: If the attributed string has font attributes they will override this.
+     * The default font.
      */
     val defaultFont: Bitfont,
     /**
-     * The string to typeset. TODO: Create attributed string
+     * The string to typeset.
      */
     val attributedString: AttributedString,
     /**
      * The width to wrap to. TODO: Allow dynamic wrap width (for wrapping around images and stuff)
      */
-    val wrapWidth: Int = -1
+    val wrapWidth: Int = -1,
+    /**
+     * The number of pixels to insert between lines
+     */
+    val lineSpacing: Int = 1
 ) {
     val string: String = attributedString.string
     /**
@@ -40,11 +44,11 @@ open class TypesetString(
 
     open var glyphs: List<GlyphRender> = emptyList()
         protected set
-    open var cursorEnd: Vec2i = Vec2i(0, 0)
-        protected set
 
     protected open fun fontFor(index: Int): Bitfont {
-        return attributedString[Attribute.font, index] ?: defaultFont
+        return attributedString[Attribute.font, codepointIndices[index]]?.let {
+            if(codepoints[index] in it.glyphs) it else null
+        } ?: defaultFont
     }
 
     protected open fun glyphFor(index: Int): Glyph {
@@ -102,7 +106,7 @@ open class TypesetString(
                     posAfter = Vec2i(it.posAfter.x, y)
                 ))
             }
-            y += maxDescent
+            y += maxDescent + lineSpacing
         }
         this.glyphs = glyphs
     }
