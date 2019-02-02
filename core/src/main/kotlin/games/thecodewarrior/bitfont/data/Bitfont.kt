@@ -4,6 +4,7 @@ import games.thecodewarrior.bitfont.utils.clamp
 import games.thecodewarrior.bitfont.utils.serialization.MsgPackable
 import games.thecodewarrior.bitfont.utils.serialization.MsgUnpackable
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import org.msgpack.core.MessageInsufficientBufferException
 import org.msgpack.core.MessagePacker
 import org.msgpack.core.MessageUnpacker
 
@@ -67,11 +68,11 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
             packInt(capHeight)
             packInt(xHeight)
             packInt(spacing)
-            packMapHeader(glyphs.size)
-            glyphs.int2ObjectEntrySet()
+            val entries = glyphs.int2ObjectEntrySet()
                 .filter { !it.value.isEmpty() }
                 .sortedBy { it.intKey }
-                .forEach { (point, glyph) ->
+            packMapHeader(entries.size)
+            entries.forEach { (point, glyph) ->
                 packInt(point)
                 glyph.pack(packer)
             }
@@ -90,8 +91,13 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
                 val font = Bitfont(name, ascent, descent, capHeight, xHeight, spacing)
 
                 val glyphCount = unpackMapHeader()
-                for(i in 0 until glyphCount) {
-                    font.glyphs[unpackInt()] = Glyph.unpack(unpacker)
+                try {
+                    for (i in 0 until glyphCount) {
+                        font.glyphs[unpackInt()] = Glyph.unpack(unpacker)
+                    }
+                } catch(e: MessageInsufficientBufferException) {
+                    e.printStackTrace()
+                    font.name = font.name + "~"
                 }
                 return font
             }
