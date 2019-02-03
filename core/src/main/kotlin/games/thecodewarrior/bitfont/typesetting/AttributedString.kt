@@ -3,6 +3,7 @@
 package games.thecodewarrior.bitfont.typesetting
 
 import games.thecodewarrior.bitfont.data.Bitfont
+import games.thecodewarrior.bitfont.utils.Attribute
 import games.thecodewarrior.bitfont.utils.RangeMap
 import java.awt.Color
 
@@ -40,18 +41,7 @@ class AttributedString(val string: String) {
     }
 }
 
-class Attribute<T> private constructor(val name: String) {
-    companion object {
-        private val attributes = mutableMapOf<String, Attribute<*>>()
-
-        fun <T> get(name: String): Attribute<T> {
-            @Suppress("UNCHECKED_CAST")
-            return attributes.getOrPut(name) {
-                Attribute<Any>(name)
-            } as Attribute<T>
-        }
-
-        val color = get<Color>("color")
-        val font = get<Bitfont>("font")
-    }
-}
+private val colorAttr = Attribute.get<Color>("color")
+private val fontAttr = Attribute.get<Bitfont>("font")
+val Attribute.Companion.color get() = colorAttr
+val Attribute.Companion.font get() = fontAttr

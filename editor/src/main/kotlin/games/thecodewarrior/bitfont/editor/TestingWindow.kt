@@ -2,7 +2,7 @@ package games.thecodewarrior.bitfont.editor
 
 import games.thecodewarrior.bitfont.editor.IMWindow
 import games.thecodewarrior.bitfont.data.Bitfont
-import games.thecodewarrior.bitfont.typesetting.Attribute
+import games.thecodewarrior.bitfont.utils.Attribute
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.editor.utils.Colors
@@ -12,6 +12,8 @@ import games.thecodewarrior.bitfont.editor.utils.extensions.random
 import games.thecodewarrior.bitfont.editor.utils.extensions.toIm
 import games.thecodewarrior.bitfont.editor.utils.extensions.u32
 import games.thecodewarrior.bitfont.editor.utils.keys
+import games.thecodewarrior.bitfont.typesetting.color
+import games.thecodewarrior.bitfont.typesetting.font
 import glm_.vec2.Vec2
 import imgui.FocusedFlag
 import imgui.ImGui

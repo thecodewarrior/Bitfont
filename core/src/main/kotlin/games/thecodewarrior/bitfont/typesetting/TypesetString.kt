@@ -3,6 +3,7 @@ package games.thecodewarrior.bitfont.typesetting
 import com.ibm.icu.lang.UCharacter
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.Glyph
+import games.thecodewarrior.bitfont.utils.Attribute
 import games.thecodewarrior.bitfont.utils.Vec2i
 import games.thecodewarrior.bitfont.utils.extensions.characterBreakIterator
 import games.thecodewarrior.bitfont.utils.extensions.lineBreakIterator
