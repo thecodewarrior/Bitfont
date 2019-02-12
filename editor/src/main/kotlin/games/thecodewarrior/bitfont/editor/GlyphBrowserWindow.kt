@@ -39,6 +39,7 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
     var needsRedraw = true
     var canvas = Rect()
     val detail = GlyphDetailPane(document)
+    var lastSelectTime = 0L
 
     val cellSize = 32
     val referenceImages = Java2DTexture(cellSize*17, cellSize*17)
@@ -130,6 +131,13 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
             if(isWindowHovered() && isMouseClicked(0)) {
                 val codepoint = (page shl 8) or ((cursorPos.y-1) shl 4) or (cursorPos.x-1)
                 detail.codepoint = codepoint
+                if(System.currentTimeMillis() - lastSelectTime < 250) {
+                    document.editorWindow.codepoint = codepoint
+                    document.editorWindow.codepointHistory.push(codepoint)
+                    document.editorWindow.visible = true
+                    document.editorWindow.focus()
+                }
+                lastSelectTime = System.currentTimeMillis()
             }
         }
     }

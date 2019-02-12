@@ -1,7 +1,6 @@
 package games.thecodewarrior.bitfont.editor
 
 import com.ibm.icu.lang.UCharacter
-import games.thecodewarrior.bitfont.editor.IMWindow
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.BitGrid
 import games.thecodewarrior.bitfont.data.Glyph
@@ -151,9 +150,9 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
                 return
             }
             var minX = Int.MAX_VALUE
-            var maxX = 0
+            var maxX = Int.MIN_VALUE
             var minY = Int.MAX_VALUE
-            var maxY = 0
+            var maxY = Int.MIN_VALUE
             enabledCells.forEach {
                 minX = min(minX, it.x)
                 maxX = max(maxX, it.x)
@@ -259,6 +258,15 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         sameLine()
         if (arrowButton("##right", Dir.Right)) codepoint++
         popButtonRepeat()
+
+        if (arrowButton("##historyBack", Dir.Left)) codepointHistory.undo()
+        sameLine()
+        withItemWidth(controlsWidth - frameHeight*2 - style.itemSpacing.x*2) {
+            text("")
+        }
+        sameLine()
+        if (arrowButton("##historyBack", Dir.Right)) codepointHistory.redo()
+
         if(codepoint != oldCodepoint) {
             codepointScrubbing = true
         } else if(codepointScrubbing) {
@@ -798,8 +806,14 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
                         mouseCellPrev = mouseReleasedPos ?: mouseCellPrev
                     modified = false
                 }
+                if (isMouseClicked(1)) {
+                    drawingState = eraser
+                    if (io.keyShift)
+                        mouseCellPrev = mouseReleasedPos ?: mouseCellPrev
+                    modified = false
+                }
             }
-            if (isMouseReleased(0)) {
+            if (isMouseReleased(0) || isMouseReleased(1)) {
                 drawingState = null
                 if(modified) data.pushHistory()
                 modified = false

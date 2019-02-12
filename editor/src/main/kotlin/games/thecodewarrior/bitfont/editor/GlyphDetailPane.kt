@@ -31,11 +31,11 @@ class GlyphDetailPane(val document: BitfontDocument) {
         }
         text(info.name)
         ImGui.font.scale = defaultFontScale
-
+/*
         info.lines.forEach { line ->
             when(line) {
                 is AliasLine -> textWrapped("= ${line.text}")
-                is FormalAliasLine -> textWrapped("\u203B${line.name}")
+                is FormalAliasLine -> textWrapped("% ${line.name}")
                 is CommentLine -> {
                     if(line.hasBullet) {
                         bullet()
@@ -51,6 +51,7 @@ class GlyphDetailPane(val document: BitfontDocument) {
                 is VariationLine -> {}
             }
         }
+*/
 
         button("Edit") {
             document.editorWindow.codepoint = codepoint
