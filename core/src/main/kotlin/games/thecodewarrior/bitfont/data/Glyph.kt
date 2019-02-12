@@ -63,6 +63,7 @@ class Glyph(): MsgPackable {
     }
 
     override fun pack(packer: MessagePacker) {
+        crop()
         packer.apply {
             packInt(bearingX)
             packInt(bearingY)
@@ -84,6 +85,7 @@ class Glyph(): MsgPackable {
                 glyph.bearingY = unpackInt()
                 glyph.advance = if (tryUnpackNil()) null else unpackInt()
                 glyph.image = BitGrid.unpack(unpacker)
+                glyph.crop()
                 return glyph
             }
         }
