@@ -19,13 +19,14 @@ import glm_.vec2.Vec2
 import imgui.FocusedFlag
 import imgui.ImGui
 import imgui.functionalProgramming.withItemWidth
+import imgui.g
 import imgui.internal.Rect
 import org.lwjgl.glfw.GLFW
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
-class TestingWindow(val document: BitfontDocument): IMWindow() {
+open class TestingWindow(val document: BitfontDocument): IMWindow() {
     val bitfont: Bitfont = document.bitfont
 
     override val title: String
@@ -44,9 +45,8 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
     init {
     }
 
-    override fun main(): Unit = with(ImGui) {
-
-        if(isWindowFocused(FocusedFlag.RootAndChildWindows)) keys {
+    open fun handleInput() = with(ImGui) {
+        keys {
             "prim+v" pressed {
                 val clipboard = GLFW.glfwGetClipboardString(0)
                 if(clipboard != null) {
@@ -62,6 +62,10 @@ class TestingWindow(val document: BitfontDocument): IMWindow() {
                 }
             }
         }
+    }
+
+    override fun main(): Unit = with(ImGui) {
+        if(isWindowFocused(FocusedFlag.RootAndChildWindows) && g.activeId == 0) handleInput()
 //        withItemWidth(win.contentsRegionRect.width - 300f) {
 //            val arr = testString.replace("\n", "\\n").toCharArray().let { name ->
 //                CharArray(name.size + 1000).also { name.copyInto(it) }

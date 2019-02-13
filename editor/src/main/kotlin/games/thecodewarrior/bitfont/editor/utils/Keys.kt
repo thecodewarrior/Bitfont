@@ -9,17 +9,13 @@ import java.util.Locale
 inline fun ImGui.keys(callback: ImGuiKeys.() -> Unit) = ImGuiKeys.callback()
 
 object ImGuiKeys {
+    val mutex = ""
     infix fun Boolean.and(keys: String) = if(this) keys else null
+    infix fun Boolean.mutex(keys: String) = if(this) mutex else keys
 
-    inline infix fun String?.pressed(callback: () -> Unit) {
-        if(this.pressed()) callback()
-    }
-    inline infix fun String?.down(callback: () -> Unit) {
-        if(this.down()) callback()
-    }
-    inline infix fun String?.released(callback: () -> Unit) {
-        if(this.released()) callback()
-    }
+    inline infix fun String?.pressed(callback: () -> Unit) = this === mutex || this.pressed().also { if(it) callback() }
+    inline infix fun String?.down(callback: () -> Unit) = this === mutex || this.down().also { if(it) callback() }
+    inline infix fun String?.released(callback: () -> Unit) = this === mutex || this.released().also { if(it) callback() }
 
     fun String?.pressed()  = this != null && checkKeys(this) { ImGui.isKeyPressed(it)  }
     fun String?.down()     = this != null && checkKeys(this) { ImGui.isKeyDown(it)     }
