@@ -1,47 +1,66 @@
-@file:Suppress("UnstableApiUsage")
-
 package games.thecodewarrior.bitfont.typesetting
 
-import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.utils.Attribute
+import games.thecodewarrior.bitfont.utils.AttributeMap
 import games.thecodewarrior.bitfont.utils.RangeMap
-import java.awt.Color
+import games.thecodewarrior.bitfont.utils.TreeRangeMap
 
-class AttributedString(val string: String) {
-    private val attributes = mutableMapOf<Attribute<*>, RangeMap<Int, Any>>()
+open class AttributedString internal constructor(
+    open val plaintext: String,
+    protected open val attributes: Map<Attribute<*>, RangeMap<Int, Any>>
+) {
 
-    private fun attrMap(attr: Attribute<*>): RangeMap<Int, Any> {
-        @Suppress("UNCHECKED_CAST")
-        return attributes.getOrPut(attr) { RangeMap() }
+    constructor(other: AttributedString): this(
+        other.plaintext,
+        other.getAllAttributes()
+    )
+    constructor(plaintext: String): this(plaintext, mutableMapOf())
+    constructor(plaintext: String, attributes: AttributeMap): this(plaintext, attributes.map.mapValues { (_, value) ->
+        TreeRangeMap<Int, Any>().also { map -> map[0, plaintext.length] = value }
+    })
+    constructor(plaintext: String, vararg attributes: Pair<Attribute<*>, Any>): this(plaintext, AttributeMap(*attributes))
+
+    open fun getAllAttributes(): Map<Attribute<*>, RangeMap<Int, Any>> {
+        return attributes.mapValues { it.value.copy() }
     }
 
-    fun setAttributesForRange(range: IntRange, values: Map<Attribute<*>, Any>) {
-        values.forEach { key, value ->
-            val map = attrMap(key)
-            map[range.start, range.endInclusive+1] = value
-        }
-    }
-
-    fun attributesFor(character: Int): Map<Attribute<*>, Any> {
-        val attrs = mutableMapOf<Attribute<*>, Any>()
+    open fun getAttributes(index: Int): AttributeMap {
+        val attrs = AttributeMap()
         attributes.forEach { key, value ->
-            value[character]?.also {
-                attrs[key] = it
+            value[index]?.also {
+                @Suppress("UNCHECKED_CAST")
+                attrs[key as Attribute<Any>] = it
             }
         }
         return attrs
     }
 
-    operator fun <T> get(attr: Attribute<T>, index: Int): T? {
+    open operator fun <T> get(attr: Attribute<T>, index: Int): T? {
         @Suppress("UNCHECKED_CAST")
         return attributes[attr]?.get(index) as T?
     }
 
-    companion object {
+    open fun substring(start: Int, end: Int): AttributedString {
+        return AttributedString(
+            plaintext.substring(start, end),
+            attributes.mapValues {
+                val map = it.value.copy { it - start }
+                map.clear(Int.MIN_VALUE, 0)
+                map.clear(end-start, Int.MAX_VALUE)
+                map
+            }
+        )
+    }
+
+    open fun staticCopy(): AttributedString {
+        return AttributedString(this)
+    }
+
+    open fun mutableCopy(): MutableAttributedString {
+        return MutableAttributedString(this)
+    }
+
+    override fun toString(): String {
+        return plaintext
     }
 }
-
-private val colorAttr = Attribute.get<Color>("color")
-private val fontAttr = Attribute.get<Bitfont>("font")
-val Attribute.Companion.color get() = colorAttr
-val Attribute.Companion.font get() = fontAttr

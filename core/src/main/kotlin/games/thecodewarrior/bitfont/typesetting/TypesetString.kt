@@ -5,6 +5,7 @@ import com.ibm.icu.lang.UProperty
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.utils.Attribute
+import games.thecodewarrior.bitfont.utils.AttributeMap
 import games.thecodewarrior.bitfont.utils.CombiningClass
 import games.thecodewarrior.bitfont.utils.Vec2i
 import games.thecodewarrior.bitfont.utils.extensions.characterBreakIterator
@@ -35,7 +36,7 @@ open class TypesetString(
      */
     val lineSpacing: Int = 1
 ) {
-    val string: String = attributedString.string
+    val string: String = attributedString.plaintext
     /**
      * An array of codepoints representing [string]
      */
@@ -103,6 +104,11 @@ open class TypesetString(
                 maxAscent = max(maxAscent, font.ascent)
                 maxDescent = max(maxDescent, font.descent)
             }
+            run.forEach {
+                maxAscent = max(maxAscent, -(it.pos.y + it.glyph.bearingY))
+                maxDescent = max(maxDescent, it.glyph.image.height + it.pos.y + it.glyph.bearingY)
+            }
+
             y += maxAscent
             run.forEach {
                 glyphs.add(it.copy(
@@ -140,7 +146,7 @@ open class TypesetString(
                 combiningPosAfter = Vec2i(cursor + advance, 0)
                 list.add(
                     GlyphRender(codepointIndices[it], it, codepoints[it], glyph, Vec2i(cursor, 0), Vec2i(cursor + advance, 0),
-                        attributedString.attributesFor(codepointIndices[it]))
+                        attributedString.getAttributes(codepointIndices[it]))
                 )
                 cursor += advance
             } else {
@@ -191,7 +197,7 @@ open class TypesetString(
 
                 list.add(
                     GlyphRender(codepointIndices[it], it, codepoints[it], glyph, Vec2i(newX, newY), combiningPosAfter,
-                        attributedString.attributesFor(codepointIndices[it]))
+                        attributedString.getAttributes(codepointIndices[it]))
                 )
             }
         }
@@ -261,11 +267,7 @@ open class TypesetString(
 
     data class GlyphRender(
         val characterIndex: Int, val codepointIndex: Int, val codepoint: Int, val glyph: Glyph,
-        val pos: Vec2i, val posAfter: Vec2i, val attributes: Map<Attribute<*>, Any>) {
-        operator fun <T> get(attribute: Attribute<T>): T? {
-            @Suppress("UNCHECKED_CAST")
-            return attributes[attribute] as T?
-        }
+        val pos: Vec2i, val posAfter: Vec2i, val attributes: AttributeMap) {
     }
 
     companion object {
