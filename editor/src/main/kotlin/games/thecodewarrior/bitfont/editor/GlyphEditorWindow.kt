@@ -235,13 +235,13 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     }
 
     fun drawControls() = with(ImGui) { withItemWidth(controlsWidth) {
+        pushAllowKeyboardFocus(false)
         val oldCodepoint = codepoint
         pushButtonRepeat(true)
         if (arrowButton("##left", Dir.Left)) codepoint--
         sameLine()
         withItemWidth(controlsWidth - frameHeight*2 - style.itemSpacing.x*2) {
             val speed = max(1.0, abs(getMouseDragDelta(0).y) / 10.0)
-            pushAllowKeyboardFocus(false)
             ImGuiDrags.dragScalar(
                 label = "##codepointDrag",
                 value = ::codepoint,
@@ -276,10 +276,8 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         var labelWidth = calcTextSize("Advance").x + 1
         withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
-            pushAllowKeyboardFocus(false)
             alignTextToFramePadding(); alignedText("Advance", Vec2(1, 0.5), labelWidth); sameLine()
             inputInt("##advance", data::advance)
-            pushAllowKeyboardFocus(false)
             alignTextToFramePadding(); alignedText("Auto", Vec2(1, 0.5), labelWidth); sameLine()
             checkbox("##autoAdvance", data::autoAdvance)
         }
@@ -289,22 +287,16 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         labelWidth = calcTextSize("Local Grid").x + 1
         withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
             alignTextToFramePadding(); alignedText("Origin X", Vec2(1, 0.5), labelWidth); sameLine()
-            pushAllowKeyboardFocus(false)
             inputInt("Origin X", ::originX)
             alignTextToFramePadding(); alignedText("Origin Y", Vec2(1, 0.5), labelWidth); sameLine()
-            pushAllowKeyboardFocus(false)
             inputInt("Origin Y", ::originY)
             alignTextToFramePadding(); alignedText("Scale", Vec2(1, 0.5), labelWidth); sameLine()
-            pushAllowKeyboardFocus(false)
             inputInt("Scale", ::granularity)
             alignTextToFramePadding(); alignedText("Grid", Vec2(1, 0.5), labelWidth); sameLine()
-            pushAllowKeyboardFocus(false)
             checkbox("##showGrid", ::displayGrid)
             alignTextToFramePadding(); alignedText("Local Grid", Vec2(1, 0.5), labelWidth); sameLine()
-            pushAllowKeyboardFocus(false)
             inputInt("##localGridRadius", ::localGridRadius)
             alignTextToFramePadding(); alignedText("Guides", Vec2(1, 0.5), labelWidth); sameLine()
-            pushAllowKeyboardFocus(false)
             checkbox("##showGuides", ::displayGuides)
         }
 
@@ -339,10 +331,10 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         val prevCursor = Vec2(cursorPos)
         alignedText("Reference Font", Vec2(0.5), width = controlsWidth)
         cursorPos = prevCursor
-        pushAllowKeyboardFocus(false)
         checkbox("##displayReference", ::displayReference)
         text(ReferenceFonts.style(document.referenceStyle).fontName(codepoint))
 
+        popAllowKeyboardFocus()
         val bb = Rect(win.dc.cursorPos, win.dc.cursorPos + Vec2(controlsWidth))
         drawReference(bb)
     } }

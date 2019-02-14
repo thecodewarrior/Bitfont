@@ -55,7 +55,7 @@ open class TestingWindow(val document: BitfontDocument): IMWindow() {
                         val saturation = 0.25f + Math.random().toFloat() * 0.75f
                         val brightness = 0.75f + Math.random().toFloat() * 0.25f
                         val color = JColor.getHSBColor(hue, saturation, brightness)
-                        testString.insert(Random.nextInt(0, testString.plaintext.length), AttributedString(clipboard, Attribute.color to color))
+                        testString.insert(Random.nextInt(0, testString.length), AttributedString(clipboard, Attribute.color to color))
                     } else {
                         testString = MutableAttributedString(clipboard)
                     }
@@ -73,10 +73,12 @@ open class TestingWindow(val document: BitfontDocument): IMWindow() {
 //            if(inputText("##testText", arr, InputTextFlag.EnterReturnsTrue.i))
 //                testString = String(g.inputTextState.textW.sliceArray(0 until g.inputTextState.textW.indexOf('\u0000'))).replace("\\n", "\n")
 //        }
+        pushAllowKeyboardFocus(false)
         withItemWidth(150f) {
             sameLine()
             inputInt("Scale", ::scale)
         }
+        popAllowKeyboardFocus()
 
         val canvasPos = win.contentsRegionRect.min + Vec2(0, frameHeightWithSpacing)
 

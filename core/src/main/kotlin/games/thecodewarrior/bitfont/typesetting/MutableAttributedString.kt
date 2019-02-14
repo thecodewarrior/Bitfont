@@ -73,6 +73,17 @@ private interface IMutableAttributedString {
     }
     //endregion
 
+    //region removeAttributes
+    /*    //----------------- Implementations -----------------\\    */
+    fun removeAttributes(start: Int, end: Int, vararg attributes: Attribute<*>): MutableAttributedString
+    /*    //-------------------- Overloads --------------------\\    */
+    //endregion
+
+    //region removeAttributes
+    /*    //----------------- Implementations -----------------\\    */
+    fun delete(start: Int, end: Int): MutableAttributedString
+    /*    //-------------------- Overloads --------------------\\    */
+    //endregion
 
     /*
     //region append
@@ -85,7 +96,7 @@ private interface IMutableAttributedString {
     */
 }
 
-class MutableAttributedString: AttributedString, IMutableAttributedString {
+open class MutableAttributedString: AttributedString, IMutableAttributedString {
     private val buffer: StringBuffer = StringBuffer(super.plaintext)
 
     override val attributes: MutableMap<Attribute<*>, RangeMap<Int, Any>> = super.attributes.toMutableMap()
@@ -126,7 +137,7 @@ class MutableAttributedString: AttributedString, IMutableAttributedString {
     override fun insert(pos: Int, string: String, attributes: AttributeMap): MutableAttributedString {
         buffer.insert(pos, string)
         this.attributes.forEach { key, value ->
-            value.shift(pos, Int.MAX_VALUE) { it + string.length }
+            value.shift(pos, null) { it + string.length }
         }
         setAttributes(pos, pos+string.length, attributes)
         return this
@@ -135,9 +146,32 @@ class MutableAttributedString: AttributedString, IMutableAttributedString {
     override fun insert(pos: Int, string: AttributedString): MutableAttributedString {
         buffer.insert(pos, string.plaintext)
         this.attributes.forEach { key, value ->
-            value.shift(pos, Int.MAX_VALUE/2) { it + string.plaintext.length }
+            value.shift(pos, null) { it + string.length }
         }
         applyAttributes(string.getAllAttributes(), pos)
+        return this
+    }
+
+    override fun removeAttributes(start: Int, end: Int, vararg attributes: Attribute<*>): MutableAttributedString {
+        if(attributes.isEmpty()) {
+            this.attributes.forEach { key, value ->
+                value.clear(start, end)
+            }
+        } else {
+            attributes.forEach { attr ->
+                this.attributes[attr]?.clear(start, end)
+            }
+        }
+        return this
+    }
+
+    override fun delete(start: Int, end: Int): MutableAttributedString {
+        buffer.delete(start, end)
+        this.attributes.forEach { attr, ranges ->
+            val len = end - start
+            ranges.clear(start, end)
+            ranges.shift(end, null) { it - len }
+        }
         return this
     }
 

@@ -2,14 +2,19 @@ package games.thecodewarrior.bitfont.editor
 
 import games.thecodewarrior.bitfont.editor.utils.Colors
 import games.thecodewarrior.bitfont.editor.utils.Constants
+import games.thecodewarrior.bitfont.editor.utils.extensions.toImGui
+import games.thecodewarrior.bitfont.editor.utils.extensions.u32
 import games.thecodewarrior.bitfont.editor.utils.ifMacSystem
+import games.thecodewarrior.bitfont.editor.utils.keys
 import games.thecodewarrior.bitfont.editor.utils.opengl.Java2DTexture
+import glm_.vec2.Vec2
 import gln.checkError
 import gln.glClearColor
 import gln.glViewport
 import imgui.Context
 import imgui.ImGui
 import imgui.destroy
+import imgui.g
 import imgui.impl.ImplGL3
 import imgui.impl.LwjglGlfw
 import imgui.impl.LwjglGlfw.GlfwClientApi
@@ -19,22 +24,36 @@ import org.lwjgl.system.MemoryStack
 import uno.glfw.GlfwWindow
 import uno.glfw.glfw
 import uno.glfw.windowHint
+import kotlin.math.max
 
 fun main(args: Array<String>) {
     System.setProperty("java.awt.headless", "true")
-    Main
+    Main.run()
 }
 
 object Main {
 
-    val window: GlfwWindow
-    val ctx: Context
+    lateinit var window: GlfwWindow
+    lateinit var ctx: Context
 
     var showDemo = true
 
-    val documents: MutableList<BitfontDocument>
+    lateinit var documents: MutableList<BitfontDocument>
 
-    init {
+    var targetFPS = 0
+        set(value) {
+            field = max(0, value)
+            if(field == 0)
+                targetFrameDuration = 0
+            else
+                targetFrameDuration = 1000/field
+        }
+    var lastFrameTime = System.currentTimeMillis()
+        private set
+    var targetFrameDuration = 0
+        private set
+
+    fun run() {
         glfw.init(ifMacSystem("3.2", "3.0"))
         ifMacSystem {
             glfw.windowHint {
@@ -64,6 +83,7 @@ object Main {
 
         Constants // load class
 
+        targetFPS = 20
         window.loop(Main::mainLoop)
 
         LwjglGlfw.shutdown()
@@ -74,6 +94,10 @@ object Main {
     }
 
     fun mainLoop(stack: MemoryStack) {
+        val timeLeft = (lastFrameTime + targetFrameDuration) - System.currentTimeMillis()
+        if(timeLeft > 0)
+            Thread.sleep(timeLeft)
+        lastFrameTime = System.currentTimeMillis()
 
         Java2DTexture.cleanUpTextures()
 
@@ -85,6 +109,16 @@ object Main {
                 showDemoWindow(Main::showDemo)
 
             documents.toList().forEach { it.push() }
+            val fpsText = "%4.1f%s".format(io.framerate, if(targetFPS == 0) "" else "/$targetFPS")
+            overlayDrawList.addText(Vec2(0, 0), Colors.white.u32, fpsText.toCharArray())
+            keys {
+                "prim+[" pressed {
+                    targetFPS--
+                }
+                "prim+]" pressed {
+                    targetFPS++
+                }
+            }
         }
 
         // Rendering

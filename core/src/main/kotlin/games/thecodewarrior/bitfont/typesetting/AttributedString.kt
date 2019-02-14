@@ -20,6 +20,11 @@ open class AttributedString internal constructor(
     })
     constructor(plaintext: String, vararg attributes: Pair<Attribute<*>, Any>): this(plaintext, AttributeMap(*attributes))
 
+    val length: Int
+        get() = plaintext.length
+    fun isEmpty(): Boolean = length == 0
+    fun isNotEmpty(): Boolean = !isEmpty()
+
     open fun getAllAttributes(): Map<Attribute<*>, RangeMap<Int, Any>> {
         return attributes.mapValues { it.value.copy() }
     }

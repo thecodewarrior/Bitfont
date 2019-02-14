@@ -22,7 +22,7 @@ interface RangeMap<K: Comparable<K>, V> {
      * Shifts the passed range by passing each key through the passed transform. Anything in the destination range
      * will be removed in this process.
      */
-    fun shift(min: K, max: K, transform: (K) -> K)
+    fun shift(min: K?, max: K?, transform: (K) -> K)
 
     interface Entry<K: Comparable<K>, V> {
         val start: K
@@ -80,7 +80,13 @@ class TreeRangeMap<K: Comparable<K>, V> private constructor(
         tree.subMap(min, true, max, false).clear()
     }
 
-    override fun shift(min: K, max: K, transform: (K) -> K) {
+    @Suppress("NAME_SHADOWING")
+    override fun shift(min: K?, max: K?, transform: (K) -> K) {
+        if(tree.isEmpty()) return
+
+        val min = min ?: tree.firstEntry().value.start
+        val max = max ?: tree.lastEntry().value.end
+
         slice(min)
         slice(max)
 
