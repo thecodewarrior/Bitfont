@@ -75,8 +75,13 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
                     cursor = 0
                     verticalMotionX = x
                 } else {
+                    val nextLine =
+                        if(cursor == contents.length && verticalMotionX != null && verticalMotionX != cursorPos.x)
+                            it.line
+                        else
+                            it.line-1
                     val x = verticalMotionX ?: cursorPos.x
-                    val closest = internals.typesetString.lines[it.line-1].minBy { abs(x - it.pos.x) }
+                    val closest = internals.typesetString.lines[nextLine].minBy { abs(x - it.pos.x) }
                     if(closest != null)
                         cursor = closest.characterIndex
                     verticalMotionX = x
@@ -90,8 +95,13 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
                     cursor = contents.length
                     verticalMotionX = x
                 } else {
+                    val nextLine =
+                        if(cursor == 0 && verticalMotionX != null && verticalMotionX != cursorPos.x)
+                            it.line
+                        else
+                            it.line+1
                     val x = verticalMotionX ?: cursorPos.x
-                    val closest = internals.typesetString.lines[it.line+1].minBy { abs(x - it.pos.x) }
+                    val closest = internals.typesetString.lines[nextLine].minBy { abs(x - it.pos.x) }
                     if(closest != null)
                         cursor = closest.characterIndex
                     verticalMotionX = x
