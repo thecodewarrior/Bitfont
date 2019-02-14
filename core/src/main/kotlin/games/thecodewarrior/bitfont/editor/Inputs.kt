@@ -144,7 +144,8 @@ enum class Modifier {
 class Modifiers private constructor(private val bits: Int) {
     constructor(vararg mods: Modifier): this(mods.fold(0) { bits, mod -> bits or mod.bitmask })
 
-    val modifiers: List<Modifier> get() = Modifier.values().filter { it in this }
+    val modifiers: List<Modifier> = Modifier.values().filter { it in this }
+    val count = modifiers.size
 
     operator fun contains(mod: Modifier) = bits and mod.bitmask != 0
     operator fun contains(mods: Modifiers) = bits and mods.bits == mods.bits
@@ -154,6 +155,19 @@ class Modifiers private constructor(private val bits: Int) {
 
     operator fun minus(mod: Modifier) = Modifiers(bits and mod.bitmask.inv())
     operator fun minus(mods: Modifiers) = Modifiers(bits and mods.bits.inv())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Modifiers) return false
+
+        if (bits != other.bits) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return bits
+    }
 
     companion object
 }

@@ -48,6 +48,8 @@ open class TypesetString(
 
     open var glyphs: List<GlyphRender> = emptyList()
         protected set
+    open var lines: List<List<GlyphRender>> = emptyList()
+        protected set
 
     protected open fun fontFor(index: Int): Bitfont {
         return attributedString[Attribute.font, codepointIndices[index]]?.let {
@@ -95,6 +97,7 @@ open class TypesetString(
         val runRanges = makeRuns()
         val runGlyphs = runRanges.map { it to layoutRun(it) }
         val glyphs = mutableListOf<GlyphRender>()
+        val lines = mutableListOf<List<GlyphRender>>()
         var y = 0
         runGlyphs.forEachIndexed { i, (range, run) ->
             var maxAscent = 0
@@ -110,15 +113,18 @@ open class TypesetString(
             }
 
             y += maxAscent
-            run.forEach {
-                glyphs.add(it.copy(
+            val offsetGlyphs = run.map {
+                it.copy(
                     pos = Vec2i(it.pos.x, it.pos.y + y),
                     posAfter = Vec2i(it.posAfter.x, it.pos.y + y)
-                ))
+                )
             }
+            glyphs.addAll(offsetGlyphs)
+            lines.add(offsetGlyphs)
             y += maxDescent + lineSpacing
         }
         this.glyphs = glyphs
+        this.lines = lines
     }
 
     protected open fun layoutRun(range: IntRange): List<GlyphRender> {

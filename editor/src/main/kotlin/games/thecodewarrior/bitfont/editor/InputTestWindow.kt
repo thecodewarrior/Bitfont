@@ -1,6 +1,7 @@
 package games.thecodewarrior.bitfont.editor
 
 import games.thecodewarrior.bitfont.data.Bitfont
+import games.thecodewarrior.bitfont.editor.mode.DefaultEditorMode
 import games.thecodewarrior.bitfont.utils.Attribute
 import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.editor.utils.Colors
@@ -10,9 +11,9 @@ import games.thecodewarrior.bitfont.editor.utils.extensions.draw
 import games.thecodewarrior.bitfont.editor.utils.extensions.fromGlfw
 import games.thecodewarrior.bitfont.editor.utils.extensions.toIm
 import games.thecodewarrior.bitfont.editor.utils.extensions.u32
-import games.thecodewarrior.bitfont.editor.utils.keys
 import games.thecodewarrior.bitfont.typesetting.font
 import glm_.vec2.Vec2
+import glm_.vec2.Vec2i
 import imgui.FocusedFlag
 import imgui.ImGui
 import imgui.functionalProgramming.withItemWidth
@@ -26,7 +27,7 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
     override val title: String
         get() = "${bitfont.name}: Testing"
 
-    val textInput = TextInput(bitfont, -1)
+    val textInput = Editor(bitfont, -1)
     var scale = 2
         set(value) {
             field = max(value, 1)
@@ -41,6 +42,12 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
     }
 
     fun handleInput() = with(ImGui) {
+        textInput.inputModifiers(Modifiers(*listOfNotNull(
+            if(io.keyShift) Modifier.SHIFT else null,
+            if(io.keyCtrl) Modifier.CONTROL else null,
+            if(io.keyAlt) Modifier.ALT else null,
+            if(io.keySuper) Modifier.SUPER else null
+        ).toTypedArray()))
         textInput.inputKeyChanges(
             io.keysDown.withIndex().filter { (i, isDown) ->
                 val wasDown = prevKeysDown[i]
@@ -80,6 +87,8 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
         popClipRect()
     }
 
+    private var lastCursorChange = System.currentTimeMillis()
+    private var lastCursor = 0
     fun drawCanvas() {
         drawList.addRectFilled(
             canvas.min,
@@ -87,13 +96,41 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
             Colors.layoutTest.background.u32
         )
 
-        val cursor = textOrigin - Vec2(0.5)
-        drawList.addTriangleFilled(cursor, cursor + Vec2(-scale, -scale), cursor + Vec2(-scale, scale), Colors.layoutTest.originIndicator.u32)
+        val originIndicator = textOrigin - Vec2(0.5)
+        drawList.addTriangleFilled(
+            originIndicator,
+            originIndicator + Vec2(-scale, -scale),
+            originIndicator + Vec2(-scale, scale),
+            Colors.layoutTest.originIndicator.u32
+        )
         val textRegion = Rect(textOrigin, canvas.max)
 
         textInput.width = (textRegion.width / scale).toInt()
+
+        val mode = textInput.mode as DefaultEditorMode
+        if(mode.cursor != lastCursor) {
+            lastCursor = mode.cursor
+            lastCursorChange = System.currentTimeMillis()
+        }
+        var cursorGlyph: TypesetString.GlyphRender? = null
+
         textInput.typesetString.glyphs.forEach {
+            if(it.characterIndex == mode.cursor || (cursorGlyph == null && it.characterIndex == mode.cursor-1)) {
+                cursorGlyph = it
+            }
             drawGlyph(it)
+        }
+
+        val blinkSpeed = 500
+        if((System.currentTimeMillis()-lastCursorChange) % (blinkSpeed*2) < blinkSpeed) {
+            cursorGlyph?.also { glyph ->
+                val cursorPos = if (glyph.characterIndex == mode.cursor) glyph.pos.toIm() else glyph.posAfter.toIm()
+                val font = glyph.attributes[Attribute.font] ?: bitfont
+                val cursorMin = cursorPos - Vec2i(1, font.ascent)
+                val cursorMax = cursorPos + Vec2i(0, font.descent)
+
+                drawList.addRect(textOrigin + cursorMin * scale, textOrigin + cursorMax * scale, Colors.white.u32)
+            }
         }
     }
 
