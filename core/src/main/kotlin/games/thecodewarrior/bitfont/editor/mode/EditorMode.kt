@@ -11,7 +11,7 @@ abstract class EditorMode(val editor: Editor) {
 
     val internals = editor.internals
     var contents by internals::contents
-    fun updateText() = internals.updateText()
+    open fun updateText() = internals.updateText()
 
     abstract fun recieveText(text: String)
     abstract fun keyDown(key: Key)

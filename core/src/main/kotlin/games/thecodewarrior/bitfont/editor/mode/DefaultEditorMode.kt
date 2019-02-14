@@ -2,9 +2,38 @@ package games.thecodewarrior.bitfont.editor.mode
 
 import games.thecodewarrior.bitfont.editor.Editor
 import games.thecodewarrior.bitfont.editor.Key
+import games.thecodewarrior.bitfont.typesetting.TypesetString
+import games.thecodewarrior.bitfont.typesetting.TypesetString.GlyphRender
+import games.thecodewarrior.bitfont.utils.Vec2i
+import kotlin.math.abs
 
 class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
+    private var verticalMotionX: Int? = null
+
     var cursor = 0
+        set(value) {
+            if(field != value) {
+                field = value
+                verticalMotionX = null
+                updateCursorPos()
+            }
+        }
+    var cursorGlyph: GlyphRender? = null
+    var cursorPos: Vec2i = Vec2i(0, 0)
+
+    override fun updateText() {
+        super.updateText()
+        updateCursorPos()
+    }
+
+    fun updateCursorPos() {
+        val atCursor = internals.typesetString.glyphMap[cursor]
+        val beforeCursor = internals.typesetString.glyphMap[cursor-1]
+        cursorGlyph = atCursor ?: beforeCursor
+        cursorPos = atCursor?.pos ?:
+            beforeCursor?.posAfter ?:
+            Vec2i(0, editor.font.ascent)
+    }
 
     override fun recieveText(text: String) {
         insert(text)
@@ -30,6 +59,7 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
                 updateText()
             }
         }
+
         addAction(Key.LEFT) {
             if(cursor > 0)
                 cursor--
@@ -38,6 +68,37 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
             if(cursor < contents.length)
                 cursor++
         }
+        addAction(Key.UP) {
+            cursorGlyph?.also {
+                if(it.line == 0) {
+                    val x = verticalMotionX ?: cursorPos.x
+                    cursor = 0
+                    verticalMotionX = x
+                } else {
+                    val x = verticalMotionX ?: cursorPos.x
+                    val closest = internals.typesetString.lines[it.line-1].minBy { abs(x - it.pos.x) }
+                    if(closest != null)
+                        cursor = closest.characterIndex
+                    verticalMotionX = x
+                }
+            }
+        }
+        addAction(Key.DOWN) {
+            cursorGlyph?.also {
+                if(it.line == internals.typesetString.lines.size-1) {
+                    val x = verticalMotionX ?: cursorPos.x
+                    cursor = contents.length
+                    verticalMotionX = x
+                } else {
+                    val x = verticalMotionX ?: cursorPos.x
+                    val closest = internals.typesetString.lines[it.line+1].minBy { abs(x - it.pos.x) }
+                    if(closest != null)
+                        cursor = closest.characterIndex
+                    verticalMotionX = x
+                }
+            }
+        }
+
         addAction(Key.ENTER) {
             insert("\n")
         }

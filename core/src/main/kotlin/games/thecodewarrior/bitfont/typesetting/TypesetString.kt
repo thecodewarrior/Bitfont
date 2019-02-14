@@ -50,6 +50,8 @@ open class TypesetString(
         protected set
     open var lines: List<List<GlyphRender>> = emptyList()
         protected set
+    open var glyphMap: Map<Int, GlyphRender> = emptyMap()
+        protected set
 
     protected open fun fontFor(index: Int): Bitfont {
         return attributedString[Attribute.font, codepointIndices[index]]?.let {
@@ -95,9 +97,8 @@ open class TypesetString(
      */
     protected open fun typeset() {
         val runRanges = makeRuns()
-        val runGlyphs = runRanges.map { it to layoutRun(it) }
-        val glyphs = mutableListOf<GlyphRender>()
-        val lines = mutableListOf<List<GlyphRender>>()
+        val runGlyphs = runRanges.mapIndexed { i, range -> range to layoutRun(i, range) }
+        val lines = mutableListOf<MutableList<GlyphRender>>()
         var y = 0
         runGlyphs.forEachIndexed { i, (range, run) ->
             var maxAscent = 0
@@ -119,15 +120,29 @@ open class TypesetString(
                     posAfter = Vec2i(it.posAfter.x, it.pos.y + y)
                 )
             }
-            glyphs.addAll(offsetGlyphs)
-            lines.add(offsetGlyphs)
+            lines.lastOrNull()?.also { prevLine ->
+                val lineStart = offsetGlyphs.first().pos
+                if(prevLine.last().codepoint in newlines) {
+                    prevLine[prevLine.size-1] = prevLine.last().copy(posAfter = lineStart)
+                }
+            }
+            lines.add(offsetGlyphs.toMutableList())
             y += maxDescent + lineSpacing
         }
-        this.glyphs = glyphs
+
+        // set the posAfter for trailing newlines
+        lines.lastOrNull()?.also { prevLine ->
+            if(prevLine.last().codepoint in newlines) {
+                y += prevLine.last().font.ascent
+                prevLine[prevLine.size-1] = prevLine.last().copy(posAfter = Vec2i(0, y))
+            }
+        }
+        this.glyphs = lines.flatten()
         this.lines = lines
+        this.glyphMap = glyphs.associateBy { it.characterIndex }
     }
 
-    protected open fun layoutRun(range: IntRange): List<GlyphRender> {
+    protected open fun layoutRun(line: Int, range: IntRange): List<GlyphRender> {
         val list = mutableListOf<GlyphRender>()
         var cursor = 0
         var combiningGap = 0
@@ -135,7 +150,6 @@ open class TypesetString(
         var combiningRectMax = Vec2i(0, 0)
         var combiningPosAfter = Vec2i(0, 0)
         range.forEach {
-            if(codepoints[it] in newlines) return@forEach
             val glyph = glyphFor(it)
             val font = fontFor(it)
             val advance = glyph.calcAdvance(font.spacing)
@@ -151,7 +165,9 @@ open class TypesetString(
                 )
                 combiningPosAfter = Vec2i(cursor + advance, 0)
                 list.add(
-                    GlyphRender(codepointIndices[it], it, codepoints[it], glyph, Vec2i(cursor, 0), Vec2i(cursor + advance, 0),
+                    GlyphRender(codepointIndices[it], it, codepoints[it], line,
+                        font, glyph,
+                        Vec2i(cursor, 0), Vec2i(cursor + advance, 0),
                         attributedString.getAttributes(codepointIndices[it]))
                 )
                 cursor += advance
@@ -202,7 +218,9 @@ open class TypesetString(
                 }
 
                 list.add(
-                    GlyphRender(codepointIndices[it], it, codepoints[it], glyph, Vec2i(newX, newY), combiningPosAfter,
+                    GlyphRender(codepointIndices[it], it, codepoints[it], line,
+                        font, glyph,
+                        Vec2i(newX, newY), combiningPosAfter,
                         attributedString.getAttributes(codepointIndices[it]))
                 )
             }
@@ -227,13 +245,17 @@ open class TypesetString(
         var nextPos: Int? = null
 
         fun addBreak(pos: Int) {
+            lines.add(lineStart until pos)
+            nextPos = pos
+            lineStart = pos
+            x = 0
+        }
+
+        fun findBreak(pos: Int) {
             var charBreak = if(characterBreakIterator.isBoundary(pos)) pos else characterBreakIterator.preceding(pos)
             if(charBreak == lineStart) // this would lead to 0 characters on a line and likely an infinite loop
                 charBreak = characterBreakIterator.following(pos)
-            lines.add(lineStart until charBreak)
-            nextPos = charBreak
-            lineStart = charBreak
-            x = 0
+            addBreak(charBreak)
         }
 
         while(i < codepoints.size) {
@@ -253,12 +275,12 @@ open class TypesetString(
                     val lineBreak = lineBreakIterator.preceding(i)
                     if(lineBreak <= lineStart) { // no available break points on this line, so we have to split by character
                         if(i == lineStart) {
-                            addBreak(i + 1)
+                            findBreak(i + 1)
                         } else {
-                            addBreak(i)
+                            findBreak(i)
                         }
                     } else {
-                        addBreak(lineBreak)
+                        findBreak(lineBreak)
                     }
                 }
             }
@@ -272,7 +294,8 @@ open class TypesetString(
     }
 
     data class GlyphRender(
-        val characterIndex: Int, val codepointIndex: Int, val codepoint: Int, val glyph: Glyph,
+        val characterIndex: Int, val codepointIndex: Int, val codepoint: Int, val line: Int,
+        val font: Bitfont, val glyph: Glyph,
         val pos: Vec2i, val posAfter: Vec2i, val attributes: AttributeMap) {
     }
 

@@ -112,31 +112,21 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
             lastCursor = mode.cursor
             lastCursorChange = System.currentTimeMillis()
         }
-        var cursorGlyph: TypesetString.GlyphRender? = null
-
         textInput.typesetString.glyphs.forEach {
-            if(it.characterIndex == mode.cursor || (cursorGlyph == null && it.characterIndex == mode.cursor-1)) {
-                cursorGlyph = it
-            }
             drawGlyph(it)
         }
 
         val blinkSpeed = 500
         if((System.currentTimeMillis()-lastCursorChange) % (blinkSpeed*2) < blinkSpeed) {
-            cursorGlyph?.also { glyph ->
-                val cursorPos = if (glyph.characterIndex == mode.cursor) glyph.pos.toIm() else glyph.posAfter.toIm()
-                val font = glyph.attributes[Attribute.font] ?: bitfont
-                val cursorMin = cursorPos - Vec2i(1, font.ascent)
-                val cursorMax = cursorPos + Vec2i(0, font.descent)
+            val cursorMin = mode.cursorPos.toIm() - Vec2i(1, bitfont.ascent)
+            val cursorMax = mode.cursorPos.toIm() + Vec2i(0, bitfont.descent)
 
-                drawList.addRect(textOrigin + cursorMin * scale, textOrigin + cursorMax * scale, Colors.white.u32)
-            }
+            drawList.addRect(textOrigin + cursorMin * scale, textOrigin + cursorMax * scale, Colors.white.u32)
         }
     }
 
     fun drawGlyph(char: TypesetString.GlyphRender) {
         val color = char.attributes[Attribute.color] ?: Colors.layoutTest.text
-        val font = char.attributes[Attribute.font] ?: bitfont
         char.glyph.draw(textOrigin + char.pos.toIm() * scale, scale, color.u32)
     }
 }
