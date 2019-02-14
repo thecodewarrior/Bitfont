@@ -10,7 +10,9 @@ import games.thecodewarrior.bitfont.utils.CombiningClass
 import games.thecodewarrior.bitfont.utils.Vec2i
 import games.thecodewarrior.bitfont.utils.extensions.characterBreakIterator
 import games.thecodewarrior.bitfont.utils.extensions.lineBreakIterator
+import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.min
 
 /**
  *
@@ -48,10 +50,32 @@ open class TypesetString(
 
     open var glyphs: List<GlyphRender> = emptyList()
         protected set
-    open var lines: List<List<GlyphRender>> = emptyList()
+    open var lines: List<Line> = emptyList()
         protected set
     open var glyphMap: Map<Int, GlyphRender> = emptyMap()
         protected set
+
+    fun closestCharacter(pos: Vec2i): Int {
+        val absoluteTop = lines.firstOrNull()?.let { it.baseline-it.maxAscent } ?: 0
+        val absoluteBottom = lines.lastOrNull()?.let { it.baseline+it.maxDescent } ?: 0
+        if(pos.y < absoluteTop) {
+            return 0
+        }
+        if(pos.y > absoluteBottom) {
+            return string.length
+        }
+
+        val closestLine = lines.minBy {
+            val top = it.baseline-it.maxAscent
+            val bottom = it.baseline+it.maxDescent
+            if(pos.y in top until bottom) {
+                0
+            } else {
+                min(abs(pos.y - top), abs(pos.y - bottom))
+            }
+        } ?: return 0
+        return closestLine.closestCharacter(pos.x)
+    }
 
     protected open fun fontFor(index: Int): Bitfont {
         return attributedString[Attribute.font, codepointIndices[index]]?.let {
@@ -98,7 +122,8 @@ open class TypesetString(
     protected open fun typeset() {
         val runRanges = makeRuns()
         val runGlyphs = runRanges.mapIndexed { i, range -> range to layoutRun(i, range) }
-        val lines = mutableListOf<MutableList<GlyphRender>>()
+        val lineGlyphs = mutableListOf<MutableList<GlyphRender>>()
+        val lines = mutableListOf<Line>()
         var y = 0
         runGlyphs.forEachIndexed { i, (range, run) ->
             var maxAscent = 0
@@ -120,25 +145,32 @@ open class TypesetString(
                     posAfter = Vec2i(it.posAfter.x, it.pos.y + y)
                 )
             }
-            lines.lastOrNull()?.also { prevLine ->
+            lineGlyphs.lastOrNull()?.also { prevLine ->
                 val lineStart = offsetGlyphs.first().pos
                 if(prevLine.last().codepoint in newlines) {
                     prevLine[prevLine.size-1] = prevLine.last().copy(posAfter = lineStart)
                 }
             }
-            lines.add(offsetGlyphs.toMutableList())
+            lineGlyphs.add(offsetGlyphs.toMutableList())
+            lines.add(Line(
+                i, y, maxAscent, maxDescent,
+                offsetGlyphs.first().pos.x, offsetGlyphs.last().posAfter.x,
+                emptyList()
+            ))
             y += maxDescent + lineSpacing
         }
 
         // set the posAfter for trailing newlines
-        lines.lastOrNull()?.also { prevLine ->
+        lineGlyphs.lastOrNull()?.also { prevLine ->
             if(prevLine.last().codepoint in newlines) {
                 y += prevLine.last().font.ascent
                 prevLine[prevLine.size-1] = prevLine.last().copy(posAfter = Vec2i(0, y))
             }
         }
-        this.glyphs = lines.flatten()
-        this.lines = lines
+        this.glyphs = lineGlyphs.flatten()
+        this.lines = lines.mapIndexed { i, it ->
+            it.copy(glyphs = lineGlyphs[i])
+        }
         this.glyphMap = glyphs.associateBy { it.characterIndex }
     }
 
@@ -297,6 +329,17 @@ open class TypesetString(
         val characterIndex: Int, val codepointIndex: Int, val codepoint: Int, val line: Int,
         val font: Bitfont, val glyph: Glyph,
         val pos: Vec2i, val posAfter: Vec2i, val attributes: AttributeMap) {
+    }
+
+    data class Line(
+        val lineNumber: Int, val baseline: Int,
+        val maxAscent: Int, val maxDescent: Int,
+        val startX: Int, val endX: Int,
+        val glyphs: List<GlyphRender>
+    ) {
+        fun closestCharacter(pos: Int): Int {
+            return glyphs.minBy { abs(pos - it.pos.x) }?.characterIndex ?: 0
+        }
     }
 
     companion object {

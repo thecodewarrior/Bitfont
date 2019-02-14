@@ -6,6 +6,7 @@ import games.thecodewarrior.bitfont.editor.mode.EditorMode
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import games.thecodewarrior.bitfont.typesetting.TypesetString
+import games.thecodewarrior.bitfont.utils.Vec2i
 import games.thecodewarrior.bitfont.utils.extensions.getValue
 import games.thecodewarrior.bitfont.utils.extensions.setValue
 
@@ -45,12 +46,23 @@ class Editor(font: Bitfont, width: Int) {
         mode.receiveText(text)
     }
 
-    fun inputKeyChanges(changes: Map<Key, Boolean>) {
-        changes.forEach { key, state ->
-            if(state)
-                mode.keyDown(key)
-            else
-                mode.keyUp(key)
-        }
+    fun inputKeyDown(key: Key) {
+        mode.keyDown(key)
+    }
+
+    fun inputKeyUp(key: Key) {
+        mode.keyUp(key)
+    }
+
+    fun inputMouseMove(pos: Vec2i) {
+        mode.mouseMove(pos)
+    }
+
+    fun inputMouseDown(button: MouseButton) {
+        mode.mouseDown(button)
+    }
+
+    fun inputMouseUp(button: MouseButton) {
+        mode.mouseUp(button)
     }
 }

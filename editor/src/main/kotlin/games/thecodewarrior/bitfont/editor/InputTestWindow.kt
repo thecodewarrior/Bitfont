@@ -9,6 +9,7 @@ import games.thecodewarrior.bitfont.editor.utils.extensions.cString
 import games.thecodewarrior.bitfont.editor.utils.extensions.color
 import games.thecodewarrior.bitfont.editor.utils.extensions.draw
 import games.thecodewarrior.bitfont.editor.utils.extensions.fromGlfw
+import games.thecodewarrior.bitfont.editor.utils.extensions.toBit
 import games.thecodewarrior.bitfont.editor.utils.extensions.toIm
 import games.thecodewarrior.bitfont.editor.utils.extensions.u32
 import games.thecodewarrior.bitfont.typesetting.font
@@ -20,6 +21,7 @@ import imgui.functionalProgramming.withItemWidth
 import imgui.g
 import imgui.internal.Rect
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 class InputTestWindow(val document: BitfontDocument): IMWindow() {
     val bitfont: Bitfont = document.bitfont
@@ -37,6 +39,8 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
         get() = canvas.min + Vec2(5, 5)
 
     val prevKeysDown = BooleanArray(ImGui.io.keysDown.size)
+    val prevMouseDown = BooleanArray(ImGui.io.mouseDown.size)
+    var prevMousePos = Vec2i(0, 0)
 
     init {
     }
@@ -48,15 +52,36 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
             if(io.keyAlt) Modifier.ALT else null,
             if(io.keySuper) Modifier.SUPER else null
         ).toTypedArray()))
-        textInput.inputKeyChanges(
-            io.keysDown.withIndex().filter { (i, isDown) ->
-                val wasDown = prevKeysDown[i]
-                prevKeysDown[i] = isDown
-                isDown != wasDown
-            }.associate { (i, isDown) ->
-                Key.fromGlfw(i) to isDown
-            }
-        )
+
+        io.keysDown.forEachIndexed { i, isDown ->
+            val wasDown = prevKeysDown[i]
+            prevKeysDown[i] = isDown
+            if(isDown && !wasDown)
+                textInput.inputKeyDown(Key.fromGlfw(i))
+            else if(!isDown && wasDown)
+                textInput.inputKeyUp(Key.fromGlfw(i))
+        }
+
+        val relativeMousePos =
+            if(io.mousePos.x == -Float.MAX_VALUE)
+                prevMousePos
+            else
+                (Vec2(io.mousePos - textOrigin) / scale).let {
+                    Vec2i(it.x.roundToInt(), it.y.roundToInt())
+                }
+        if(relativeMousePos != prevMousePos) {
+            textInput.inputMouseMove(relativeMousePos.toBit())
+            prevMousePos = relativeMousePos
+        }
+        io.mouseDown.forEachIndexed { i, isDown ->
+            if(prevMouseDown[i] == isDown) return@forEachIndexed
+            prevMouseDown[i] = isDown
+            if(isDown)
+                textInput.inputMouseDown(MouseButton.values()[i+1])
+            else
+                textInput.inputMouseUp(MouseButton.values()[i+1])
+        }
+
         val text = io.inputCharacters.cString()
         if(text.isNotEmpty())
             textInput.inputText(text)

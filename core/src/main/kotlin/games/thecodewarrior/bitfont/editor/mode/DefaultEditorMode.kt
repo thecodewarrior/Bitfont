@@ -2,10 +2,12 @@ package games.thecodewarrior.bitfont.editor.mode
 
 import games.thecodewarrior.bitfont.editor.Editor
 import games.thecodewarrior.bitfont.editor.Key
+import games.thecodewarrior.bitfont.editor.MouseButton
 import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.typesetting.TypesetString.GlyphRender
 import games.thecodewarrior.bitfont.utils.Vec2i
 import kotlin.math.abs
+import kotlin.math.min
 
 class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
     private var verticalMotionX: Int? = null
@@ -81,9 +83,7 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
                         else
                             it.line-1
                     val x = verticalMotionX ?: cursorPos.x
-                    val closest = internals.typesetString.lines[nextLine].minBy { abs(x - it.pos.x) }
-                    if(closest != null)
-                        cursor = closest.characterIndex
+                    cursor = internals.typesetString.lines[nextLine].closestCharacter(x)
                     verticalMotionX = x
                 }
             }
@@ -101,9 +101,7 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
                         else
                             it.line+1
                     val x = verticalMotionX ?: cursorPos.x
-                    val closest = internals.typesetString.lines[nextLine].minBy { abs(x - it.pos.x) }
-                    if(closest != null)
-                        cursor = closest.characterIndex
+                    cursor = internals.typesetString.lines[nextLine].closestCharacter(x)
                     verticalMotionX = x
                 }
             }
@@ -112,5 +110,11 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
         addAction(Key.ENTER) {
             insert("\n")
         }
+
+        addAction(MouseButton.LEFT) {
+            cursor = internals.typesetString.closestCharacter(mousePos)
+        }
     }
+
+
 }
