@@ -3,7 +3,6 @@ package games.thecodewarrior.bitfont.editor
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.editor.mode.DefaultEditorMode
 import games.thecodewarrior.bitfont.editor.mode.EditorMode
-import games.thecodewarrior.bitfont.editor.mode.SimpleEditorMode
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import games.thecodewarrior.bitfont.typesetting.TypesetString
@@ -43,7 +42,7 @@ class Editor(font: Bitfont, width: Int) {
     }
 
     fun inputText(text: String) {
-        mode.recieveText(text)
+        mode.receiveText(text)
     }
 
     fun inputKeyChanges(changes: Map<Key, Boolean>) {

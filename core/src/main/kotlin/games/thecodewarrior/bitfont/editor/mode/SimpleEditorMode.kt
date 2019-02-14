@@ -15,7 +15,7 @@ open class SimpleEditorMode(editor: Editor): EditorMode(editor) {
         actionList.sort()
     }
 
-    override fun recieveText(text: String) {
+    override fun receiveText(text: String) {
         contents.append(text)
         updateText()
     }

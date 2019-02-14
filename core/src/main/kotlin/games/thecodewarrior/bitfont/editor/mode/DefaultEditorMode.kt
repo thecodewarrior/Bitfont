@@ -35,7 +35,7 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
             Vec2i(0, editor.font.ascent)
     }
 
-    override fun recieveText(text: String) {
+    override fun receiveText(text: String) {
         insert(text)
     }
 
