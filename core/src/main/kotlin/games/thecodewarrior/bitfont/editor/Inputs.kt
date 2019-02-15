@@ -147,14 +147,16 @@ class Modifiers private constructor(private val bits: Int) {
     val modifiers: List<Modifier> = Modifier.values().filter { it in this }
     val count = modifiers.size
 
-    operator fun contains(mod: Modifier) = bits and mod.bitmask != 0
-    operator fun contains(mods: Modifiers) = bits and mods.bits == mods.bits
+    operator fun contains(mod: Modifier) = this == WILDCARD || bits and mod.bitmask != 0
+    operator fun contains(mods: Modifiers) = this == WILDCARD || bits and mods.bits == mods.bits
 
     operator fun plus(mod: Modifier) = Modifiers(bits or mod.bitmask)
     operator fun plus(mods: Modifiers) = Modifiers(bits or mods.bits)
 
     operator fun minus(mod: Modifier) = Modifiers(bits and mod.bitmask.inv())
     operator fun minus(mods: Modifiers) = Modifiers(bits and mods.bits.inv())
+
+    fun matches(mods: Modifiers) = this == WILDCARD || this == mods
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -169,7 +171,9 @@ class Modifiers private constructor(private val bits: Int) {
         return bits
     }
 
-    companion object
+    companion object {
+        val WILDCARD = Modifiers(1 shl (Modifier.values().size+1))
+    }
 }
 
 enum class MouseButton {

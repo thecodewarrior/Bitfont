@@ -3,6 +3,7 @@ package games.thecodewarrior.bitfont.utils
 import java.util.Collections
 import java.util.NavigableMap
 import java.util.TreeMap
+import kotlin.math.min
 
 interface RangeMap<K: Comparable<K>, V> {
     val entries: Collection<Entry<K, V>>
@@ -84,8 +85,8 @@ class TreeRangeMap<K: Comparable<K>, V> private constructor(
     override fun shift(min: K?, max: K?, transform: (K) -> K) {
         if(tree.isEmpty()) return
 
-        val min = min ?: tree.firstEntry().value.start
         val max = max ?: tree.lastEntry().value.end
+        val min = (min ?: tree.firstEntry().value.start).let { if(max < it) max else it }
 
         slice(min)
         slice(max)

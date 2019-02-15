@@ -3,7 +3,10 @@ package games.thecodewarrior.bitfont.editor.mode
 import games.thecodewarrior.bitfont.editor.Editor
 import games.thecodewarrior.bitfont.editor.Key
 import games.thecodewarrior.bitfont.editor.Modifier
+import games.thecodewarrior.bitfont.editor.Modifiers
 import games.thecodewarrior.bitfont.editor.MouseButton
+import games.thecodewarrior.bitfont.editor.utils.Clipboard
+import games.thecodewarrior.bitfont.editor.utils.InternalClipboard
 import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.typesetting.TypesetString.GlyphRender
 import games.thecodewarrior.bitfont.utils.Vec2i
@@ -36,6 +39,11 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
 
     var cursorGlyph: GlyphRender? = null
     var cursorPos: Vec2i = Vec2i(0, 0)
+    var clipboard: Clipboard = InternalClipboard
+
+    init {
+        updateCursorPos()
+    }
 
     override fun updateText() {
         super.updateText()
@@ -72,124 +80,161 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
     }
 
     init {
-        addAction(Key.BACKSPACE) {
-            val selectionStart = selectionStart
-            if(selectionStart != null) {
-                if(cursor < selectionStart) {
-                    contents.delete(cursor, selectionStart)
-                } else if(cursor > selectionStart) {
-                    contents.delete(selectionStart, cursor)
-                    cursor = selectionStart
-                }
-                this.selectionStart = null
-                updateText()
-            } else if(cursor > 0) {
-                contents.delete(cursor-1, cursor)
-                cursor--
-                updateText()
+        keyAction(Key.BACKSPACE, Modifiers.WILDCARD, ::backspace)
+        keyAction(Key.DELETE, Modifiers.WILDCARD, ::delete)
+        keyAction(Key.ENTER, Modifiers.WILDCARD, ::enter)
+
+        keyAction(Key.LEFT, Modifiers.WILDCARD, ::moveLeft)
+        keyAction(Key.RIGHT, Modifiers.WILDCARD, ::moveRight)
+
+        keyAction(Key.UP, Modifiers.WILDCARD, ::moveUp)
+        keyAction(Key.DOWN, Modifiers.WILDCARD, ::moveDown)
+
+        mouseAction(MouseButton.LEFT, Modifiers.WILDCARD, ::leftMouseDown, {}, ::leftMouseDrag)
+
+        keyAction(Key.V, Modifier.SUPER, ::paste)
+        keyAction(Key.C, Modifier.SUPER, ::copy)
+        keyAction(Key.X, Modifier.SUPER, ::cut)
+    }
+
+    private fun backspace() {
+        val selectionStart = selectionStart
+        if (selectionStart != null) {
+            if (cursor < selectionStart) {
+                contents.delete(cursor, selectionStart)
+            } else if (cursor > selectionStart) {
+                contents.delete(selectionStart, cursor)
+                cursor = selectionStart
+            }
+            this.selectionStart = null
+            updateText()
+        } else if (cursor > 0) {
+            contents.delete(cursor - 1, cursor)
+            cursor--
+            updateText()
+        }
+    }
+
+    private fun delete() {
+        if (cursor < contents.length) {
+            contents.delete(cursor, cursor + 1)
+            updateText()
+        }
+    }
+
+    private fun enter() {
+        insert("\n")
+    }
+
+    private fun moveLeft() {
+        val selectionStart = selectionStart ?: cursor
+        if(cursor > 0)
+            cursor--
+
+        if(Modifier.SHIFT in modifiers)
+            this.selectionStart = selectionStart
+    }
+
+    private fun moveRight() {
+        val selectionStart = selectionStart ?: cursor
+        if(cursor < contents.length)
+            cursor++
+
+        if(Modifier.SHIFT in modifiers)
+            this.selectionStart = selectionStart
+    }
+
+    private fun moveUp() {
+        val selectionStart = selectionStart ?: cursor
+        cursorGlyph?.also {
+            if(it.line == 0) {
+                val x = verticalMotionX ?: cursorPos.x
+                cursor = 0
+                verticalMotionX = x
+            } else {
+                val nextLine =
+                    if(cursor == contents.length && verticalMotionX != null && verticalMotionX != cursorPos.x)
+                        it.line
+                    else
+                        it.line-1
+                val x = verticalMotionX ?: cursorPos.x
+                cursor = internals.typesetString.lines[nextLine].closestCharacter(x)
+                verticalMotionX = x
             }
         }
-        addAction(Key.DELETE) {
-            if(cursor < contents.length) {
-                contents.delete(cursor, cursor+1)
-                updateText()
+        if(Modifier.SHIFT in modifiers)
+            this.selectionStart = selectionStart
+    }
+
+    private fun moveDown() {
+        val selectionStart = selectionStart ?: cursor
+        cursorGlyph?.also {
+            if(it.line == internals.typesetString.lines.size-1) {
+                val x = verticalMotionX ?: cursorPos.x
+                cursor = contents.length
+                verticalMotionX = x
+            } else {
+                val nextLine =
+                    if(cursor == 0 && verticalMotionX != null && verticalMotionX != cursorPos.x)
+                        it.line
+                    else
+                        it.line+1
+                val x = verticalMotionX ?: cursorPos.x
+                cursor = internals.typesetString.lines[nextLine].closestCharacter(x)
+                verticalMotionX = x
             }
         }
-
-        addAction(Key.LEFT) {
-            if(cursor > 0)
-                cursor--
-        }
-        addAction(Key.LEFT, Modifier.SHIFT) {
-            val selectionStart = selectionStart ?: cursor
-            if(cursor > 0)
-                cursor--
+        if(Modifier.SHIFT in modifiers)
             this.selectionStart = selectionStart
-        }
-        addAction(Key.RIGHT) {
-            if(cursor < contents.length)
-                cursor++
-        }
-        addAction(Key.RIGHT, Modifier.SHIFT) {
-            val selectionStart = selectionStart ?: cursor
-            if(cursor < contents.length)
-                cursor++
-            this.selectionStart = selectionStart
-        }
+    }
 
-        fun cursorUp() {
-            cursorGlyph?.also {
-                if(it.line == 0) {
-                    val x = verticalMotionX ?: cursorPos.x
-                    cursor = 0
-                    verticalMotionX = x
-                } else {
-                    val nextLine =
-                        if(cursor == contents.length && verticalMotionX != null && verticalMotionX != cursorPos.x)
-                            it.line
-                        else
-                            it.line-1
-                    val x = verticalMotionX ?: cursorPos.x
-                    cursor = internals.typesetString.lines[nextLine].closestCharacter(x)
-                    verticalMotionX = x
-                }
-            }
-        }
-        addAction(Key.UP) { cursorUp() }
-        addAction(Key.UP, Modifier.SHIFT) {
-            val selectionStart = selectionStart ?: cursor
-            cursorUp()
-            this.selectionStart = selectionStart
-        }
-        fun cursorDown() {
-            cursorGlyph?.also {
-                if(it.line == internals.typesetString.lines.size-1) {
-                    val x = verticalMotionX ?: cursorPos.x
-                    cursor = contents.length
-                    verticalMotionX = x
-                } else {
-                    val nextLine =
-                        if(cursor == 0 && verticalMotionX != null && verticalMotionX != cursorPos.x)
-                            it.line
-                        else
-                            it.line+1
-                    val x = verticalMotionX ?: cursorPos.x
-                    cursor = internals.typesetString.lines[nextLine].closestCharacter(x)
-                    verticalMotionX = x
-                }
-            }
-        }
-        addAction(Key.DOWN) { cursorDown() }
-        addAction(Key.DOWN, Modifier.SHIFT) {
-            val selectionStart = selectionStart ?: cursor
-            cursorDown()
-            this.selectionStart = selectionStart
-        }
-
-        addAction(Key.ENTER) {
-            insert("\n")
-        }
-
-        addAction(MouseButton.LEFT) {
-            cursor = internals.typesetString.closestCharacter(mousePos)
-        }
-        addAction(MouseButton.LEFT, Modifier.SHIFT) {
-            val newPos = internals.typesetString.closestCharacter(mousePos)
+    private fun leftMouseDown() {
+        val newPos = internals.typesetString.closestCharacter(mousePos)
+        if(Modifier.SHIFT in modifiers) {
             val selection = selectionRange
-            if(selection == null) {
+            if (selection == null) {
                 val currentCursor = cursor
                 cursor = newPos
                 this.selectionStart = currentCursor
             } else {
                 cursor = newPos
-                if(abs(selection.start - newPos) < abs(selection.endExclusive - newPos)) {
+                if (abs(selection.start - newPos) < abs(selection.endExclusive - newPos)) {
                     selectionStart = selection.endInclusive
                 } else {
                     selectionStart = selection.start
                 }
             }
+            return
+        }
+
+        cursor = newPos
+    }
+
+    private fun leftMouseDrag(previousPos: Vec2i) {
+        val selectionStart = selectionStart ?: cursor
+        cursor = internals.typesetString.closestCharacter(mousePos)
+        this.selectionStart = selectionStart
+    }
+
+    private fun paste() {
+        clipboard.contents?.also {
+            if(it.isNotEmpty()) insert(it)
         }
     }
 
+    private fun copy() {
+        selectionRange?.also {
+            clipboard.contents = contents.plaintext.substring(it)
+            selectionStart = null
+        }
+    }
 
+    private fun cut() {
+        selectionRange?.also {
+            copy()
+            contents.delete(it.start, it.endExclusive)
+            cursor = it.start
+            updateText()
+        }
+    }
 }

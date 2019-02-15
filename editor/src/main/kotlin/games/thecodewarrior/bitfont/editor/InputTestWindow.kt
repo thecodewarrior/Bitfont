@@ -5,6 +5,7 @@ import games.thecodewarrior.bitfont.editor.mode.DefaultEditorMode
 import games.thecodewarrior.bitfont.utils.Attribute
 import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.editor.utils.Colors
+import games.thecodewarrior.bitfont.editor.utils.GlfwClipboard
 import games.thecodewarrior.bitfont.editor.utils.extensions.cString
 import games.thecodewarrior.bitfont.editor.utils.extensions.color
 import games.thecodewarrior.bitfont.editor.utils.extensions.copy
@@ -13,6 +14,8 @@ import games.thecodewarrior.bitfont.editor.utils.extensions.fromGlfw
 import games.thecodewarrior.bitfont.editor.utils.extensions.toBit
 import games.thecodewarrior.bitfont.editor.utils.extensions.toIm
 import games.thecodewarrior.bitfont.editor.utils.extensions.u32
+import games.thecodewarrior.bitfont.typesetting.font
+import games.thecodewarrior.bitfont.utils.extensions.endExclusive
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import imgui.FocusedFlag
@@ -30,6 +33,7 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
         get() = "${bitfont.name}: Testing"
 
     val editor = Editor(bitfont, -1)
+    val mode = editor.mode as DefaultEditorMode
     var selection: IntRange? = null
 
     var scale = 2
@@ -45,6 +49,7 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
     var prevMousePos = Vec2i(0, 0)
 
     init {
+        mode.clipboard = GlfwClipboard
     }
 
     fun handleInput() = with(ImGui) {
@@ -134,7 +139,6 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
 
         editor.width = (textRegion.width / scale).toInt()
 
-        val mode = editor.mode as DefaultEditorMode
         if(mode.cursor != lastCursor) {
             lastCursor = mode.cursor
             lastCursorChange = System.currentTimeMillis()
@@ -158,11 +162,11 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
         }
 
         val blinkSpeed = 500
-        if((System.currentTimeMillis()-lastCursorChange) % (blinkSpeed*2) < blinkSpeed) {
-            val cursorMin = mode.cursorPos.toIm() - Vec2i(1, bitfont.ascent)
+        if(selection == null && (System.currentTimeMillis()-lastCursorChange) % (blinkSpeed*2) < blinkSpeed) {
+            val cursorMin = mode.cursorPos.toIm() - Vec2i(0, bitfont.ascent)
             val cursorMax = mode.cursorPos.toIm() + Vec2i(0, bitfont.descent)
 
-            drawList.addRect(textOrigin + cursorMin * scale, textOrigin + cursorMax * scale, Colors.white.u32)
+            drawList.addRectFilled(textOrigin - Vec2i(1, 0) + cursorMin * scale, textOrigin + cursorMax * scale, Colors.white.u32)
         }
     }
 

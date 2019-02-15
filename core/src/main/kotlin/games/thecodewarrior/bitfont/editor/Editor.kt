@@ -15,12 +15,14 @@ class Editor(font: Bitfont, width: Int) {
         set(value) {
             if(field != value) {
                 field = value
+                mode.updateText()
             }
         }
     var width = width
         set(value) {
             if(field != value) {
                 field = value
+                mode.updateText()
             }
         }
 

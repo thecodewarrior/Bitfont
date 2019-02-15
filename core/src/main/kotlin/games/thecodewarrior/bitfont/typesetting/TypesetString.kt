@@ -89,7 +89,6 @@ open class TypesetString(
     }
 
     protected open fun advanceFor(index: Int): Int {
-        val combiningClass = UCharacter.getCombiningClass(codepoints[index])
         return glyphFor(index).calcAdvance(fontFor(index).spacing)
     }
 

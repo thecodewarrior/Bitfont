@@ -16,17 +16,33 @@ open class SimpleEditorMode(editor: Editor): EditorMode(editor) {
     private var currentKeyAction: KeyEditorAction? = null
     private var currentMouseAction: MouseEditorAction? = null
 
-    fun addAction(key: Key, vararg modifiers: Modifier,
-        keyDown: () -> Unit
+    @JvmOverloads
+    fun keyAction(
+        key: Key,
+        keyDown: () -> Unit,
+        keyUp: () -> Unit = {}
     ) {
-        addAction(key, modifiers, keyDown, {})
+        keyAction(key, Modifiers(), keyDown, keyUp)
     }
 
-    fun addAction(key: Key, modifiers: Array<out Modifier>,
+    @JvmOverloads
+    fun keyAction(
+        key: Key,
+        modifier: Modifier,
         keyDown: () -> Unit,
-        keyUp: () -> Unit
+        keyUp: () -> Unit = {}
     ) {
-        keyActions.add(object: KeyEditorAction(key, Modifiers(*modifiers)) {
+        keyAction(key, Modifiers(modifier), keyDown, keyUp)
+    }
+
+    @JvmOverloads
+    fun keyAction(
+        key: Key,
+        modifiers: Modifiers,
+        keyDown: () -> Unit,
+        keyUp: () -> Unit = {}
+    ) {
+        keyActions.add(object: KeyEditorAction(key, modifiers) {
             override fun keyDown() {
                 keyDown()
             }
@@ -35,20 +51,41 @@ open class SimpleEditorMode(editor: Editor): EditorMode(editor) {
                 keyUp()
             }
         })
+        keyActions.sortByDescending { if(it.mods == Modifiers.WILDCARD) 0 else it.mods.count }
     }
 
-    fun addAction(button: MouseButton, vararg modifiers: Modifier,
-        mouseDown: () -> Unit
-    ) {
-        addAction(button, modifiers, mouseDown, {}, {})
-    }
 
-    fun addAction(button: MouseButton, modifiers: Array<out Modifier>,
+    @JvmOverloads
+    fun mouseAction(
+        button: MouseButton,
         mouseDown: () -> Unit,
-        mouseUp: () -> Unit,
-        mouseDrag: (previousPos: Vec2i) -> Unit
+        mouseUp: () -> Unit = {},
+        mouseDrag: (previousPos: Vec2i) -> Unit = {}
     ) {
-        mouseActions.add(object: MouseEditorAction(button, Modifiers(*modifiers)) {
+        mouseAction(button, Modifiers(), mouseDown, mouseUp, mouseDrag)
+    }
+
+    @JvmOverloads
+    fun mouseAction(
+        button: MouseButton,
+        modifier: Modifier,
+        mouseDown: () -> Unit,
+        mouseUp: () -> Unit = {},
+        mouseDrag: (previousPos: Vec2i) -> Unit = {}
+    ) {
+        mouseAction(button, Modifiers(modifier), mouseDown, mouseUp, mouseDrag)
+    }
+
+
+    @JvmOverloads
+    fun mouseAction(
+        button: MouseButton,
+        modifiers: Modifiers,
+        mouseDown: () -> Unit,
+        mouseUp: () -> Unit = {},
+        mouseDrag: (previousPos: Vec2i) -> Unit = {}
+    ) {
+        mouseActions.add(object: MouseEditorAction(button, modifiers) {
             override fun mouseDown() {
                 mouseDown()
             }
@@ -61,6 +98,7 @@ open class SimpleEditorMode(editor: Editor): EditorMode(editor) {
                 mouseDrag(previousPos)
             }
         })
+        mouseActions.sortByDescending { if(it.mods == Modifiers.WILDCARD) 0 else it.mods.count }
     }
 
     override fun receiveText(text: String) {
@@ -108,12 +146,12 @@ open class SimpleEditorMode(editor: Editor): EditorMode(editor) {
 abstract class KeyEditorAction(val key: Key, val mods: Modifiers) {
     abstract fun keyDown()
     abstract fun keyUp()
-    fun matches(key: Key, mods: Modifiers) = key == this.key && this.mods == mods
+    fun matches(key: Key, mods: Modifiers) = key == this.key && this.mods.matches(mods)
 }
 
 abstract class MouseEditorAction(val button: MouseButton, val mods: Modifiers) {
     abstract fun mouseDown()
     abstract fun mouseUp()
     abstract fun mouseDrag(previousPos: Vec2i)
-    fun matches(button: MouseButton, mods: Modifiers) = button == this.button && this.mods == mods
+    fun matches(button: MouseButton, mods: Modifiers) = button == this.button && this.mods.matches(mods)
 }
