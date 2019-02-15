@@ -7,6 +7,7 @@ import games.thecodewarrior.bitfont.editor.MouseButton
 import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.typesetting.TypesetString.GlyphRender
 import games.thecodewarrior.bitfont.utils.Vec2i
+import games.thecodewarrior.bitfont.utils.extensions.endExclusive
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -23,6 +24,15 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
             }
         }
     var selectionStart: Int? = null
+    val selectionRange: IntRange?
+        get() = selectionStart?.let {
+            if(cursor < it)
+                cursor until it
+            else if(cursor > it)
+                it until cursor
+            else
+                null
+        }
 
     var cursorGlyph: GlyphRender? = null
     var cursorPos: Vec2i = Vec2i(0, 0)
@@ -162,6 +172,22 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
 
         addAction(MouseButton.LEFT) {
             cursor = internals.typesetString.closestCharacter(mousePos)
+        }
+        addAction(MouseButton.LEFT, Modifier.SHIFT) {
+            val newPos = internals.typesetString.closestCharacter(mousePos)
+            val selection = selectionRange
+            if(selection == null) {
+                val currentCursor = cursor
+                cursor = newPos
+                this.selectionStart = currentCursor
+            } else {
+                cursor = newPos
+                if(abs(selection.start - newPos) < abs(selection.endExclusive - newPos)) {
+                    selectionStart = selection.endInclusive
+                } else {
+                    selectionStart = selection.start
+                }
+            }
         }
     }
 

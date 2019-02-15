@@ -139,14 +139,7 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
             lastCursor = mode.cursor
             lastCursorChange = System.currentTimeMillis()
         }
-        selection = mode.selectionStart?.let {
-            if(mode.cursor < it)
-                mode.cursor until it
-            else if(mode.cursor > it)
-                it until mode.cursor
-            else
-                null
-        }
+        selection = mode.selectionRange
         selection?.let { selection ->
             editor.typesetString.lines.forEach { line ->
                 line.glyphs.forEach { glyph ->
