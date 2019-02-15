@@ -1,5 +1,6 @@
 package games.thecodewarrior.bitfont.data
 
+import games.thecodewarrior.bitfont.utils.Vec2i
 import games.thecodewarrior.bitfont.utils.clamp
 import games.thecodewarrior.bitfont.utils.serialization.MsgPackable
 import games.thecodewarrior.bitfont.utils.serialization.MsgUnpackable
@@ -16,6 +17,12 @@ class Glyph(): MsgPackable {
     var bearingY: Int = 0
         set(value) {
             field = value.clamp(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
+        }
+    var bearing: Vec2i
+        get() = Vec2i(bearingX, bearingY)
+        set(value) {
+            bearingX = value.x
+            bearingY = value.y
         }
     var advance: Int? = null
         set(value) {

@@ -24,3 +24,17 @@ val JColor.vec4: Vec4
 
 fun JColor.toImGui(): IColor
     = IColor(red, green, blue, alpha)
+
+fun JColor.copy(
+    red: Int = this.red,
+    green: Int = this.green,
+    blue: Int = this.blue,
+    alpha: Int = this.alpha
+) = JColor(red, green, blue, alpha)
+
+fun JColor.copy(
+    red: Float = this.red / 255f,
+    green: Float = this.green / 255f,
+    blue: Float = this.blue / 255f,
+    alpha: Float = this.alpha / 255f
+) = JColor(red, green, blue, alpha)

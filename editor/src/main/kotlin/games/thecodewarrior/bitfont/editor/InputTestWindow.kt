@@ -7,12 +7,12 @@ import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.editor.utils.Colors
 import games.thecodewarrior.bitfont.editor.utils.extensions.cString
 import games.thecodewarrior.bitfont.editor.utils.extensions.color
+import games.thecodewarrior.bitfont.editor.utils.extensions.copy
 import games.thecodewarrior.bitfont.editor.utils.extensions.draw
 import games.thecodewarrior.bitfont.editor.utils.extensions.fromGlfw
 import games.thecodewarrior.bitfont.editor.utils.extensions.toBit
 import games.thecodewarrior.bitfont.editor.utils.extensions.toIm
 import games.thecodewarrior.bitfont.editor.utils.extensions.u32
-import games.thecodewarrior.bitfont.typesetting.font
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import imgui.FocusedFlag
@@ -29,7 +29,9 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
     override val title: String
         get() = "${bitfont.name}: Testing"
 
-    val textInput = Editor(bitfont, -1)
+    val editor = Editor(bitfont, -1)
+    var selection: IntRange? = null
+
     var scale = 2
         set(value) {
             field = max(value, 1)
@@ -46,7 +48,7 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
     }
 
     fun handleInput() = with(ImGui) {
-        textInput.inputModifiers(Modifiers(*listOfNotNull(
+        editor.inputModifiers(Modifiers(*listOfNotNull(
             if(io.keyShift) Modifier.SHIFT else null,
             if(io.keyCtrl) Modifier.CONTROL else null,
             if(io.keyAlt) Modifier.ALT else null,
@@ -57,9 +59,9 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
             val wasDown = prevKeysDown[i]
             prevKeysDown[i] = isDown
             if(isDown && !wasDown)
-                textInput.inputKeyDown(Key.fromGlfw(i))
+                editor.inputKeyDown(Key.fromGlfw(i))
             else if(!isDown && wasDown)
-                textInput.inputKeyUp(Key.fromGlfw(i))
+                editor.inputKeyUp(Key.fromGlfw(i))
         }
 
         val relativeMousePos =
@@ -70,21 +72,21 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
                     Vec2i(it.x.roundToInt(), it.y.roundToInt())
                 }
         if(relativeMousePos != prevMousePos) {
-            textInput.inputMouseMove(relativeMousePos.toBit())
+            editor.inputMouseMove(relativeMousePos.toBit())
             prevMousePos = relativeMousePos
         }
         io.mouseDown.forEachIndexed { i, isDown ->
             if(prevMouseDown[i] == isDown) return@forEachIndexed
             prevMouseDown[i] = isDown
             if(isDown)
-                textInput.inputMouseDown(MouseButton.values()[i+1])
+                editor.inputMouseDown(MouseButton.values()[i+1])
             else
-                textInput.inputMouseUp(MouseButton.values()[i+1])
+                editor.inputMouseUp(MouseButton.values()[i+1])
         }
 
         val text = io.inputCharacters.cString()
         if(text.isNotEmpty())
-            textInput.inputText(text)
+            editor.inputText(text)
     }
 
     override fun main(): Unit = with(ImGui) {
@@ -130,14 +132,35 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
         )
         val textRegion = Rect(textOrigin, canvas.max)
 
-        textInput.width = (textRegion.width / scale).toInt()
+        editor.width = (textRegion.width / scale).toInt()
 
-        val mode = textInput.mode as DefaultEditorMode
+        val mode = editor.mode as DefaultEditorMode
         if(mode.cursor != lastCursor) {
             lastCursor = mode.cursor
             lastCursorChange = System.currentTimeMillis()
         }
-        textInput.typesetString.glyphs.forEach {
+        selection = mode.selectionStart?.let {
+            if(mode.cursor < it)
+                mode.cursor until it
+            else if(mode.cursor > it)
+                it until mode.cursor
+            else
+                null
+        }
+        selection?.let { selection ->
+            editor.typesetString.lines.forEach { line ->
+                line.glyphs.forEach { glyph ->
+                    if (glyph.characterIndex in selection && glyph.posAfter.y == glyph.pos.y) {
+                        drawList.addRectFilled(
+                            textOrigin + (glyph.pos.toIm() - Vec2i(0, line.maxAscent)) * scale,
+                            textOrigin + (glyph.posAfter.toIm() + Vec2i(0, line.maxDescent)) * scale,
+                            Colors.cyan.copy(alpha = 0.5f).u32
+                        )
+                    }
+                }
+            }
+        }
+        editor.typesetString.glyphs.forEach {
             drawGlyph(it)
         }
 

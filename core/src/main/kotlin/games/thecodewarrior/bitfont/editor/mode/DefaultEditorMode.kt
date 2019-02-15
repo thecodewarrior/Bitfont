@@ -2,6 +2,7 @@ package games.thecodewarrior.bitfont.editor.mode
 
 import games.thecodewarrior.bitfont.editor.Editor
 import games.thecodewarrior.bitfont.editor.Key
+import games.thecodewarrior.bitfont.editor.Modifier
 import games.thecodewarrior.bitfont.editor.MouseButton
 import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.typesetting.TypesetString.GlyphRender
@@ -17,9 +18,12 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
             if(field != value) {
                 field = value
                 verticalMotionX = null
+                selectionStart = null
                 updateCursorPos()
             }
         }
+    var selectionStart: Int? = null
+
     var cursorGlyph: GlyphRender? = null
     var cursorPos: Vec2i = Vec2i(0, 0)
 
@@ -42,6 +46,16 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
     }
 
     fun insert(text: String) {
+        val selectionStart = selectionStart
+        if(selectionStart != null) {
+            if(cursor < selectionStart) {
+                contents.delete(cursor, selectionStart)
+            } else if(cursor > selectionStart) {
+                contents.delete(selectionStart, cursor)
+                cursor = selectionStart
+            }
+            this.selectionStart = null
+        }
         contents.insert(cursor, text)
         cursor += text.length
         updateText()
@@ -49,7 +63,17 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
 
     init {
         addAction(Key.BACKSPACE) {
-            if(cursor > 0) {
+            val selectionStart = selectionStart
+            if(selectionStart != null) {
+                if(cursor < selectionStart) {
+                    contents.delete(cursor, selectionStart)
+                } else if(cursor > selectionStart) {
+                    contents.delete(selectionStart, cursor)
+                    cursor = selectionStart
+                }
+                this.selectionStart = null
+                updateText()
+            } else if(cursor > 0) {
                 contents.delete(cursor-1, cursor)
                 cursor--
                 updateText()
@@ -66,11 +90,24 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
             if(cursor > 0)
                 cursor--
         }
+        addAction(Key.LEFT, Modifier.SHIFT) {
+            val selectionStart = selectionStart ?: cursor
+            if(cursor > 0)
+                cursor--
+            this.selectionStart = selectionStart
+        }
         addAction(Key.RIGHT) {
             if(cursor < contents.length)
                 cursor++
         }
-        addAction(Key.UP) {
+        addAction(Key.RIGHT, Modifier.SHIFT) {
+            val selectionStart = selectionStart ?: cursor
+            if(cursor < contents.length)
+                cursor++
+            this.selectionStart = selectionStart
+        }
+
+        fun cursorUp() {
             cursorGlyph?.also {
                 if(it.line == 0) {
                     val x = verticalMotionX ?: cursorPos.x
@@ -88,7 +125,13 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
                 }
             }
         }
-        addAction(Key.DOWN) {
+        addAction(Key.UP) { cursorUp() }
+        addAction(Key.UP, Modifier.SHIFT) {
+            val selectionStart = selectionStart ?: cursor
+            cursorUp()
+            this.selectionStart = selectionStart
+        }
+        fun cursorDown() {
             cursorGlyph?.also {
                 if(it.line == internals.typesetString.lines.size-1) {
                     val x = verticalMotionX ?: cursorPos.x
@@ -105,6 +148,12 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
                     verticalMotionX = x
                 }
             }
+        }
+        addAction(Key.DOWN) { cursorDown() }
+        addAction(Key.DOWN, Modifier.SHIFT) {
+            val selectionStart = selectionStart ?: cursor
+            cursorDown()
+            this.selectionStart = selectionStart
         }
 
         addAction(Key.ENTER) {
