@@ -1,7 +1,6 @@
 package games.thecodewarrior.bitfont.typesetting
 
 import com.ibm.icu.lang.UCharacter
-import com.ibm.icu.lang.UProperty
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.utils.Attribute
@@ -13,6 +12,7 @@ import games.thecodewarrior.bitfont.utils.extensions.lineBreakIterator
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.streams.toList
 
 /**
  *
@@ -163,7 +163,7 @@ open class TypesetString(
             }
             lineGlyphs.lastOrNull()?.also { prevLine ->
                 val lineStart = offsetGlyphs.first().pos
-                if(prevLine.last().codepoint in newlines) {
+                if(prevLine.last().codepoint in newlineInts) {
                     prevLine[prevLine.size-1] = prevLine.last().copy(posAfter = lineStart)
                 }
             }
@@ -178,7 +178,7 @@ open class TypesetString(
 
         // set the posAfter for trailing newlines
         lineGlyphs.lastOrNull()?.also { prevLine ->
-            if(prevLine.last().codepoint in newlines) {
+            if(prevLine.last().codepoint in newlineInts) {
                 y += prevLine.last().font.ascent
                 prevLine[prevLine.size-1] = prevLine.last().copy(posAfter = Vec2i(0, y))
             }
@@ -307,7 +307,7 @@ open class TypesetString(
         }
 
         while(i < codepoints.size) {
-            if(codepoints[i] in newlines) {
+            if(codepoints[i] in newlineInts) {
                 val isCrBeforeLf = codepoints[i] == 0x000D && codepoints.getOrNull(i+1) == 0x000A
                 if(isCrBeforeLf)
                     addBreak(i+2)
@@ -362,7 +362,8 @@ open class TypesetString(
     }
 
     companion object {
-        val newlines = listOf(0x000a, 0x000b, 0x000c, 0x000d, 0x00085, 0x2028, 0x2029)
+        val newlines = "\u000a\u000b\u000c\u000d\u0085\u2028\u2029"
+        val newlineInts = newlines.chars().toList()
     }
 }
 

@@ -36,39 +36,45 @@ specialty:
   ctrl+tab => insert tab (for when tab would move to the next control)
 
 Mac:
-
-// a "paragraph" is a logical line (from one newline to the next) whereas a "line" is a visual line
-potential/todo:
+  alt+left => move cursor to the beginning of the previous word
+  alt+right => move the cursor to the end of the next word
+  click => set cursor under mouse
+  shift+click => select from cursor to mouse
+  double-click => select word
+  double-click+drag => expand selection by words
+  triple-click => select paragraph
+  triple-click+drag => expand selection by paragraphs
   cmd+x => cut
   cmd+c => copy
   cmd+v => paste
+  alt+backspace => delete backward to the next word boundary
+  cmd+a => select all
+  ctrl+k => delete until the next paragraph break
+  ctrl+h => delete the character behind the cursor (equivalent to backspace)
+  ctrl+d / fn+backspace / delete => delete the character in front of the cursor
+  ctrl+f => move one character forward
+  ctrl+b => move one character backward
+  alt+up => move to the beginning of the current paragraph, then the beginning of the following paragraph
+  alt+down => move to the end of the current paragraph, then the end of the following paragraph
+  ctrl+a => move to the beginning of the paragraph
+  ctrl+e => move to the end of the paragraph
+  ctrl+p => move up one line
+  ctrl+n => move down one line
+  ctrl+o => insert a new line after the cursor
+  cmd+up => move cursor to the beginning of the document
+  cmd+down => move the cursor to the end of the document
+
+// a "paragraph" is a logical line (from one newline to the next) whereas a "line" is a visual line
+potential/todo:
   cmd+z => undo
   shift+cmd+z => redo
-  cmd+a => select all
-  alt+backspace => delete backward to the next word boundary
-  ctrl+h => delete the character behind the cursor (equivalent to backspace)
-  ctrl+h / fn+backspace / delete => delete the character in front of the cursor
-  ctrl+k => delete until the next paragraph break
   fn+up / page up => scroll up one page
   fn+down / page down => scroll down one page
   fn+left / home => scroll to the beginning of the document
   fn+right / end => scroll to the end of the document
-  cmd+up => move cursor to the beginning of the document
-  cmd+down => move the cursor to the end of the document
   cmd+left => move the cursor to the beginning of the current line
   cmd+right => move the cursor to the end of the current line
-  alt+up => move to the beginning of the current paragraph, then the beginning of the following paragraph
-  alt+down => move to the end of the current paragraph, then the end of the following paragraph
-  alt+left => move cursor to the beginning of the previous word
-  alt+right => move the cursor to the end of the next word
-  ctrl+a => move to the beginning of the paragraph
-  ctrl+e => move to the end of the paragraph
-  ctrl+f => move one character forward
-  ctrl+b => move one character backward
   ctrl+l => scroll to place the cursor or selection in the center of the visible area
-  ctrl+p => move up one line
-  ctrl+n => move down one line
-  ctrl+o => insert a new line after the cursor
   ctrl+t => swap the character behind the cursor with the one in front of it
 
 specialty:
@@ -88,11 +94,29 @@ specialty:
   shift+tab => move to previous control
   alt+tab => insert tab (for when tab would move to the next control)
 
-Ubuntu:
+Linux:
 
 pending/todo:
-  ctrl+right => move to the end of the next word
-  ctrl+left => move to the start of the previous word
+  ctrl+x / shift+del => cut
+  ctrl+c / ctrl+insert => copy
+  ctrl+v / shift+insert => paste
+  ctrl+z => undo
+  ctrl+shift+z => redo
+  ctrl+right => cursor to start of next word
+  ctrl+left => cursor to start of prev word
+  ctrl+down => move down 1 line
+  ctrl+up => move up 1 line
+  home => cursor to start of line
+  end => cursor to end of line
+  ctrl+home => cursor to start of document
+  ctrl+end => cursor to end of document
+  ctrl+del => delete forward to word break
+  ctrl+backspace => delete back to word break
+  shift+enter => add newline (for when enter triggers submit)
+  ctrl+enter => submit (for when enter inserts a newline)
+  page up => move up 1 screen
+  page down => move down 1 screen
+  ctrl+a => select all
 
 specialty:
   tab => next control

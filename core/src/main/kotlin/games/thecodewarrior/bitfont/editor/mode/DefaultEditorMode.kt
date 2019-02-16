@@ -2,16 +2,12 @@ package games.thecodewarrior.bitfont.editor.mode
 
 import com.ibm.icu.text.BreakIterator
 import games.thecodewarrior.bitfont.editor.Editor
-import games.thecodewarrior.bitfont.editor.Key
 import games.thecodewarrior.bitfont.editor.Modifier
-import games.thecodewarrior.bitfont.editor.ModifierPattern
-import games.thecodewarrior.bitfont.editor.Modifiers
-import games.thecodewarrior.bitfont.editor.MouseButton
 import games.thecodewarrior.bitfont.editor.utils.Clipboard
 import games.thecodewarrior.bitfont.editor.utils.InternalClipboard
-import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.typesetting.TypesetString.GlyphRender
 import games.thecodewarrior.bitfont.utils.Vec2i
+import games.thecodewarrior.bitfont.utils.clamp
 import games.thecodewarrior.bitfont.utils.extensions.BreakType
 import games.thecodewarrior.bitfont.utils.extensions.endExclusive
 import kotlin.math.abs
@@ -85,34 +81,20 @@ open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
 
     //region actions
 
-    protected fun backspace() {
-        val selectionStart = selectionStart
-        if (selectionStart != null) {
-            if (cursor < selectionStart) {
-                contents.delete(cursor, selectionStart)
-            } else if (cursor > selectionStart) {
-                contents.delete(selectionStart, cursor)
-                cursor = selectionStart
-            }
-            this.selectionStart = null
-            updateText()
-        } else if (cursor > 0) {
-            contents.delete(cursor - 1, cursor)
-            cursor--
-            updateText()
+    protected fun delete(end: Int) {
+        val rangeStart = selectionStart ?: end.clamp(0, contents.length)
+        if (cursor < rangeStart) {
+            contents.delete(cursor, rangeStart)
+        } else if (cursor > rangeStart) {
+            contents.delete(rangeStart, cursor)
+            cursor = rangeStart
         }
-    }
-
-    protected fun delete() {
-        if (cursor < contents.length) {
-            contents.delete(cursor, cursor + 1)
-            updateText()
-        }
+        this.selectionStart = null
+        updateText()
     }
 
     protected fun enter() {
         insert("\n")
-
     }
 
     protected fun moveTo(pos: Int) {

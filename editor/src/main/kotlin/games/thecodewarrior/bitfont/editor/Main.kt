@@ -2,7 +2,6 @@ package games.thecodewarrior.bitfont.editor
 
 import games.thecodewarrior.bitfont.editor.utils.Colors
 import games.thecodewarrior.bitfont.editor.utils.Constants
-import games.thecodewarrior.bitfont.editor.utils.extensions.toImGui
 import games.thecodewarrior.bitfont.editor.utils.extensions.u32
 import games.thecodewarrior.bitfont.editor.utils.ifMacSystem
 import games.thecodewarrior.bitfont.editor.utils.keys
@@ -14,7 +13,6 @@ import gln.glViewport
 import imgui.Context
 import imgui.ImGui
 import imgui.destroy
-import imgui.g
 import imgui.impl.ImplGL3
 import imgui.impl.LwjglGlfw
 import imgui.impl.LwjglGlfw.GlfwClientApi
@@ -25,6 +23,7 @@ import uno.glfw.GlfwWindow
 import uno.glfw.glfw
 import uno.glfw.windowHint
 import kotlin.math.max
+import kotlin.math.min
 
 fun main(args: Array<String>) {
     System.setProperty("java.awt.headless", "true")
@@ -47,10 +46,15 @@ object Main {
                 targetFrameDuration = 0
             else
                 targetFrameDuration = 1000/field
+            waitHistory = DoubleArray(max(1, field*2))
         }
     var lastFrameTime = System.currentTimeMillis()
         private set
     var targetFrameDuration = 0
+        private set
+    var frameNum = 0
+        private set
+    var waitHistory = DoubleArray(20)
         private set
 
     fun run() {
@@ -97,6 +101,7 @@ object Main {
         val timeLeft = (lastFrameTime + targetFrameDuration) - System.currentTimeMillis()
         if(timeLeft > 0)
             Thread.sleep(timeLeft)
+        waitHistory[frameNum++ % waitHistory.size] = timeLeft / targetFrameDuration.toDouble()
         lastFrameTime = System.currentTimeMillis()
 
         Java2DTexture.cleanUpTextures()
@@ -109,7 +114,10 @@ object Main {
                 showDemoWindow(Main::showDemo)
 
             documents.toList().forEach { it.push() }
-            val fpsText = "%4.1f%s".format(io.framerate, if(targetFPS == 0) "" else "/$targetFPS")
+            val fpsText = "%4.1f".format(io.framerate) + if(targetFPS == 0)
+                ""
+            else
+                "/%d (%2.0f%%)".format(targetFPS, 100*(1 - waitHistory.sum()/waitHistory.size))
             overlayDrawList.addText(Vec2(0, 0), Colors.white.u32, fpsText.toCharArray())
             keys {
                 "prim+[" pressed {
