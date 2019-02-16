@@ -1,8 +1,10 @@
 package games.thecodewarrior.bitfont.editor.mode
 
+import com.ibm.icu.text.BreakIterator
 import games.thecodewarrior.bitfont.editor.Editor
 import games.thecodewarrior.bitfont.editor.Key
 import games.thecodewarrior.bitfont.editor.Modifier
+import games.thecodewarrior.bitfont.editor.ModifierPattern
 import games.thecodewarrior.bitfont.editor.Modifiers
 import games.thecodewarrior.bitfont.editor.MouseButton
 import games.thecodewarrior.bitfont.editor.utils.Clipboard
@@ -10,11 +12,13 @@ import games.thecodewarrior.bitfont.editor.utils.InternalClipboard
 import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.typesetting.TypesetString.GlyphRender
 import games.thecodewarrior.bitfont.utils.Vec2i
+import games.thecodewarrior.bitfont.utils.extensions.BreakType
 import games.thecodewarrior.bitfont.utils.extensions.endExclusive
 import kotlin.math.abs
+import kotlin.math.max
 import kotlin.math.min
 
-class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
+open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
     private var verticalMotionX: Int? = null
 
     var cursor = 0
@@ -79,25 +83,9 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
         updateText()
     }
 
-    init {
-        keyAction(Key.BACKSPACE, Modifiers.WILDCARD, ::backspace)
-        keyAction(Key.DELETE, Modifiers.WILDCARD, ::delete)
-        keyAction(Key.ENTER, Modifiers.WILDCARD, ::enter)
+    //region actions
 
-        keyAction(Key.LEFT, Modifiers.WILDCARD, ::moveLeft)
-        keyAction(Key.RIGHT, Modifiers.WILDCARD, ::moveRight)
-
-        keyAction(Key.UP, Modifiers.WILDCARD, ::moveUp)
-        keyAction(Key.DOWN, Modifiers.WILDCARD, ::moveDown)
-
-        mouseAction(MouseButton.LEFT, Modifiers.WILDCARD, ::leftMouseDown, {}, ::leftMouseDrag)
-
-        keyAction(Key.V, Modifier.SUPER, ::paste)
-        keyAction(Key.C, Modifier.SUPER, ::copy)
-        keyAction(Key.X, Modifier.SUPER, ::cut)
-    }
-
-    private fun backspace() {
+    protected fun backspace() {
         val selectionStart = selectionStart
         if (selectionStart != null) {
             if (cursor < selectionStart) {
@@ -115,37 +103,48 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
         }
     }
 
-    private fun delete() {
+    protected fun delete() {
         if (cursor < contents.length) {
             contents.delete(cursor, cursor + 1)
             updateText()
         }
     }
 
-    private fun enter() {
+    protected fun enter() {
         insert("\n")
+
     }
 
-    private fun moveLeft() {
+    protected fun moveTo(pos: Int) {
         val selectionStart = selectionStart ?: cursor
-        if(cursor > 0)
-            cursor--
+
+        cursor = pos
 
         if(Modifier.SHIFT in modifiers)
             this.selectionStart = selectionStart
     }
 
-    private fun moveRight() {
-        val selectionStart = selectionStart ?: cursor
-        if(cursor < contents.length)
-            cursor++
-
-        if(Modifier.SHIFT in modifiers)
-            this.selectionStart = selectionStart
+    protected fun moveBackward(breakType: BreakType) {
+        val iter = breakType.get()
+        iter.setText(contents.plaintext)
+        val newPos = iter.preceding(cursor)
+        if(newPos == BreakIterator.DONE)
+            moveTo(0)
+        else
+            moveTo(newPos)
     }
 
-    private fun moveUp() {
-        val selectionStart = selectionStart ?: cursor
+    protected fun moveForward(breakType: BreakType) {
+        val iter = breakType.get()
+        iter.setText(contents.plaintext)
+        val newPos = iter.following(cursor)
+        if(newPos == BreakIterator.DONE)
+            moveTo(contents.length)
+        else
+            moveTo(newPos)
+    }
+
+    protected fun moveUp() {
         cursorGlyph?.also {
             if(it.line == 0) {
                 val x = verticalMotionX ?: cursorPos.x
@@ -158,16 +157,13 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
                     else
                         it.line-1
                 val x = verticalMotionX ?: cursorPos.x
-                cursor = internals.typesetString.lines[nextLine].closestCharacter(x)
+                moveTo(internals.typesetString.lines[nextLine].closestCharacter(x))
                 verticalMotionX = x
             }
         }
-        if(Modifier.SHIFT in modifiers)
-            this.selectionStart = selectionStart
     }
 
-    private fun moveDown() {
-        val selectionStart = selectionStart ?: cursor
+    protected fun moveDown() {
         cursorGlyph?.also {
             if(it.line == internals.typesetString.lines.size-1) {
                 val x = verticalMotionX ?: cursorPos.x
@@ -180,15 +176,13 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
                     else
                         it.line+1
                 val x = verticalMotionX ?: cursorPos.x
-                cursor = internals.typesetString.lines[nextLine].closestCharacter(x)
+                moveTo(internals.typesetString.lines[nextLine].closestCharacter(x))
                 verticalMotionX = x
             }
         }
-        if(Modifier.SHIFT in modifiers)
-            this.selectionStart = selectionStart
     }
 
-    private fun leftMouseDown() {
+    protected fun jumpToMouse() {
         val newPos = internals.typesetString.closestCharacter(mousePos)
         if(Modifier.SHIFT in modifiers) {
             val selection = selectionRange
@@ -210,31 +204,41 @@ class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
         cursor = newPos
     }
 
-    private fun leftMouseDrag(previousPos: Vec2i) {
+    protected fun normalMouseDrag(previousPos: Vec2i) {
         val selectionStart = selectionStart ?: cursor
         cursor = internals.typesetString.closestCharacter(mousePos)
         this.selectionStart = selectionStart
     }
 
-    private fun paste() {
+    protected fun paste() {
         clipboard.contents?.also {
             if(it.isNotEmpty()) insert(it)
         }
     }
 
-    private fun copy() {
+    protected fun copy() {
         selectionRange?.also {
             clipboard.contents = contents.plaintext.substring(it)
             selectionStart = null
         }
     }
 
-    private fun cut() {
+    protected fun cut() {
         selectionRange?.also {
             copy()
             contents.delete(it.start, it.endExclusive)
             cursor = it.start
             updateText()
+        }
+    }
+
+    //endregion
+
+    companion object {
+        var operatingSystemMode: (editor: Editor) -> DefaultEditorMode = ::WindowsEditorMode
+
+        fun systemMode(editor: Editor): DefaultEditorMode {
+            return operatingSystemMode(editor)
         }
     }
 }

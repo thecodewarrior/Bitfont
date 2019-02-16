@@ -38,7 +38,11 @@ class Editor(font: Bitfont, width: Int) {
 
     val attributedString: AttributedString get() = internals.contents.staticCopy()
     var typesetString by internals::typesetString
-    var mode: EditorMode = DefaultEditorMode(this)
+    var mode: EditorMode = DefaultEditorMode.systemMode(this)
+
+    fun update() {
+        mode.update()
+    }
 
     fun inputModifiers(modifiers: Modifiers) {
         mode.modifiers = modifiers

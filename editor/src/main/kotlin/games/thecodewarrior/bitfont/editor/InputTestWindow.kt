@@ -2,6 +2,7 @@ package games.thecodewarrior.bitfont.editor
 
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.editor.mode.DefaultEditorMode
+import games.thecodewarrior.bitfont.editor.mode.MacEditorMode
 import games.thecodewarrior.bitfont.utils.Attribute
 import games.thecodewarrior.bitfont.typesetting.TypesetString
 import games.thecodewarrior.bitfont.editor.utils.Colors
@@ -32,6 +33,9 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
     override val title: String
         get() = "${bitfont.name}: Testing"
 
+    init {
+        DefaultEditorMode.operatingSystemMode = ::MacEditorMode
+    }
     val editor = Editor(bitfont, -1)
     val mode = editor.mode as DefaultEditorMode
     var selection: IntRange? = null
@@ -96,6 +100,7 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
 
     override fun main(): Unit = with(ImGui) {
         if(isWindowFocused(FocusedFlag.RootAndChildWindows) && g.activeId == 0) handleInput()
+        editor.update()
 //        withItemWidth(win.contentsRegionRect.width - 300f) {
 //            val arr = testString.replace("\n", "\\n").toCharArray().let { name ->
 //                CharArray(name.size + 1000).also { name.copyInto(it) }

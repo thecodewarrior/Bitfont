@@ -55,26 +55,43 @@ open class TypesetString(
     open var glyphMap: Map<Int, GlyphRender> = emptyMap()
         protected set
 
-    fun closestCharacter(pos: Vec2i): Int {
-        val absoluteTop = lines.firstOrNull()?.let { it.baseline-it.maxAscent } ?: 0
-        val absoluteBottom = lines.lastOrNull()?.let { it.baseline+it.maxDescent } ?: 0
-        if(pos.y < absoluteTop) {
-            return 0
+    fun closestLine(y: Int): Int {
+        if(lines.isEmpty()) return 0
+
+        val absoluteTop = lines.first().let { it.baseline-it.maxAscent }
+        val absoluteBottom = lines.last().let { it.baseline+it.maxDescent }
+        if(y < absoluteTop) {
+            return -1
         }
-        if(pos.y > absoluteBottom) {
-            return string.length
+        if(y > absoluteBottom) {
+            return lines.size
         }
 
         val closestLine = lines.minBy {
             val top = it.baseline-it.maxAscent
             val bottom = it.baseline+it.maxDescent
-            if(pos.y in top until bottom) {
+            if(y in top until bottom) {
                 0
             } else {
-                min(abs(pos.y - top), abs(pos.y - bottom))
+                min(abs(y - top), abs(y - bottom))
             }
-        } ?: return 0
-        return closestLine.closestCharacter(pos.x)
+        }!!
+
+        return closestLine.lineNumber
+    }
+
+    fun closestCharacter(pos: Vec2i): Int {
+        val lineIndex = closestLine(pos.y)
+        if(lineIndex == lines.size) return string.length
+        val line = lines.getOrNull(lineIndex) ?: return 0
+        return line.closestCharacter(pos.x)
+    }
+
+    fun containingCharacter(pos: Vec2i): Int {
+        val lineIndex = closestLine(pos.y)
+        if(lineIndex == lines.size) return string.length
+        val line = lines.getOrNull(lineIndex) ?: return 0
+        return line.containingCharacter(pos.x)
     }
 
     protected open fun fontFor(index: Int): Bitfont {
@@ -336,8 +353,11 @@ open class TypesetString(
         val startX: Int, val endX: Int,
         val glyphs: List<GlyphRender>
     ) {
-        fun closestCharacter(pos: Int): Int {
-            return glyphs.minBy { abs(pos - it.pos.x) }?.characterIndex ?: 0
+        fun closestCharacter(x: Int): Int {
+            return glyphs.minBy { abs(x - it.pos.x) }?.characterIndex ?: 0
+        }
+        fun containingCharacter(x: Int): Int {
+            return glyphs.lastOrNull { it.pos.x <= x }?.characterIndex ?: 0
         }
     }
 

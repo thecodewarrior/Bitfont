@@ -1,6 +1,8 @@
+@file:JvmName("BreakIteratorUtils")
 package games.thecodewarrior.bitfont.utils.extensions
 
 import com.ibm.icu.text.BreakIterator
+import java.util.EnumMap
 import kotlin.concurrent.getOrSet
 
 private val characterBreakIteratorLocal = ThreadLocal<BreakIterator>()
@@ -22,3 +24,19 @@ internal val sentenceBreakIterator: BreakIterator
 private val lineBreakIteratorLocal = ThreadLocal<BreakIterator>()
 internal val lineBreakIterator: BreakIterator
     get() = lineBreakIteratorLocal.getOrSet { BreakIterator.getLineInstance() }
+
+private val breakIterators = ThreadLocal<EnumMap<BreakType, BreakIterator>>()
+
+enum class BreakType(private val constructor: () -> BreakIterator) {
+    CHARACTER({ BreakIterator.getCharacterInstance() }),
+    TITLE({ BreakIterator.getTitleInstance() }),
+    WORD({ BreakIterator.getWordInstance() }),
+    SENTENCE({ BreakIterator.getSentenceInstance() }),
+    LINE({ BreakIterator.getLineInstance() });
+
+    fun get(): BreakIterator {
+        return breakIterators
+            .getOrSet { EnumMap(BreakType::class.java) }
+            .getOrPut(this, constructor)
+    }
+}
