@@ -10,6 +10,7 @@ import games.thecodewarrior.bitfont.editor.MouseButton
 import games.thecodewarrior.bitfont.utils.Vec2i
 import games.thecodewarrior.bitfont.utils.extensions.BreakType
 import games.thecodewarrior.bitfont.utils.extensions.endExclusive
+import games.thecodewarrior.bitfont.utils.extensions.replace
 import kotlin.math.abs
 
 class MacEditorMode(editor: Editor): DefaultEditorMode(editor) {
@@ -86,10 +87,11 @@ class MacEditorMode(editor: Editor): DefaultEditorMode(editor) {
 
 
     fun selectWord() {
-        if(selectionStart != null) return
-
-        val start = prevWordStart(contents.plaintext, cursor)
-        val end = nextWordEnd(contents.plaintext, cursor)
+        val wordIter = BreakType.WORD.get()
+        wordIter.setText(contents.plaintext)
+        val underCursor = internals.typesetString.containingCharacter(mousePos)
+        val end = wordIter.following(underCursor).replace(BreakIterator.DONE, contents.length)
+        val start = wordIter.previous().replace(BreakIterator.DONE, 0)
         originalWord = start until end
 
         val isStartCloser = cursor - start < end - cursor
@@ -124,7 +126,7 @@ class MacEditorMode(editor: Editor): DefaultEditorMode(editor) {
             val wordIter = BreakType.WORD.get()
             wordIter.setText(contents.plaintext)
 
-            val wordBreak = wordIter.following(mouseOver)
+            val wordBreak = wordIter.preceding(mouseOver)
             if (wordBreak == BreakIterator.DONE) {
                 cursor = contents.length
                 selectionStart = originalWord.endExclusive

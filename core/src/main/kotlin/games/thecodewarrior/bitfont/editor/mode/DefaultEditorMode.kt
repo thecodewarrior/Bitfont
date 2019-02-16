@@ -127,7 +127,7 @@ open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
     protected fun moveBackward(breakType: BreakType) {
         val iter = breakType.get()
         iter.setText(contents.plaintext)
-        val newPos = iter.preceding(cursor)
+        val newPos = iter.preceding(selectionStart?.let { min(it, cursor) } ?: cursor)
         if(newPos == BreakIterator.DONE)
             moveTo(0)
         else
@@ -137,7 +137,7 @@ open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
     protected fun moveForward(breakType: BreakType) {
         val iter = breakType.get()
         iter.setText(contents.plaintext)
-        val newPos = iter.following(cursor)
+        val newPos = iter.following(selectionStart?.let { max(it, cursor) } ?: cursor)
         if(newPos == BreakIterator.DONE)
             moveTo(contents.length)
         else
@@ -145,7 +145,8 @@ open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
     }
 
     protected fun moveUp() {
-        cursorGlyph?.also {
+        val start = selectionStart?.let { min(it, cursor) } ?: cursor
+        internals.typesetString.glyphMap[start]?.also {
             if(it.line == 0) {
                 val x = verticalMotionX ?: cursorPos.x
                 cursor = 0
@@ -164,7 +165,8 @@ open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
     }
 
     protected fun moveDown() {
-        cursorGlyph?.also {
+        val start = selectionStart?.let { max(it, cursor) } ?: cursor
+        internals.typesetString.glyphMap[start]?.also {
             if(it.line == internals.typesetString.lines.size-1) {
                 val x = verticalMotionX ?: cursorPos.x
                 cursor = contents.length

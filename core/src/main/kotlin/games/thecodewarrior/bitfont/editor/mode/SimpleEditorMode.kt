@@ -181,6 +181,7 @@ open class SimpleEditorMode(editor: Editor): EditorMode(editor) {
         clickCount++
         lastClickTime = time
         lastClickPos = mousePos
+        currentMouseAction?.mouseUp()
         mouseActions.firstOrNull { it.matches(button, clickCount, modifiers) }?.also {
             it.mouseDown()
             currentMouseAction = it
@@ -214,5 +215,5 @@ abstract class MouseEditorAction(val button: MouseButton, val clickCount: Int, v
     abstract fun mouseDown()
     abstract fun mouseUp()
     abstract fun mouseDrag(previousPos: Vec2i)
-    fun matches(button: MouseButton, clickCount: Int, mods: Modifiers) = button == this.button && clickCount == clickCount && this.mods.matches(mods)
+    fun matches(button: MouseButton, clickCount: Int, mods: Modifiers) = button == this.button && clickCount == this.clickCount && this.mods.matches(mods)
 }
