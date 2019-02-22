@@ -4,6 +4,7 @@ import games.thecodewarrior.bitfont.utils.clamp
 import games.thecodewarrior.bitfont.utils.serialization.MsgPackable
 import games.thecodewarrior.bitfont.utils.serialization.MsgUnpackable
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import org.msgpack.core.MessageInsufficientBufferException
 import org.msgpack.core.MessagePacker
 import org.msgpack.core.MessageUnpacker
@@ -44,6 +45,8 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
         private set
 
     private fun createDefaultGlyph(): Glyph {
+        val capHeight = if(capHeight == 0) 1 else capHeight
+        val xHeight = if(xHeight == 0) 1 else xHeight
         val glyph = Glyph()
         glyph.bearingX = 0
         glyph.bearingY = -capHeight
@@ -62,44 +65,106 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
 
     override fun pack(packer: MessagePacker) {
         packer.apply {
-            packString(name)
-            packInt(ascent)
-            packInt(descent)
-            packInt(capHeight)
-            packInt(xHeight)
-            packInt(spacing)
-            val entries = glyphs.int2ObjectEntrySet()
-                .filter { !it.value.isEmpty() }
-                .sortedBy { it.intKey }
-            packMapHeader(entries.size)
-            entries.forEach { (point, glyph) ->
-                packInt(point)
-                glyph.pack(packer)
+            writePayload(magicBytes)
+            packInt(version)
+
+            val tables = packTables()
+            packArrayHeader(tables.size)
+            tables.forEach { name, data ->
+                packString(name)
+                packInt(data.size)
+                writePayload(data)
             }
         }
     }
 
-    companion object: MsgUnpackable<Bitfont> {
-        override fun unpack(unpacker: MessageUnpacker): Bitfont {
-            unpacker.apply {
-                val name = unpackString()
-                val ascent = unpackInt()
-                val descent = unpackInt()
-                val capHeight = unpackInt()
-                val xHeight = unpackInt()
-                val spacing = unpackInt()
-                val font = Bitfont(name, ascent, descent, capHeight, xHeight, spacing)
+    private fun packTables(): Map<String, ByteArray> {
+        val map = mutableMapOf<String, ByteArray>()
 
-                val glyphCount = unpackMapHeader()
-                try {
-                    for (i in 0 until glyphCount) {
-                        font.glyphs[unpackInt()] = Glyph.unpack(unpacker)
-                    }
-                } catch(e: MessageInsufficientBufferException) {
-                    e.printStackTrace()
-                    font.name = font.name + "~"
+        glyphs.int2ObjectEntrySet().toList().forEach {
+            if (it.value.isEmpty())
+                glyphs.remove(it.intKey)
+        }
+
+        map["info"] = MsgPackable.packToBytes { packer ->
+            packer.packString(name)
+            packer.packInt(ascent)
+            packer.packInt(descent)
+            packer.packInt(capHeight)
+            packer.packInt(xHeight)
+            packer.packInt(spacing)
+        }
+
+        map["glyphs"] = MsgPackable.packToBytes { packer ->
+            val glyphEntries = glyphs.int2ObjectEntrySet()
+                .sortedBy { it.intKey }
+            packer.packMapHeader(glyphEntries.size)
+            glyphEntries.forEach { (point, glyph) ->
+                packer.packInt(point)
+                glyph.pack(packer)
+            }
+        }
+
+        return map
+    }
+
+    companion object: MsgUnpackable<Bitfont> {
+        val version = 1
+        val magic = "BITFONT"
+        val magicBytes = magic.toByteArray()
+
+        override fun unpack(unpacker: MessageUnpacker): Bitfont {
+            val fileMagic = (try {
+                unpacker.readPayload(magicBytes.size)
+            } catch(e: MessageInsufficientBufferException) {
+                ByteArray(0)
+            } catch(e: Exception) {
+                throw e
+            })!!
+
+            if(!fileMagic.contentEquals(magicBytes))
+                throw IllegalArgumentException("Passed data is not a bitfont file. Missing magic constant `$magic` " +
+                    "at the start of the file.")
+
+            val fileVersion = unpacker.unpackInt()
+
+            val tables = mutableMapOf<String, ByteArray>()
+            val tableCount = unpacker.unpackArrayHeader()
+            repeat(tableCount) {
+                tables[unpacker.unpackString()] = unpacker.readPayload(unpacker.unpackInt())
+            }
+
+            val font = Bitfont("<none>", 0, 0, 0, 0, 0)
+
+            unpackTables(font, tables)
+
+            return font
+        }
+
+        private fun unpackTables(font: Bitfont, map: Map<String, ByteArray>) {
+            map["info"]?.also { data ->
+                MsgUnpackable.unpack(data) { unpacker ->
+                    font.name = unpacker.unpackString()
+                    font.ascent = unpacker.unpackInt()
+                    font.descent = unpacker.unpackInt()
+                    font.capHeight = unpacker.unpackInt()
+                    font.xHeight = unpacker.unpackInt()
+                    font.spacing = unpacker.unpackInt()
                 }
-                return font
+            }
+
+            map["glyphs"]?.also { data ->
+                MsgUnpackable.unpack(data) { unpacker ->
+                    val glyphCount = unpacker.unpackMapHeader()
+                    try {
+                        for (i in 0 until glyphCount) {
+                            font.glyphs[unpacker.unpackInt()] = Glyph.unpack(unpacker)
+                        }
+                    } catch(e: MessageInsufficientBufferException) {
+                        e.printStackTrace()
+                        font.name = font.name + "~"
+                    }
+                }
             }
         }
     }
