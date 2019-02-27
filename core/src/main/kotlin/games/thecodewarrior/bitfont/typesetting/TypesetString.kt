@@ -8,6 +8,7 @@ import games.thecodewarrior.bitfont.utils.AttributeMap
 import games.thecodewarrior.bitfont.utils.CombiningClass
 import games.thecodewarrior.bitfont.utils.Vec2i
 import games.thecodewarrior.bitfont.utils.extensions.characterBreakIterator
+import games.thecodewarrior.bitfont.utils.extensions.endExclusive
 import games.thecodewarrior.bitfont.utils.extensions.lineBreakIterator
 import kotlin.math.abs
 import kotlin.math.max
@@ -53,6 +54,8 @@ open class TypesetString(
     open var lines: List<Line> = emptyList()
         protected set
     open var glyphMap: Map<Int, GlyphRender> = emptyMap()
+        protected set
+    open var bounds: Vec2i = Vec2i(0, 0)
         protected set
 
     fun closestLine(y: Int): Int {
@@ -137,43 +140,49 @@ open class TypesetString(
      */
     protected open fun typeset() {
         val runRanges = makeRuns()
-        val runGlyphs = runRanges.mapIndexed { i, range -> range to layoutRun(i, range) }
+        val items = itemize()
+        val runGlyphs = items.map { shapeRange(it.font, it.range) }
         val lineGlyphs = mutableListOf<MutableList<GlyphRender>>()
         val lines = mutableListOf<Line>()
         var y = 0
-        runGlyphs.forEachIndexed { i, (range, run) ->
-            var maxAscent = 0
-            var maxDescent = 0
-            range.forEach {
-                val font = fontFor(it)
-                maxAscent = max(maxAscent, font.ascent)
-                maxDescent = max(maxDescent, font.descent)
-            }
-            run.forEach {
-                maxAscent = max(maxAscent, -(it.pos.y + it.glyph.bearingY))
-                maxDescent = max(maxDescent, it.glyph.image.height + it.pos.y + it.glyph.bearingY)
-            }
+        var maxX = 0
+        val glyphs = mutableListOf<GlyphRender>()
+        runGlyphs.forEach { run ->
+//            var maxAscent = 0
+//            var maxDescent = 0
+//            range.forEach {
+//                val font = fontFor(it)
+//                maxAscent = max(maxAscent, font.ascent)
+//                maxDescent = max(maxDescent, font.descent)
+//            }
+//            run.forEach {
+//                maxAscent = max(maxAscent, -(it.pos.y + it.glyph.bearingY))
+//                maxDescent = max(maxDescent, it.glyph.image.height + it.pos.y + it.glyph.bearingY)
+//            }
 
-            y += maxAscent
+//            y += maxAscent
+            y += 16
             val offsetGlyphs = run.map {
                 it.copy(
-                    pos = Vec2i(it.pos.x, it.pos.y + y),
-                    posAfter = Vec2i(it.posAfter.x, it.pos.y + y)
+                    pos = Vec2i(maxX + it.pos.x, it.pos.y + y),
+                    posAfter = Vec2i(maxX + it.posAfter.x, it.pos.y + y)
                 )
             }
-            lineGlyphs.lastOrNull()?.also { prevLine ->
-                val lineStart = offsetGlyphs.first().pos
-                if(prevLine.last().codepoint in newlineInts) {
-                    prevLine[prevLine.size-1] = prevLine.last().copy(posAfter = lineStart)
-                }
-            }
-            lineGlyphs.add(offsetGlyphs.toMutableList())
-            lines.add(Line(
-                i, y, maxAscent, maxDescent,
-                offsetGlyphs.first().pos.x, offsetGlyphs.last().posAfter.x,
-                emptyList()
-            ))
-            y += maxDescent + lineSpacing
+            maxX = max(maxX, offsetGlyphs.map { it.posAfter.x }.max() ?: 0)
+            glyphs.addAll(offsetGlyphs)
+//            lineGlyphs.lastOrNull()?.also { prevLine ->
+//                val lineStart = offsetGlyphs.first().pos
+//                if(prevLine.last().codepoint in newlineInts) {
+//                    prevLine[prevLine.size-1] = prevLine.last().copy(posAfter = lineStart)
+//                }
+//            }
+//            lineGlyphs.add(offsetGlyphs.toMutableList())
+//            lines.add(Line(
+//                i, y, maxAscent, maxDescent,
+//                offsetGlyphs.first().pos.x, offsetGlyphs.last().posAfter.x,
+//                emptyList()
+//            ))
+//            y += maxDescent + lineSpacing
         }
 
         // set the posAfter for trailing newlines
@@ -183,25 +192,72 @@ open class TypesetString(
                 prevLine[prevLine.size-1] = prevLine.last().copy(posAfter = Vec2i(0, y))
             }
         }
-        this.glyphs = lineGlyphs.flatten()
+        this.bounds = Vec2i(y, maxX)
+        this.glyphs = glyphs
         this.lines = lines.mapIndexed { i, it ->
             it.copy(glyphs = lineGlyphs[i])
         }
         this.glyphMap = glyphs.associateBy { it.characterIndex }
     }
 
-    protected open fun layoutRun(line: Int, range: IntRange): List<GlyphRender> {
+    fun itemize(): List<StringItem> {
+        if(codepoints.isEmpty()) return emptyList()
+        val items = mutableListOf<StringItem>()
+        var rangeFont = fontFor(0)
+        var rangeStart = 0
+        for(i in 1 until codepoints.size) {
+            val font = fontFor(i)
+            if(font != rangeFont) {
+                items.add(StringItem(rangeFont, rangeStart until i))
+                rangeStart = i
+                rangeFont = font
+            }
+        }
+        items.add(StringItem(rangeFont, rangeStart until codepoints.size))
+        return items
+    }
+
+    data class StringItem(val font: Bitfont, val range: IntRange)
+
+    protected open fun shapeRange(font: Bitfont, range: IntRange): List<GlyphRender> {
         val list = mutableListOf<GlyphRender>()
         var cursor = 0
         var combiningGap = 0
         var combiningRectMin = Vec2i(0, 0)
         var combiningRectMax = Vec2i(0, 0)
         var combiningPosAfter = Vec2i(0, 0)
+        val ligatures = font.ligatures.mapKeys { it.key.codePoints().toList() }
+        val currentLigature = mutableListOf<Int>()
+
+        val glyphs = mutableListOf<Triple<Int, Glyph, CombiningClass>>()
         range.forEach {
-            val glyph = glyphFor(it)
-            val font = fontFor(it)
+            currentLigature.add(codepoints[it])
+            if(ligatures.keys.any { it.size >= currentLigature.size && it.subList(0, currentLigature.size) == currentLigature }) {
+                return@forEach
+            } else {
+                val last = currentLigature.removeAt(currentLigature.size-1)
+                val ligatureGlyph = ligatures[currentLigature]
+                val firstIndex = it - currentLigature.size
+                if(ligatureGlyph != null) {
+                    glyphs.add(Triple(firstIndex, font.glyphs[ligatureGlyph], CombiningClass.NOT_REORDERED))
+                } else {
+                    currentLigature.forEachIndexed { i, glyph ->
+                        glyphs.add(Triple(firstIndex+i, font.glyphs[glyph], CombiningClass[UCharacter.getCombiningClass(codepoints[firstIndex+i])]))
+                    }
+                }
+                glyphs.add(Triple(it, font.glyphs[last], CombiningClass[UCharacter.getCombiningClass(codepoints[it])]))
+                currentLigature.clear()
+            }
+        }
+        if(currentLigature.isNotEmpty()) {
+            val firstIndex = range.endExclusive - currentLigature.size
+            currentLigature.forEachIndexed { i, glyph ->
+                glyphs.add(Triple(firstIndex+i, font.glyphs[glyph], CombiningClass[UCharacter.getCombiningClass(codepoints[firstIndex+i])]))
+            }
+        }
+
+        glyphs.forEach { (index, glyph, combiningClass) ->
             val advance = glyph.calcAdvance(font.spacing)
-            val combiningClass = CombiningClass[UCharacter.getCombiningClass(codepoints[it])]
 
             if(combiningClass == CombiningClass.NOT_REORDERED) {
                 combiningGap = max(1, font.capHeight / 8)
@@ -213,10 +269,10 @@ open class TypesetString(
                 )
                 combiningPosAfter = Vec2i(cursor + advance, 0)
                 list.add(
-                    GlyphRender(codepointIndices[it], it, codepoints[it], line,
+                    GlyphRender(codepointIndices[index], index, codepoints[index], 0,
                         font, glyph,
                         Vec2i(cursor, 0), Vec2i(cursor + advance, 0),
-                        attributedString.getAttributes(codepointIndices[it]))
+                        attributedString.getAttributes(codepointIndices[index]))
                 )
                 cursor += advance
             } else {
@@ -266,10 +322,10 @@ open class TypesetString(
                 }
 
                 list.add(
-                    GlyphRender(codepointIndices[it], it, codepoints[it], line,
+                    GlyphRender(codepointIndices[index], index, codepoints[index], 0,
                         font, glyph,
                         Vec2i(newX, newY), combiningPosAfter,
-                        attributedString.getAttributes(codepointIndices[it]))
+                        attributedString.getAttributes(codepointIndices[index]))
                 )
             }
         }

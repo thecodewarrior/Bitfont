@@ -46,7 +46,10 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     val bitfont: Bitfont = document.bitfont
 
     override val title: String
-        get() = "${bitfont.name}: U+%04X - %s".format(codepoint, UCharacter.getName(codepoint))
+        get() = if(index < 0)
+            "${bitfont.name}: Special"
+        else
+            "${bitfont.name}: U+%04X - %s".format(index, UCharacter.getName(index))
 
     var granularity = 25
         set(value) {
@@ -70,20 +73,20 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
     var data: Data = Data(0)
 
-    var codepoint: Int = 0
+    var index: Int = 0
         set(value) {
-            if(field != value.clamp(0, 0x10FFFF)) {
+            if(field != value.clamp(Int.MIN_VALUE, 0x10FFFF)) {
                 if(tool === nudge) nudge.stop()
-                if(data == Data(codepoint)) {
-                    dataMap.remove(codepoint)
+                if(data == Data(index)) {
+                    dataMap.remove(index)
                 }
-                codepointChanged = true
+                indexChanged = true
             }
-            field = value.clamp(0, 0x10FFFF)
-            data = dataMap.getOrPut(codepoint) { Data(codepoint) }
+            field = value.clamp(Int.MIN_VALUE, 0x10FFFF)
+            data = dataMap.getOrPut(index) { Data(index) }
         }
 
-    var codepointChanged = false
+    var indexChanged = false
     val sidebarReferenceImage = Java2DTexture(controlsWidth.toInt(), controlsWidth.toInt())
     var displayReference = false
     var displayGrid = true
@@ -91,17 +94,15 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     var localGridRadius = 0
         set(value) { field = value.clamp(0, 100) }
 
-    var codepointScrubbing = false
-    var codepointHistory = HistoryTracker<Int>(100, 65)
     init {
-        codepoint = 65
+        index = 65
     }
 
     var horizontalGuides = mutableListOf<Float>()
     var verticalGuides = mutableListOf<Float>()
 
-    inner class Data(val codepoint: Int) {
-        val glyph = bitfont.glyphs.getOrPut(codepoint) { Glyph() }
+    inner class Data(val index: Int) {
+        val glyph = bitfont.glyphs.getOrPut(index) { Glyph() }
         val enabledCells = mutableSetOf<Vec2i>()
 
         val history: HistoryTracker<State>
@@ -184,7 +185,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             if (this === other) return true
             if (other !is Data) return false
 
-            if (codepoint != other.codepoint) return false
+            if (index != other.index) return false
             if (glyph != other.glyph) return false
             if (enabledCells != other.enabledCells) return false
             if (history != other.history) return false
@@ -193,7 +194,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         }
 
         override fun hashCode(): Int {
-            var result = codepoint
+            var result = index
             result = 31 * result + glyph.hashCode()
             result = 31 * result + enabledCells.hashCode()
             result = 31 * result + history.hashCode()
@@ -202,23 +203,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     }
 
     override fun main() = with(ImGui) {
-        keys {
-            "tab" pressed {
-                if(io.keyShift)
-                    codepoint--
-                else
-                    codepoint++
-                codepointHistory.push(codepoint)
-            }
-            "shift+h" pressed {
-                codepointHistory.undo()
-            }
-            "shift+l" pressed {
-                codepointHistory.redo()
-            }
-        }
-
-        val wasChanged = codepointChanged
+        val wasChanged = indexChanged
         var menuHeight = -cursorPos
         val contentRect = win.contentsRegionRect
         menuHeight = menuHeight + cursorPos
@@ -231,48 +216,11 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         canvas = Rect(contentRect.min + Vec2(controlsWidth + 5, menuHeight.y), contentRect.max)
         drawCanvas()
         if(wasChanged)
-            codepointChanged = false
+            indexChanged = false
     }
 
     fun drawControls() = with(ImGui) { withItemWidth(controlsWidth) {
         pushAllowKeyboardFocus(false)
-        val oldCodepoint = codepoint
-        pushButtonRepeat(true)
-        if (arrowButton("##left", Dir.Left)) codepoint--
-        sameLine()
-        withItemWidth(controlsWidth - frameHeight*2 - style.itemSpacing.x*2) {
-            val speed = max(1.0, abs(getMouseDragDelta(0).y) / 10.0)
-            ImGuiDrags.dragScalar(
-                label = "##codepointDrag",
-                value = ::codepoint,
-                speed = speed,
-                power = 1.0,
-                minValue = 0,
-                maxValue = 0x10FFFF,
-                valueToDisplay = { "U+%04X".format(it) },
-                correct = { codepointScrubbing = true; it.roundToInt() },
-                valueToString = { "%04X".format(it) },
-                stringToValue = { current, new -> (new.toIntOrNull(16) ?: current) to "" }
-            )
-        }
-        sameLine()
-        if (arrowButton("##right", Dir.Right)) codepoint++
-        popButtonRepeat()
-
-        if (arrowButton("##historyBack", Dir.Left)) codepointHistory.undo()
-        sameLine()
-        withItemWidth(controlsWidth - frameHeight*2 - style.itemSpacing.x*2) {
-            text("")
-        }
-        sameLine()
-        if (arrowButton("##historyBack", Dir.Right)) codepointHistory.redo()
-
-        if(codepoint != oldCodepoint) {
-            codepointScrubbing = true
-        } else if(codepointScrubbing) {
-            codepointScrubbing = false
-            codepointHistory.push(codepoint)
-        }
 
         var labelWidth = calcTextSize("Advance").x + 1
         withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
@@ -328,15 +276,39 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         separator()
 
-        val prevCursor = Vec2(cursorPos)
-        alignedText("Reference Font", Vec2(0.5), width = controlsWidth)
-        cursorPos = prevCursor
-        checkbox("##displayReference", ::displayReference)
-        text(ReferenceFonts.style(document.referenceStyle).fontName(codepoint))
+        if(index >= 0) {
+            pushButtonRepeat(true)
+            if (arrowButton("##left", Dir.Left)) index--
+            sameLine()
+            withItemWidth(controlsWidth - frameHeight*2 - style.itemSpacing.x*2) {
+                val speed = max(1.0, abs(getMouseDragDelta(0).y) / 10.0)
+                ImGuiDrags.dragScalar(
+                    label = "##codepointDrag",
+                    value = ::index,
+                    speed = speed,
+                    power = 1.0,
+                    minValue = 0,
+                    maxValue = 0x10FFFF,
+                    valueToDisplay = { "U+%04X".format(it) },
+                    correct = { it.roundToInt() },
+                    valueToString = { "%04X".format(it) },
+                    stringToValue = { current, new -> (new.toIntOrNull(16) ?: current) to "" }
+                )
+            }
+            sameLine()
+            if (arrowButton("##right", Dir.Right)) index++
+            popButtonRepeat()
 
+            val prevCursor = Vec2(cursorPos)
+            alignedText("Reference Font", Vec2(0.5), width = controlsWidth)
+            cursorPos = prevCursor
+            checkbox("##displayReference", ::displayReference)
+            text(ReferenceFonts.style(document.referenceStyle).fontName(index))
+
+            val bb = Rect(win.dc.cursorPos, win.dc.cursorPos + Vec2(controlsWidth))
+            drawReference(bb)
+        }
         popAllowKeyboardFocus()
-        val bb = Rect(win.dc.cursorPos, win.dc.cursorPos + Vec2(controlsWidth))
-        drawReference(bb)
     } }
 
     fun drawCell(cell: Vec2i, col: Col) {
@@ -358,7 +330,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             Colors.editor.background.u32
         )
 
-        if(codepointChanged) updateReference()
+        if(indexChanged) updateReference()
         drawList.addImage(sidebarReferenceImage.texID, bb.min, bb.max)
 
         popClipRect()
@@ -368,10 +340,10 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         val g = sidebarReferenceImage.edit(true, true)
         val size = Vec2(sidebarReferenceImage.width, sidebarReferenceImage.height)
 
-        val chr = String(Character.toChars(codepoint))
+        val chr = String(Character.toChars(index))
         val frc = FontRenderContext(AffineTransform(), true, true)
 
-        val font = ReferenceFonts.style(document.referenceStyle)[codepoint]
+        val font = ReferenceFonts.style(document.referenceStyle)[index]
         val bigFont = font.deriveFont(1000f)
 
         val (ascent, descent) = bigFont.getLineMetrics(chr, frc).let { it.ascent/1000 to it.descent/1000 }
@@ -412,7 +384,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
         g.color = Colors.editor.referencePanel.glyph
         g.font = font.deriveFont(scale)
-        g.drawString(String(Character.toChars(codepoint)), origin.x, origin.y)
+        g.drawString(String(Character.toChars(index)), origin.x, origin.y)
     }
 
     var canvasMouseHovered = false
@@ -553,7 +525,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         }
 
         if(displayReference) {
-            ReferenceFonts.style(document.referenceStyle)[codepoint].glyphProfile(codepoint, document.referenceSize).forEach { contour ->
+            ReferenceFonts.style(document.referenceStyle)[index].glyphProfile(index, document.referenceSize).forEach { contour ->
                 drawList.addPolyline(ArrayList(contour.map {
                     canvas.min + pos(it)
                 }), Colors.editor.selection.u32, true, 1f)

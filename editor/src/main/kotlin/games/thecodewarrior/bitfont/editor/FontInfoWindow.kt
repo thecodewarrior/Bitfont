@@ -1,7 +1,5 @@
 package games.thecodewarrior.bitfont.editor
 
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.editor.data.UnifontImporter
 import games.thecodewarrior.bitfont.editor.typesetting.BitfontAtlas
@@ -17,7 +15,6 @@ import imgui.functionalProgramming.menu
 import imgui.functionalProgramming.menuBar
 import imgui.functionalProgramming.withItemWidth
 import imgui.g
-import org.msgpack.core.MessagePack
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -82,27 +79,24 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
             }
         }
 
-        button("Edit") {
+        button("Edit Glyphs") {
             document.editorWindow = GlyphEditorWindow(document)
-            document.editorWindow.visible = true
         }
-        sameLine()
-        button("Browse") {
-            val browser = GlyphBrowserWindow(document)
-            browser.visible = true
-            document.browserWindows.add(browser)
+        button("Browse Characters") {
+            val browser = CharacterBrowserWindow(document)
+            document.otherWindows.add(browser)
         }
-        sameLine()
-        button("Test") {
+        button("Browse Ligatures") {
+            val browser = LigatureBrowserWindow(document)
+            document.otherWindows.add(browser)
+        }
+        button("Test Typesetter") {
             val test = TestingWindow(document)
-            test.visible = true
-            document.testWindows.add(test)
+            document.otherWindows.add(test)
         }
-        sameLine()
-        button("Input") {
+        button("Test Text Editor") {
             val input = InputTestWindow(document)
-            input.visible = true
-            document.inputWindows.add(input)
+            document.otherWindows.add(input)
         }
 
         drawMenu()

@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import org.msgpack.core.MessageInsufficientBufferException
 import org.msgpack.core.MessagePacker
 import org.msgpack.core.MessageUnpacker
+import java.util.Collections
 
 class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: Int, spacing: Int): MsgPackable {
     var name: String = name
@@ -25,24 +26,47 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
     var capHeight: Int = capHeight.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)
-            defaultGlyph = createDefaultGlyph()
+            generatedDefaultGlyph = createDefaultGlyph()
         }
 
     var xHeight: Int = xHeight.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)
-            defaultGlyph = createDefaultGlyph()
+            generatedDefaultGlyph = createDefaultGlyph()
         }
 
     var spacing: Int = spacing.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)
-            defaultGlyph = createDefaultGlyph()
+            generatedDefaultGlyph = createDefaultGlyph()
         }
 
+    val ligatures = Object2IntOpenHashMap<String>()
+
     val glyphs = Int2ObjectOpenHashMap<Glyph>()
-    var defaultGlyph: Glyph = createDefaultGlyph()
-        private set
+    val reservedSpecialGlyphs: Set<Int>
+        get() = listOf(
+            listOf(-1),
+            ligatures.values
+        ).flatten().toSet()
+
+    private var generatedDefaultGlyph = createDefaultGlyph()
+    val defaultGlyph: Glyph
+        get() {
+            val glyph = glyphs[-1]
+            if(glyph == null || glyph.isEmpty())
+                return generatedDefaultGlyph
+            return glyph
+        }
+
+    fun nextSpecialGlyph(): Int {
+        val reserved = reservedSpecialGlyphs
+        var i = -1
+        while (i in reserved) {
+            i--
+        }
+        return i
+    }
 
     private fun createDefaultGlyph(): Glyph {
         val capHeight = if(capHeight == 0) 1 else capHeight
@@ -81,8 +105,9 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
     private fun packTables(): Map<String, ByteArray> {
         val map = mutableMapOf<String, ByteArray>()
 
+        val specials = reservedSpecialGlyphs - setOf(-1) // an empty -1 should be removed so it can be generated
         glyphs.int2ObjectEntrySet().toList().forEach {
-            if (it.value.isEmpty())
+            if (it.value.isEmpty() && it.intKey !in specials)
                 glyphs.remove(it.intKey)
         }
 
@@ -102,6 +127,16 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
             glyphEntries.forEach { (point, glyph) ->
                 packer.packInt(point)
                 glyph.pack(packer)
+            }
+        }
+
+        map["ligatures"] = MsgPackable.packToBytes { packer ->
+            val ligEntries = ligatures.object2IntEntrySet()
+                .sortedBy { it.key }
+            packer.packMapHeader(ligEntries.size)
+            ligEntries.forEach { (chars, glyph) ->
+                packer.packString(chars)
+                packer.packInt(glyph)
             }
         }
 
@@ -163,6 +198,15 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
                     } catch(e: MessageInsufficientBufferException) {
                         e.printStackTrace()
                         font.name = font.name + "~"
+                    }
+                }
+            }
+
+            map["ligatures"]?.also { data ->
+                MsgUnpackable.unpack(data) { unpacker ->
+                    val ligCount = unpacker.unpackMapHeader()
+                    for (i in 0 until ligCount) {
+                        font.ligatures[unpacker.unpackString()] = unpacker.unpackInt()
                     }
                 }
             }

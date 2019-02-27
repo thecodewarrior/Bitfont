@@ -68,4 +68,10 @@ open class AttributedString internal constructor(
     override fun toString(): String {
         return plaintext
     }
+
+    /**
+     * Companion object so conversion extensions can be made (e.g. `AttributedString.fromMC` for Minecraft formatting
+     * -> AttributedString)
+     */
+    companion object
 }

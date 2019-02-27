@@ -1,20 +1,12 @@
 package games.thecodewarrior.bitfont.editor
 
 import games.thecodewarrior.bitfont.editor.utils.Constants
-import games.thecodewarrior.bitfont.editor.utils.nameslist.AliasLine
-import games.thecodewarrior.bitfont.editor.utils.nameslist.CommentLine
-import games.thecodewarrior.bitfont.editor.utils.nameslist.CompatMapping
-import games.thecodewarrior.bitfont.editor.utils.nameslist.CrossRef
-import games.thecodewarrior.bitfont.editor.utils.nameslist.Decomposition
 import games.thecodewarrior.bitfont.editor.utils.nameslist.ExpandLine
 import games.thecodewarrior.bitfont.editor.utils.nameslist.ExpandLineElement
-import games.thecodewarrior.bitfont.editor.utils.nameslist.FormalAliasLine
-import games.thecodewarrior.bitfont.editor.utils.nameslist.NoticeLine
-import games.thecodewarrior.bitfont.editor.utils.nameslist.VariationLine
 import imgui.ImGui
 import imgui.functionalProgramming.button
 
-class GlyphDetailPane(val document: BitfontDocument) {
+class CharacterDetailPane(val document: BitfontDocument) {
     val width: Float
         get() = 175f
     var codepoint = 0
@@ -54,8 +46,7 @@ class GlyphDetailPane(val document: BitfontDocument) {
 */
 
         button("Edit") {
-            document.editorWindow.codepoint = codepoint
-            document.editorWindow.codepointHistory.push(codepoint)
+            document.editorWindow.index = codepoint
             document.editorWindow.visible = true
             document.editorWindow.focus()
         }
