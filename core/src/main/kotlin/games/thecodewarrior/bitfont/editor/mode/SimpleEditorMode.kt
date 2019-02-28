@@ -149,14 +149,16 @@ open class SimpleEditorMode(editor: Editor): EditorMode(editor) {
         }
     }
 
-    override fun keyDown(key: Key) {
+    override fun keyDown(key: Key): Boolean {
         keyActions.firstOrNull { it.matches(key, modifiers) }?.also {
             it.keyDown()
             it.keyPress()
             currentKeyAction = it
             activeKeyActions.add(it)
             nextKeyRepeatTime = timeProvider.time + keyRepeatDelay
+            return true
         }
+        return false
     }
 
     override fun keyUp(key: Key) {

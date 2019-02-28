@@ -18,7 +18,7 @@ abstract class EditorMode(val editor: Editor) {
     abstract fun update()
 
     abstract fun receiveText(text: String)
-    abstract fun keyDown(key: Key)
+    abstract fun keyDown(key: Key): Boolean
     abstract fun keyUp(key: Key)
 
     abstract fun mouseDown(button: MouseButton)

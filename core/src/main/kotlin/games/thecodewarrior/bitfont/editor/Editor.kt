@@ -15,14 +15,14 @@ class Editor(font: Bitfont, width: Int) {
         set(value) {
             if(field != value) {
                 field = value
-                mode.updateText()
+                catchOOB { mode.updateText() }
             }
         }
     var width = width
         set(value) {
             if(field != value) {
                 field = value
-                mode.updateText()
+                catchOOB { mode.updateText() }
             }
         }
 
@@ -41,34 +41,43 @@ class Editor(font: Bitfont, width: Int) {
     var mode: EditorMode = DefaultEditorMode.systemMode(this)
 
     fun update() {
-        mode.update()
+        catchOOB { mode.update() }
     }
 
     fun inputModifiers(modifiers: Modifiers) {
-        mode.modifiers = modifiers
+        catchOOB { mode.modifiers = modifiers }
     }
 
     fun inputText(text: String) {
-        mode.receiveText(text)
+        catchOOB { mode.receiveText(text) }
     }
 
-    fun inputKeyDown(key: Key) {
-        mode.keyDown(key)
+    fun inputKeyDown(key: Key): Boolean {
+        return catchOOB { mode.keyDown(key) } ?: false
     }
 
     fun inputKeyUp(key: Key) {
-        mode.keyUp(key)
+        catchOOB { mode.keyUp(key) }
     }
 
     fun inputMouseMove(pos: Vec2i) {
-        mode.mouseMove(pos)
+        catchOOB { mode.mouseMove(pos) }
     }
 
     fun inputMouseDown(button: MouseButton) {
-        mode.mouseDown(button)
+        catchOOB { mode.mouseDown(button) }
     }
 
     fun inputMouseUp(button: MouseButton) {
-        mode.mouseUp(button)
+        catchOOB { mode.mouseUp(button) }
+    }
+
+    private inline fun <T> catchOOB(fn: () -> T): T? {
+        try {
+            return fn()
+        } catch(e: StringIndexOutOfBoundsException) {
+            e.printStackTrace()
+            return null
+        }
     }
 }
