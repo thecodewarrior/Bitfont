@@ -154,10 +154,25 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                     val newDocument = BitfontDocument(bitfont)
                     Main.documents.add(newDocument)
                 }
-                if(menuItem("Import")) {
-                    val bitfont = UnifontImporter.import(File("unifont.hex"))
-                    val newDocument = BitfontDocument(bitfont)
-                    Main.documents.add(newDocument)
+                menu("Import") {
+                    menu("Unifont") {
+                        if(menuItem("BMP (unifont.hex)")) {
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont BMP", false, "unifont.hex")))
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont BMP", true, "unifont.hex")))
+                        }
+                        if(menuItem("Plane 1 (unifont_upper.hex)")) {
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont Plane 1", false, "unifont_upper.hex")))
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont Plane 1", true, "unifont_upper.hex")))
+                        }
+                        if(menuItem("All (unifont.hex, unifont_upper.hex)")) {
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont", false, "unifont.hex", "unifont_upper.hex")))
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont", true, "unifont.hex", "unifont_upper.hex")))
+                        }
+                        if(menuItem("CSUR (unifont_csur.hex, unifont_csur_lower.hex)")) {
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont CSUR", false, "unifont.hex", "unifont_upper.hex")))
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont CSUR", true, "unifont.hex", "unifont_upper.hex")))
+                        }
+                    }
                 }
                 if(menuItem("Optimize")) {
                     bitfont.glyphs.forEach { _, glyph -> glyph.crop() }
@@ -175,6 +190,22 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
 //                menuItem("Quit", "Alt+F4")
             }
         } }
+    }
+
+    fun importUnifont(name: String, autoAdvance: Boolean, vararg files: String): Bitfont {
+        val lines = files.flatMap { File(it).readLines() }
+        val bitfont = UnifontImporter.import(lines)
+
+        bitfont.name = name + (if(autoAdvance) " (auto advance)" else " (fixed advance)")
+
+        if(autoAdvance) {
+            bitfont.glyphs.forEach { (_, it) ->
+                if (!it.isEmpty())
+                    it.advance = null
+            }
+        }
+
+        return bitfont
     }
 
 }
