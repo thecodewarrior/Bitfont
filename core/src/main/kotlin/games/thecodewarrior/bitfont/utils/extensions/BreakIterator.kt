@@ -25,7 +25,9 @@ private val lineBreakIteratorLocal = ThreadLocal<BreakIterator>()
 internal val lineBreakIterator: BreakIterator
     get() = lineBreakIteratorLocal.getOrSet { BreakIterator.getLineInstance() }
 
-private val breakIterators = ThreadLocal<EnumMap<BreakType, BreakIterator>>()
+private val breakIterators = EnumMap<BreakType, ThreadLocal<BreakIterator>>(
+    BreakType.values().associate { it to ThreadLocal<BreakIterator>() }
+)
 
 enum class BreakType(private val constructor: () -> BreakIterator) {
     CHARACTER({ BreakIterator.getCharacterInstance() }),
@@ -35,8 +37,6 @@ enum class BreakType(private val constructor: () -> BreakIterator) {
     LINE({ BreakIterator.getLineInstance() });
 
     fun get(): BreakIterator {
-        return breakIterators
-            .getOrSet { EnumMap(BreakType::class.java) }
-            .getOrPut(this, constructor)
+        return breakIterators.getValue(this).getOrSet(constructor)
     }
 }

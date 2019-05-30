@@ -150,7 +150,7 @@ open class SimpleEditorMode(editor: Editor): EditorMode(editor) {
     }
 
     override fun keyDown(key: Key): Boolean {
-        keyActions.firstOrNull { it.matches(key, modifiers) }?.also {
+        keyActions.lastOrNull { it.matches(key, modifiers) }?.also {
             it.keyDown()
             it.keyPress()
             currentKeyAction = it
@@ -184,7 +184,7 @@ open class SimpleEditorMode(editor: Editor): EditorMode(editor) {
         lastClickTime = time
         lastClickPos = mousePos
         currentMouseAction?.mouseUp()
-        mouseActions.firstOrNull { it.matches(button, clickCount, modifiers) }?.also {
+        mouseActions.lastOrNull { it.matches(button, clickCount, modifiers) }?.also {
             it.mouseDown()
             currentMouseAction = it
         }
