@@ -7,5 +7,6 @@ package games.thecodewarrior.bitfont.utils.extensions
 //fun Float.replace(src: Float, dest: Float): Float = if(this == src) dest else this
 //fun Double.replace(src: Double, dest: Double): Double = if(this == src) dest else this
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun <T: Number> T.replace(src: T, dest: T): T = if(this == src) dest else this
 

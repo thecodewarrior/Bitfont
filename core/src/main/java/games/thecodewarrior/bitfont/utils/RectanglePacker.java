@@ -65,9 +65,10 @@ public class RectanglePacker<P>
     private @NotNull Node root;
 
     /**
-     * The border to leave around rectangles
+     * The gapSize to leave around rectangles
      */
-    private int border = 0;
+    private int gapSize = 0;
+    private int gapSizeMin = 0;
 
     /**
      * Builds a new {@link RectanglePacker}
@@ -76,13 +77,14 @@ public class RectanglePacker<P>
      *           The width of the space available to pack into
      * @param height
      *           The height of the space available to pack into
-     * @param border
-     *           The border to preserve between packed items
+     * @param gapSize
+     *           The amount of space to preserve between packed items
      */
-    public RectanglePacker( final int width, final int height, final int border )
+    public RectanglePacker( final int width, final int height, final int gapSize )
     {
-        root = new Node( new Rectangle( 0, 0, width, height ) );
-        this.border = border;
+        this.root = new Node( new Rectangle( 0, 0, width, height ) );
+        this.gapSize = gapSize;
+        this.gapSizeMin = gapSize / 2;
     }
 
     /**
@@ -131,14 +133,11 @@ public class RectanglePacker<P>
      */
     public @Nullable Rectangle insert( final int width, final int height, final @NotNull P o )
     {
-        final Node n = root.insert( width + 2 * border, height + 2 * border, o );
+        final Node n = root.insert( width + gapSize, height + gapSize, o );
 
         if( n != null )
         {
-            final Rectangle r =
-                    new Rectangle( n.rect.x + border, n.rect.y + border,
-                            n.rect.width - 2 * border, n.rect.height - 2 * border );
-            return r;
+            return new Rectangle(n.rect.x + gapSizeMin, n.rect.y + gapSizeMin, width, height);
         }
         else
         {
