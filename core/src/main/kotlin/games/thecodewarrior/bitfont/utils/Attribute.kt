@@ -50,5 +50,4 @@ class AttributeMap() {
     fun clear() = map.clear()
 
     fun putAll(from: AttributeMap) = map.putAll(from.map)
-
 }

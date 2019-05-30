@@ -6,10 +6,12 @@ import games.thecodewarrior.bitfont.editor.mode.EditorMode
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import games.thecodewarrior.bitfont.typesetting.TypesetString
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import games.thecodewarrior.bitfont.utils.Vec2i
 import games.thecodewarrior.bitfont.utils.extensions.getValue
 import games.thecodewarrior.bitfont.utils.extensions.setValue
 
+@ExperimentalBitfont
 class Editor(font: Bitfont, width: Int) {
     var font = font
         set(value) {

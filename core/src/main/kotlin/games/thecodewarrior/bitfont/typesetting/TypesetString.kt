@@ -6,6 +6,7 @@ import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.utils.Attribute
 import games.thecodewarrior.bitfont.utils.AttributeMap
 import games.thecodewarrior.bitfont.utils.CombiningClass
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import games.thecodewarrior.bitfont.utils.Vec2i
 import games.thecodewarrior.bitfont.utils.extensions.characterBreakIterator
 import games.thecodewarrior.bitfont.utils.extensions.lineBreakIterator
@@ -20,6 +21,7 @@ import kotlin.streams.toList
  * initialized any fields needed for your typesetting process. The default call in [TypesetString]'s constructor is
  * not run for subclasses in order to allow for clean inheritance.
  */
+@ExperimentalBitfont
 open class TypesetString(
     /**
      * The default font.

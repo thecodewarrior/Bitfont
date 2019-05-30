@@ -5,8 +5,10 @@ import games.thecodewarrior.bitfont.editor.Key
 import games.thecodewarrior.bitfont.editor.Modifier
 import games.thecodewarrior.bitfont.editor.ModifierPattern
 import games.thecodewarrior.bitfont.editor.MouseButton
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import games.thecodewarrior.bitfont.utils.extensions.BreakType
 
+@ExperimentalBitfont
 class WindowsEditorMode(editor: Editor): DefaultEditorMode(editor) {
 
     init {

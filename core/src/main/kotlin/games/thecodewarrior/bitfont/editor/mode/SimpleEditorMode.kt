@@ -8,8 +8,10 @@ import games.thecodewarrior.bitfont.editor.Modifiers
 import games.thecodewarrior.bitfont.editor.MouseButton
 import games.thecodewarrior.bitfont.editor.utils.SystemTimeProvider
 import games.thecodewarrior.bitfont.editor.utils.TimeProvider
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import games.thecodewarrior.bitfont.utils.Vec2i
 
+@ExperimentalBitfont
 open class SimpleEditorMode(editor: Editor): EditorMode(editor) {
     val keyActions: MutableList<KeyEditorAction> = mutableListOf()
     val mouseActions: MutableList<MouseEditorAction> = mutableListOf()

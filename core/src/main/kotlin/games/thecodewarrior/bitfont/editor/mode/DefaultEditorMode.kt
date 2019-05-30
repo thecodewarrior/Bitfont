@@ -6,6 +6,7 @@ import games.thecodewarrior.bitfont.editor.Modifier
 import games.thecodewarrior.bitfont.editor.utils.Clipboard
 import games.thecodewarrior.bitfont.editor.utils.InternalClipboard
 import games.thecodewarrior.bitfont.typesetting.TypesetString.GlyphRender
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import games.thecodewarrior.bitfont.utils.Vec2i
 import games.thecodewarrior.bitfont.utils.clamp
 import games.thecodewarrior.bitfont.utils.extensions.BreakType
@@ -14,6 +15,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
+@ExperimentalBitfont
 open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
     private var verticalMotionX: Int? = null
 

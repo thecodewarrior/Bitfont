@@ -46,6 +46,9 @@ configure<JavaPluginConvention> {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.freeCompilerArgs = listOf("-Xuse-experimental=kotlin.ExperimentalUnsignedTypes")
+    kotlinOptions.freeCompilerArgs += listOf(
+        "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
+        "-Xuse-experimental=games.thecodewarrior.bitfont.utils.ExperimentalBitfont"
+    )
 }
 

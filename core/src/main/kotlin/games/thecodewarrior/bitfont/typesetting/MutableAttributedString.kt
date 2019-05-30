@@ -3,6 +3,7 @@ package games.thecodewarrior.bitfont.typesetting
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.utils.Attribute
 import games.thecodewarrior.bitfont.utils.AttributeMap
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import games.thecodewarrior.bitfont.utils.RangeMap
 import games.thecodewarrior.bitfont.utils.TreeRangeMap
 import java.awt.Color
@@ -10,12 +11,14 @@ import java.awt.Color
 /**
  * A private interface purely to simplify method organization
  */
+@ExperimentalBitfont
 private interface IMutableAttributedString {
     private fun getThis(): MutableAttributedString = this as MutableAttributedString
 
     //region append
     /*    //----------------- Implementations -----------------\\    */
     fun append(string: String, attributes: AttributeMap): MutableAttributedString
+    @ExperimentalBitfont
     fun append(string: AttributedString): MutableAttributedString
     /*    //-------------------- Overloads --------------------\\    */
     @JvmDefault
@@ -49,6 +52,7 @@ private interface IMutableAttributedString {
     //region insert
     /*    //----------------- Implementations -----------------\\    */
     fun insert(pos: Int, string: String, attributes: AttributeMap): MutableAttributedString
+    @ExperimentalBitfont
     fun insert(pos: Int, string: AttributedString): MutableAttributedString
     /*    //-------------------- Overloads --------------------\\    */
     @JvmDefault
@@ -96,6 +100,7 @@ private interface IMutableAttributedString {
     */
 }
 
+@ExperimentalBitfont
 open class MutableAttributedString: AttributedString, IMutableAttributedString {
     private val buffer: StringBuffer = StringBuffer(super.plaintext)
 

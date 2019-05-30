@@ -7,11 +7,13 @@ import games.thecodewarrior.bitfont.editor.Modifier
 import games.thecodewarrior.bitfont.editor.ModifierPattern
 import games.thecodewarrior.bitfont.editor.MouseButton
 import games.thecodewarrior.bitfont.typesetting.TypesetString
+import games.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import games.thecodewarrior.bitfont.utils.Vec2i
 import games.thecodewarrior.bitfont.utils.extensions.BreakType
 import games.thecodewarrior.bitfont.utils.extensions.endExclusive
 import games.thecodewarrior.bitfont.utils.extensions.replace
 
+@ExperimentalBitfont
 class MacEditorMode(editor: Editor): DefaultEditorMode(editor) {
 
     init {
