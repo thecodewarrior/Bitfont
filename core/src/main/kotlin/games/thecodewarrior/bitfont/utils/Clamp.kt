@@ -10,3 +10,6 @@ internal fun Float.clamp(min: Float, max: Float) = if(this < min) min else if(th
 internal fun Double.clamp(min: Double, max: Double) = if(this < min) min else if(this > max) max else this
 
 internal fun <T: Comparable<T>> T.clamp(min: T, max: T) = if(this < min) min else if(this > max) max else this
+
+internal fun <T: Comparable<T>> min(a: T, b: T) = if(b < a) b else a
+internal fun <T: Comparable<T>> max(a: T, b: T) = if(b > a) b else a

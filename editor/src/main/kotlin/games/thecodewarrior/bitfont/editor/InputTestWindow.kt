@@ -1,6 +1,8 @@
 package games.thecodewarrior.bitfont.editor
 
 import games.thecodewarrior.bitfont.data.Bitfont
+import games.thecodewarrior.bitfont.editor.mode.CursorPosition
+import games.thecodewarrior.bitfont.editor.mode.CursorRange
 import games.thecodewarrior.bitfont.editor.mode.DefaultEditorMode
 import games.thecodewarrior.bitfont.editor.mode.MacEditorMode
 import games.thecodewarrior.bitfont.utils.Attribute
@@ -38,7 +40,7 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
     }
     val editor = Editor(bitfont, -1)
     val mode = editor.mode as DefaultEditorMode
-    var selection: IntRange? = null
+    var selection: CursorRange? = null
 
     var scale = 2
         set(value) {
@@ -125,7 +127,8 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
     }
 
     private var lastCursorChange = System.currentTimeMillis()
-    private var lastCursor = 0
+    private var lastCursor = CursorPosition(0, false)
+
     fun drawCanvas() {
         drawList.addRectFilled(
             canvas.min,
@@ -152,7 +155,7 @@ class InputTestWindow(val document: BitfontDocument): IMWindow() {
         selection?.let { selection ->
             editor.typesetString.lines.forEach { line ->
                 line.glyphs.forEach { glyph ->
-                    if (glyph.characterIndex in selection && glyph.posAfter.y == glyph.pos.y) {
+                    if (glyph.characterIndex in selection.indexRange && glyph.posAfter.y == glyph.pos.y) {
                         drawList.addRectFilled(
                             textOrigin + (glyph.pos.toIm() - Vec2i(0, line.maxAscent)) * scale,
                             textOrigin + (glyph.posAfter.toIm() + Vec2i(0, line.maxDescent)) * scale,

@@ -82,10 +82,10 @@ open class TypesetString(
         return closestLine.lineNumber
     }
 
-    fun closestCharacter(pos: Vec2i): Int {
+    fun closestCharacter(pos: Vec2i): Pair<Int, Boolean> {
         val lineIndex = closestLine(pos.y)
-        if(lineIndex == lines.size) return string.length
-        val line = lines.getOrNull(lineIndex) ?: return 0
+        if(lineIndex == lines.size) return string.length to false
+        val line = lines.getOrNull(lineIndex) ?: return 0 to false
         return line.closestCharacter(pos.x)
     }
 
@@ -346,7 +346,7 @@ open class TypesetString(
     data class GlyphRender(
         val characterIndex: Int, val codepointIndex: Int, val codepoint: Int, val line: Int,
         val font: Bitfont, val glyph: Glyph,
-        val pos: Vec2i, val posAfter: Vec2i, val attributes: AttributeMap) {
+        var pos: Vec2i, var posAfter: Vec2i, val attributes: AttributeMap) {
     }
 
     data class Line(
@@ -355,8 +355,29 @@ open class TypesetString(
         val startX: Int, val endX: Int,
         val glyphs: List<GlyphRender>
     ) {
-        fun closestCharacter(x: Int): Int {
-            return glyphs.minBy { abs(x - it.pos.x) }?.characterIndex ?: 0
+        var offset: Vec2i = Vec2i(0, 0)
+            set(value) {
+                val offsetDelta = value - field
+                glyphs.forEach {
+                    it.pos += offsetDelta
+                    it.posAfter += offsetDelta
+                }
+                field = value
+            }
+
+        /**
+         * Returns the closest character index to the passed X index
+         */
+        fun closestCharacter(x: Int): Pair<Int, Boolean> {
+            if(glyphs.isEmpty())
+                return 0 to false
+            val glyph = glyphs.minBy { abs(x - it.pos.x) }
+            val endDistance = abs(x - glyphs.last().posAfter.x)
+            val glyphDistance = glyph?.let { abs(x - it.pos.x) }
+            if(glyphDistance != null && glyphDistance < endDistance) {
+                return glyph.characterIndex to false
+            }
+            return glyphs.last().characterIndex + 1 to true
         }
         fun containingCharacter(x: Int): Int {
             return glyphs.lastOrNull { it.pos.x <= x }?.characterIndex ?: 0

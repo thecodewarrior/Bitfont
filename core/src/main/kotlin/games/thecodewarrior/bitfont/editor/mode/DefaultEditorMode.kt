@@ -11,6 +11,8 @@ import games.thecodewarrior.bitfont.utils.Vec2i
 import games.thecodewarrior.bitfont.utils.clamp
 import games.thecodewarrior.bitfont.utils.extensions.BreakType
 import games.thecodewarrior.bitfont.utils.extensions.endExclusive
+import games.thecodewarrior.bitfont.utils.max
+import games.thecodewarrior.bitfont.utils.min
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -19,32 +21,34 @@ import kotlin.math.min
 open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
     private var verticalMotionX: Int? = null
 
-    var cursor = 0
+    var cursor: CursorPosition = CursorPosition(0, false)
         set(value) {
             if(field != value) {
                 field = value
                 verticalMotionX = null
-                selectionStart = null
                 updateCursorPos()
             }
         }
-    var selectionStart: Int? = null
-    val selectionRange: IntRange?
+    var selectionStart: CursorPosition? = null
+    val selectionRange: CursorRange?
         get() = selectionStart?.let {
-            if(cursor < it)
-                cursor until it
-            else if(cursor > it)
-                it until cursor
-            else
-                null
+            when {
+                cursor.index < it.index -> CursorRange(cursor, it)
+                cursor.index > it.index -> CursorRange(it, cursor)
+                else -> null
+            }
         }
 
-    var cursorGlyph: GlyphRender? = null
     var cursorPos: Vec2i = Vec2i(0, 0)
     var clipboard: Clipboard = InternalClipboard
 
     init {
         updateCursorPos()
+    }
+
+    fun resetCursor(pos: CursorPosition) {
+        cursor = pos
+        selectionStart = null
     }
 
     override fun updateText() {
@@ -53,12 +57,17 @@ open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
     }
 
     fun updateCursorPos() {
-        val atCursor = internals.typesetString.glyphMap[cursor]
-        val beforeCursor = internals.typesetString.glyphMap[cursor-1]
-        cursorGlyph = atCursor ?: beforeCursor
-        cursorPos = atCursor?.pos ?:
-            beforeCursor?.posAfter ?:
-            Vec2i(0, editor.font.ascent)
+        val atCursor = internals.typesetString.glyphMap[cursor.index]
+        val beforeCursor = internals.typesetString.glyphMap[cursor.index-1]
+        if(cursor.afterPrevious) {
+            cursorPos = beforeCursor?.posAfter ?:
+                atCursor?.pos ?:
+                Vec2i(0, editor.font.ascent)
+        } else {
+            cursorPos = atCursor?.pos ?:
+                beforeCursor?.posAfter ?:
+                Vec2i(0, editor.font.ascent)
+        }
     }
 
     override fun receiveText(text: String) {
@@ -69,27 +78,32 @@ open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
         val selectionStart = selectionStart
         if(selectionStart != null) {
             if(cursor < selectionStart) {
-                contents.delete(cursor, selectionStart)
+                contents.delete(cursor.index, selectionStart.index)
+                resetCursor(cursor)
             } else if(cursor > selectionStart) {
-                contents.delete(selectionStart, cursor)
-                cursor = selectionStart
+                contents.delete(selectionStart.index, cursor.index)
+                resetCursor(selectionStart)
             }
-            this.selectionStart = null
         }
-        contents.insert(cursor, text)
-        cursor += text.length
+        contents.insert(cursor.index, text)
+        // this is after the previous for a few reasons:
+        // - If the user pastes and it causes a word wrap exactly at the end of the pasted value, the cursor should
+        //   be at the end of the pasted value
+        // - If the user pastes and it ends in a newline, the pos after the newline's end will be correctly on the
+        //   next line
+        resetCursor(CursorPosition(cursor.index + text.length, true))
         updateText()
     }
 
     //region actions
 
     protected fun delete(end: Int) {
-        val rangeStart = selectionStart ?: end.clamp(0, contents.length)
-        if (cursor < rangeStart) {
-            contents.delete(cursor, rangeStart)
-        } else if (cursor > rangeStart) {
-            contents.delete(rangeStart, cursor)
-            cursor = rangeStart
+        val rangeStart = selectionStart?.index ?: end.clamp(0, contents.length)
+        if (cursor.index < rangeStart) {
+            contents.delete(cursor.index, rangeStart)
+        } else if (cursor.index > rangeStart) {
+            contents.delete(rangeStart, cursor.index)
+            resetCursor(CursorPosition(rangeStart, false))
         }
         this.selectionStart = null
         updateText()
@@ -99,10 +113,10 @@ open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
         insert("\n")
     }
 
-    protected fun moveTo(pos: Int) {
+    protected fun moveTo(pos: CursorPosition) {
         val selectionStart = selectionStart ?: cursor
 
-        cursor = pos
+        resetCursor(pos)
 
         if(Modifier.SHIFT in modifiers)
             this.selectionStart = selectionStart
@@ -111,74 +125,84 @@ open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
     protected fun moveBackward(breakType: BreakType) {
         val iter = breakType.get()
         iter.setText(contents.plaintext)
-        val newPos = iter.preceding(selectionStart?.let { min(it, cursor) } ?: cursor)
+        val newPos = iter.preceding(selectionStart?.let { min(it, cursor) }?.index ?: cursor.index)
         if(newPos == BreakIterator.DONE)
-            moveTo(0)
+            moveTo(CursorPosition(0, false))
         else
-            moveTo(newPos)
+            moveTo(CursorPosition(newPos, false))
     }
 
     protected fun moveForward(breakType: BreakType) {
         val iter = breakType.get()
         iter.setText(contents.plaintext)
-        val newPos = iter.following(selectionStart?.let { max(it, cursor) } ?: cursor)
+        val newPos = iter.following(selectionStart?.let { max(it, cursor) }?.index ?: cursor.index)
         if(newPos == BreakIterator.DONE)
-            moveTo(contents.length)
+            moveTo(CursorPosition(contents.length, true))
         else
-            moveTo(newPos)
+            moveTo(CursorPosition(newPos, true))
     }
 
     protected fun moveUp() {
-        val start = selectionStart?.let { min(it, cursor) } ?: cursor
+        var start = selectionStart?.let { min(it, cursor) }?.index ?: cursor.index
+        val max = internals.typesetString.glyphMap.keys.max()
+        if(max != null && start > max)
+            start = max
         internals.typesetString.glyphMap[start]?.also {
+            val x = verticalMotionX ?: cursorPos.x
             if(it.line == 0) {
-                val x = verticalMotionX ?: cursorPos.x
-                cursor = 0
-                verticalMotionX = x
+                cursor = CursorPosition(0, false)
             } else {
-                val nextLine =
-                    if(cursor == contents.length && verticalMotionX != null && verticalMotionX != cursorPos.x)
-                        it.line
-                    else
-                        it.line-1
-                val x = verticalMotionX ?: cursorPos.x
-                moveTo(internals.typesetString.lines[nextLine].closestCharacter(x))
-                verticalMotionX = x
+                val closest = internals.typesetString.lines[it.line-1].closestCharacter(x)
+                moveTo(CursorPosition(closest))
             }
+            verticalMotionX = x
         }
     }
 
     protected fun moveDown() {
         val start = selectionStart?.let { max(it, cursor) } ?: cursor
-        internals.typesetString.glyphMap[start]?.also {
+        internals.typesetString.glyphMap[start.index]?.also {
+            val x = verticalMotionX ?: cursorPos.x
             if(it.line == internals.typesetString.lines.size-1) {
-                val x = verticalMotionX ?: cursorPos.x
-                cursor = contents.length
-                verticalMotionX = x
+                cursor = CursorPosition(contents.length, false)
             } else {
-                val nextLine =
-                    if(cursor == 0 && verticalMotionX != null && verticalMotionX != cursorPos.x)
-                        it.line
-                    else
-                        it.line+1
-                val x = verticalMotionX ?: cursorPos.x
-                moveTo(internals.typesetString.lines[nextLine].closestCharacter(x))
-                verticalMotionX = x
+                val closest = internals.typesetString.lines[it.line+1].closestCharacter(x)
+                moveTo(CursorPosition(closest))
             }
+            verticalMotionX = x
+        }
+    }
+
+    protected fun moveToLineStart() {
+        internals.typesetString.glyphMap[cursor.index]?.also {
+            // lines[it.line] exists, because this glyph exists
+            // glyphs[0] exists, because at least this gliph is on it
+            moveTo(CursorPosition(
+                internals.typesetString.lines[it.line].glyphs.first().characterIndex, false
+            ))
+        }
+    }
+
+    protected fun moveToLineEnd() {
+        internals.typesetString.glyphMap[cursor.index]?.also {
+            // lines[it.line] exists, because this glyph exists
+            // glyphs[0] exists, because at least this gliph is on it
+            moveTo(CursorPosition(
+                internals.typesetString.lines[it.line].glyphs.last().characterIndex+1, true
+            ))
         }
     }
 
     protected fun jumpToMouse() {
-        val newPos = internals.typesetString.closestCharacter(mousePos)
+        val newPos = CursorPosition(internals.typesetString.closestCharacter(mousePos))
         if(Modifier.SHIFT in modifiers) {
             val selection = selectionRange
             if (selection == null) {
-                val currentCursor = cursor
+                this.selectionStart = cursor
                 cursor = newPos
-                this.selectionStart = currentCursor
             } else {
                 cursor = newPos
-                if (abs(selection.start - newPos) < abs(selection.endExclusive - newPos)) {
+                if (abs(selection.start.index - newPos.index) < abs(selection.endExclusive.index - newPos.index)) {
                     selectionStart = selection.endInclusive
                 } else {
                     selectionStart = selection.start
@@ -187,12 +211,12 @@ open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
             return
         }
 
-        cursor = newPos
+        resetCursor(newPos)
     }
 
     protected fun normalMouseDrag(previousPos: Vec2i) {
         val selectionStart = selectionStart ?: cursor
-        cursor = internals.typesetString.closestCharacter(mousePos)
+        cursor = CursorPosition(internals.typesetString.closestCharacter(mousePos))
         this.selectionStart = selectionStart
     }
 
@@ -204,7 +228,7 @@ open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
 
     protected fun copy() {
         selectionRange?.also {
-            clipboard.contents = contents.plaintext.substring(it)
+            clipboard.contents = contents.plaintext.substring(it.start.index .. it.endExclusive.index)
             selectionStart = null
         }
     }
@@ -212,8 +236,8 @@ open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
     protected fun cut() {
         selectionRange?.also {
             copy()
-            contents.delete(it.start, it.endExclusive)
-            cursor = it.start
+            contents.delete(it.start.index, it.endExclusive.index)
+            resetCursor(it.start)
             updateText()
         }
     }
@@ -227,4 +251,31 @@ open class DefaultEditorMode(editor: Editor): SimpleEditorMode(editor) {
             return operatingSystemMode(editor)
         }
     }
+}
+
+data class CursorPosition(val index: Int, val afterPrevious: Boolean): Comparable<CursorPosition> {
+    constructor(pair: Pair<Int, Boolean>) : this(pair.first, pair.second)
+
+    override fun compareTo(other: CursorPosition): Int {
+        if(this.index == other.index) {
+            if(this.afterPrevious && !other.afterPrevious)
+                return -1
+            if(!this.afterPrevious && other.afterPrevious)
+                return 1
+        }
+        return this.index.compareTo(other.index)
+    }
+
+    operator fun plus(other: Int): CursorPosition {
+        return CursorPosition(index + other, afterPrevious)
+    }
+
+    operator fun minus(other: Int): CursorPosition {
+        return CursorPosition(index - other, afterPrevious)
+    }
+}
+
+data class CursorRange(val start: CursorPosition, val endExclusive: CursorPosition) {
+    val endInclusive: CursorPosition = endExclusive.copy(index = endExclusive.index - 1)
+    val indexRange = start.index until endExclusive.index
 }

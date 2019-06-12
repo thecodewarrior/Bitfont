@@ -14,8 +14,8 @@ class WindowsEditorMode(editor: Editor): DefaultEditorMode(editor) {
     init {
         val optionalShift = ModifierPattern.optional(Modifier.SHIFT)
 
-        keyAction(Key.BACKSPACE, { delete(cursor-1) })
-        keyAction(Key.DELETE, { delete(cursor+1) })
+        keyAction(Key.BACKSPACE, { delete(cursor.index-1) })
+        keyAction(Key.DELETE, { delete(cursor.index+1) })
         keyAction(Key.ENTER, ::enter)
 
         keyAction(Key.LEFT, optionalShift, { moveBackward(BreakType.CHARACTER) })
