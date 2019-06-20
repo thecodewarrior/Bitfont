@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     java
     kotlin("jvm")
+    id("maven")
 }
 
 repositories {
@@ -35,3 +36,7 @@ val sourcesJar by tasks.registering(Jar::class) {
 }
 
 tasks["jar"].dependsOn.add(sourcesJar)
+
+artifacts {
+    this.add("archives", sourcesJar)
+}

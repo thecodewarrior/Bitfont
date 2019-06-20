@@ -15,7 +15,7 @@ plugins {
 }
 
 allprojects {
-    group = "games.thecodewarrior.bitfont"
+    group = "dev.thecodewarrior.bitfont"
     version = "0.1"
 
     repositories {
