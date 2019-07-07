@@ -1,8 +1,10 @@
-package games.thecodewarrior.bitfont.typesetting
+package games.thecodewarrior.bitfont
 
 import com.ibm.icu.lang.UCharacter
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.Glyph
+import games.thecodewarrior.bitfont.typesetting.AttributedString
+import games.thecodewarrior.bitfont.typesetting.font
 import games.thecodewarrior.bitfont.utils.Attribute
 import games.thecodewarrior.bitfont.utils.AttributeMap
 import games.thecodewarrior.bitfont.utils.CombiningClass
