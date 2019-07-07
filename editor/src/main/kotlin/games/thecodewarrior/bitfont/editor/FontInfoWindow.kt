@@ -98,12 +98,6 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
             test.visible = true
             document.testWindows.add(test)
         }
-        sameLine()
-        button("Input") {
-            val input = InputTestWindow(document)
-            input.visible = true
-            document.inputWindows.add(input)
-        }
 
         drawMenu()
     }
