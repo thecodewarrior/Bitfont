@@ -113,6 +113,8 @@ object Main {
             if (showDemo)
                 showDemoWindow(Main::showDemo)
 
+            if(documents.isEmpty())
+                documents.add(BitfontDocument.blank())
             documents.toList().forEach { it.push() }
             val fpsText = "%4.1f".format(io.framerate) + if(targetFPS == 0)
                 ""

@@ -27,6 +27,11 @@ class Editor(font: Bitfont, width: Int) {
                 catchOOB { mode.updateText() }
             }
         }
+    /**
+     * Validate and potentially modify the value whenever it's changed. This is a stopgap until a better editor is
+     * written.
+     */
+    var validate: (MutableAttributedString) -> MutableAttributedString = { it }
 
     internal val internals: EditorInternals = EditorInternals()
     inner class EditorInternals {
@@ -34,6 +39,7 @@ class Editor(font: Bitfont, width: Int) {
         var typesetString: TypesetString = TypesetString(font, AttributedString(""))
 
         fun updateText() {
+            contents = validate(contents)
             typesetString = TypesetString(font, contents, width)
         }
     }
