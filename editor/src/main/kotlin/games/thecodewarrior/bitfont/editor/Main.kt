@@ -141,6 +141,6 @@ object Main {
         ImGui.render()
         ImplGL3.renderDrawData(ImGui.drawData!!)
 
-        checkError("mainLoop") // TODO remove in production
+        checkError("mainLoop")
     }
 }

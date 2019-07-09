@@ -4,6 +4,7 @@ import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.editor.data.UnifontImporter
+import games.thecodewarrior.bitfont.editor.testingwindow.GlyphGeneratorTestWindow
 import games.thecodewarrior.bitfont.editor.typesetting.BitfontAtlas
 import games.thecodewarrior.bitfont.editor.utils.ReferenceFonts
 import games.thecodewarrior.bitfont.editor.utils.extensions.addAll
@@ -92,9 +93,14 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
             browser.visible = true
             document.browserWindows.add(browser)
         }
-        sameLine()
-        button("Test") {
+        text("Tests")
+        button("Old Typesetting") {
             val test = TestingWindow(document)
+            test.visible = true
+            document.testWindows.add(test)
+        }
+        button("Glyph Generator") {
+            val test = GlyphGeneratorTestWindow(document)
             test.visible = true
             document.testWindows.add(test)
         }

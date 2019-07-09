@@ -263,7 +263,6 @@ class ImTextField(val idString: String) {
                 We are attempting to do most of that in **one main pass** to minimize the computation cost
                 (non-negligible for large amount of text) + 2nd pass for selection rendering (we could merge them by an
                 extra refactoring effort)   */
-            // FIXME: This should occur on bufDisplay but we'd need to maintain cursor/select_start/select_end for UTF-8.
             val text = editState.textW
             val cursorOffset = Vec2()
             val selectStartOffset = Vec2()
@@ -348,7 +347,6 @@ class ImTextField(val idString: String) {
                 val textSelectedBegin = glm.min(editState.state.selectStart, editState.state.selectEnd)
                 val textSelectedEnd = glm.max(editState.state.selectStart, editState.state.selectEnd)
 
-                // FIXME: those offsets should be part of the style? they don't play so well with multi-line selection.
                 val bgOffYUp = if (isMultiline) 0f else -1f
                 val bgOffYDn = if (isMultiline) 0f else 2f
                 val bgColor = Col.TextSelectedBg.u32

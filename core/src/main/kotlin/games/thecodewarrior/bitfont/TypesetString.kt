@@ -34,7 +34,7 @@ open class TypesetString(
      */
     val attributedString: AttributedString,
     /**
-     * The width to wrap to. TODO: Allow dynamic wrap width (for wrapping around images and stuff)
+     * The width to wrap to.
      */
     val wrapWidth: Int = -1,
     /**

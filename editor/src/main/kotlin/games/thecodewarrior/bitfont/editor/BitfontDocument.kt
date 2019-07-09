@@ -7,7 +7,7 @@ class BitfontDocument(val bitfont: Bitfont) {
     var infoWindow = FontInfoWindow(this)
     var editorWindow = GlyphEditorWindow(this)
     var browserWindows = mutableListOf<GlyphBrowserWindow>()
-    var testWindows = mutableListOf<TestingWindow>()
+    var testWindows = mutableListOf<IMWindow>()
 
     var referenceStyle = 0
     var referenceSize = 1f
