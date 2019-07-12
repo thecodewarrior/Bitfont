@@ -3,6 +3,8 @@ package games.thecodewarrior.bitfont.editor.testingwindow
 import games.thecodewarrior.bitfont.editor.IMWindow
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.editor.BitfontDocument
+import games.thecodewarrior.bitfont.editor.imgui.ImGui
+import games.thecodewarrior.bitfont.editor.imgui.withNative
 import games.thecodewarrior.bitfont.utils.Attribute
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.editor.utils.Colors
@@ -10,18 +12,12 @@ import games.thecodewarrior.bitfont.editor.utils.extensions.JColor
 import games.thecodewarrior.bitfont.editor.utils.extensions.color
 import games.thecodewarrior.bitfont.editor.utils.extensions.draw
 import games.thecodewarrior.bitfont.editor.utils.extensions.random
-import games.thecodewarrior.bitfont.editor.utils.extensions.toIm
-import games.thecodewarrior.bitfont.editor.utils.extensions.u32
 import games.thecodewarrior.bitfont.editor.utils.keys
+import games.thecodewarrior.bitfont.editor.utils.math.rect
+import games.thecodewarrior.bitfont.editor.utils.math.vec
 import games.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import games.thecodewarrior.bitfont.typesetting.font
-import glm_.vec2.Vec2
-import imgui.FocusedFlag
-import imgui.ImGui
-import imgui.functionalProgramming.withItemWidth
-import imgui.g
-import imgui.internal.Rect
-import org.lwjgl.glfw.GLFW
+import org.ice1000.jimgui.flag.JImFocusedFlags
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
@@ -35,46 +31,46 @@ abstract class AbstractTestWindow(val document: BitfontDocument, testName: Strin
         set(value) {
             field = max(value, 1)
         }
-    var canvas = Rect()
+    var canvas = rect(0, 0, 0, 0)
 
     abstract fun stringInput(string: String)
 
-    abstract fun drawCanvas()
+    abstract fun drawCanvas(imgui: ImGui)
 
-    open fun handleInput() = with(ImGui) {
-        keys {
+    open fun handleInput(imgui: ImGui) {
+        imgui.keys {
             "prim+v" pressed {
-                val clipboard = GLFW.glfwGetClipboardString(0)
-                if(clipboard != null) {
-                    stringInput(clipboard)
-                }
+                stringInput(imgui.clipboardText)
             }
         }
     }
 
-    override fun main(): Unit = with(ImGui) {
-        if(isWindowFocused(FocusedFlag.RootAndChildWindows) && g.activeId == 0) handleInput()
-        pushAllowKeyboardFocus(false)
-        withItemWidth(150f) {
-            sameLine()
-            inputInt("Scale", ::scale)
+    override fun main(imgui: ImGui): Unit {
+        if(imgui.isWindowFocused(JImFocusedFlags.RootAndChildWindows) /*&& g.activeId == 0*/) handleInput(imgui)
+        imgui.pushAllowKeyboardFocus(false)
+        imgui.sameLine()
+
+        imgui.pushItemWidth(150f)
+        withNative(::scale) {
+            imgui.inputInt("Scale", it)
         }
-        popAllowKeyboardFocus()
+        imgui.popItemWidth()
+        imgui.popAllowKeyboardFocus()
 
-        val canvasPos = win.contentsRegionRect.min + Vec2(0, frameHeightWithSpacing)
+        val canvasPos = imgui.windowContentRegionRect.min + vec(0, imgui.frameHeightWithSpacing)
 
-        canvas = Rect(canvasPos, canvasPos + Vec2(win.contentsRegionRect.width, win.contentsRegionRect.max.y - canvasPos.y))
-        itemSize(canvas)
-        pushClipRect(canvas.min, canvas.max, true)
-        itemHoverable(canvas, "canvas".hashCode())
-        itemAdd(canvas, "canvas".hashCode())
+        canvas = rect(canvasPos, canvasPos + vec(imgui.windowContentRegionRect.width, imgui.windowContentRegionRect.max.y - canvasPos.y))
+//        imgui.itemSize(canvas)
+        imgui.pushClipRect(canvas, true)
+//        imgui.itemHoverable(canvas, "canvas".hashCode())
+//        imgui.itemAdd(canvas, "canvas".hashCode())
         drawList.addRectFilled(
             canvas.min,
             canvas.max,
-            Colors.layoutTest.background.u32
+            Colors.layoutTest.background.rgb
         )
-        drawCanvas()
-        popClipRect()
+        drawCanvas(imgui)
+        imgui.popClipRect()
     }
 
 }

@@ -12,8 +12,8 @@ object ReferenceFonts {
     val sansMono: FallbackFont
     val sans: FallbackFont
 
-    val styles: Array<String>
-    val styleFonts: Array<FallbackFont>
+    val styles: List<String>
+    val styleFonts: List<FallbackFont>
 
     var fonts = mutableMapOf<String, Font>()
 
@@ -59,12 +59,12 @@ object ReferenceFonts {
             fonts[it] = Font.createFont(Font.TRUETYPE_FONT, resource)!!
         }
 
-        styles = arrayOf(
+        styles = listOf(
             "Serif", "Sans-Serif",
             "Serif Display", "Sans-Serif Display",
             "Serif Mono", "Sans-Serif Mono"
         )
-        styleFonts = arrayOf(
+        styleFonts = listOf(
             ReferenceFonts.serif, ReferenceFonts.sans,
             serifDisplay, sansDisplay,
             serifMono, sansMono

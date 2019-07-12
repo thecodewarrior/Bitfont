@@ -1,11 +1,5 @@
 package games.thecodewarrior.bitfont.editor.utils
 
-import glm_.vec2.Vec2
-import imgui.ImGui
-import imgui.MouseCursor
-import imgui.g
-import imgui.internal.InputSource
-import imgui.internal.Rect
 import kotlin.reflect.KMutableProperty0
 /*
 class ImTextField(val idString: String) {

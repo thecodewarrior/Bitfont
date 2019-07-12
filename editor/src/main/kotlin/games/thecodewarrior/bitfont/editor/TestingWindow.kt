@@ -3,25 +3,24 @@ package games.thecodewarrior.bitfont.editor
 import games.thecodewarrior.bitfont.TypesetString
 import games.thecodewarrior.bitfont.editor.IMWindow
 import games.thecodewarrior.bitfont.data.Bitfont
+import games.thecodewarrior.bitfont.editor.imgui.ImGui
+import games.thecodewarrior.bitfont.editor.imgui.withNative
 import games.thecodewarrior.bitfont.utils.Attribute
 import games.thecodewarrior.bitfont.typesetting.AttributedString
 import games.thecodewarrior.bitfont.editor.utils.Colors
 import games.thecodewarrior.bitfont.editor.utils.extensions.JColor
 import games.thecodewarrior.bitfont.editor.utils.extensions.color
 import games.thecodewarrior.bitfont.editor.utils.extensions.draw
+import games.thecodewarrior.bitfont.editor.utils.extensions.im
 import games.thecodewarrior.bitfont.editor.utils.extensions.random
-import games.thecodewarrior.bitfont.editor.utils.extensions.toIm
-import games.thecodewarrior.bitfont.editor.utils.extensions.u32
 import games.thecodewarrior.bitfont.editor.utils.keys
+import games.thecodewarrior.bitfont.editor.utils.math.Vec2
+import games.thecodewarrior.bitfont.editor.utils.math.rect
+import games.thecodewarrior.bitfont.editor.utils.math.vec
 import games.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import games.thecodewarrior.bitfont.typesetting.font
-import glm_.vec2.Vec2
-import imgui.FocusedFlag
-import imgui.ImGui
-import imgui.functionalProgramming.withItemWidth
-import imgui.g
-import imgui.internal.Rect
-import org.lwjgl.glfw.GLFW
+import org.ice1000.jimgui.flag.JImFocusedFlags
+import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
@@ -38,34 +37,32 @@ open class TestingWindow(val document: BitfontDocument): IMWindow() {
         set(value) {
             field = max(value, 1)
         }
-    var canvas = Rect()
+    var canvas = rect(0, 0, 0, 0)
     val textOrigin: Vec2
-        get() = canvas.min + Vec2(5, 5)
+        get() = canvas.min + vec(5, 5)
 
     init {
     }
 
-    open fun handleInput() = with(ImGui) {
-        keys {
+    open fun handleInput(imgui: ImGui) {
+        imgui.keys {
             "prim+v" pressed {
-                val clipboard = GLFW.glfwGetClipboardString(0)
-                if(clipboard != null) {
-                    if("shift".pressed()) {
-                        val hue = Math.random().toFloat()
-                        val saturation = 0.25f + Math.random().toFloat() * 0.75f
-                        val brightness = 0.75f + Math.random().toFloat() * 0.25f
-                        val color = JColor.getHSBColor(hue, saturation, brightness)
-                        testString.insert(Random.nextInt(0, testString.length), AttributedString(clipboard, Attribute.color to color))
-                    } else {
-                        testString = MutableAttributedString(clipboard)
-                    }
+                val clipboard = imgui.clipboardText
+                if("shift".pressed()) {
+                    val hue = Math.random().toFloat()
+                    val saturation = 0.25f + Math.random().toFloat() * 0.75f
+                    val brightness = 0.75f + Math.random().toFloat() * 0.25f
+                    val color = JColor.getHSBColor(hue, saturation, brightness)
+                    testString.insert(Random.nextInt(0, testString.length), AttributedString(clipboard, Attribute.color to color))
+                } else {
+                    testString = MutableAttributedString(clipboard)
                 }
             }
         }
     }
 
-    override fun main(): Unit = with(ImGui) {
-        if(isWindowFocused(FocusedFlag.RootAndChildWindows) && g.activeId == 0) handleInput()
+    override fun main(imgui: ImGui): Unit {
+        if(imgui.isWindowFocused(JImFocusedFlags.RootAndChildWindows) /* && imgui.g.activeId == 0 */) handleInput(imgui)
 //        withItemWidth(win.contentsRegionRect.width - 300f) {
 //            val arr = testString.replace("\n", "\\n").toCharArray().let { name ->
 //                CharArray(name.size + 1000).also { name.copyInto(it) }
@@ -73,44 +70,47 @@ open class TestingWindow(val document: BitfontDocument): IMWindow() {
 //            if(inputText("##testText", arr, InputTextFlag.EnterReturnsTrue.i))
 //                testString = String(g.inputTextState.textW.sliceArray(0 until g.inputTextState.textW.indexOf('\u0000'))).replace("\\n", "\n")
 //        }
-        pushAllowKeyboardFocus(false)
-        withItemWidth(150f) {
-            sameLine()
-            inputInt("Scale", ::scale)
+        imgui.pushAllowKeyboardFocus(false)
+        imgui.pushItemWidth(150f)
+            imgui.sameLine()
+        withNative(::scale) {
+            imgui.inputInt("Scale", it)
         }
-        popAllowKeyboardFocus()
+        imgui.popItemWidth()
+        imgui.popAllowKeyboardFocus()
 
-        val canvasPos = win.contentsRegionRect.min + Vec2(0, frameHeightWithSpacing)
+        val canvasPos = imgui.windowContentRegionRect.min + vec(0, imgui.frameHeightWithSpacing)
 
-        canvas = Rect(canvasPos, canvasPos + Vec2(win.contentsRegionRect.width, win.contentsRegionRect.max.y - canvasPos.y))
-        itemSize(canvas)
-        pushClipRect(canvas.min, canvas.max, true)
-        itemHoverable(canvas, "canvas".hashCode())
-        itemAdd(canvas, "canvas".hashCode())
-        drawCanvas()
-        popClipRect()
+        canvas = rect(canvasPos, canvasPos + vec(imgui.windowContentRegionRect.width, imgui.windowContentRegionRect.max.y - canvasPos.y))
+//        imgui.itemSize(canvas)
+        imgui.pushClipRect(canvas, true)
+//        imgui.itemHoverable(canvas, "canvas".hashCode())
+//        imgui.itemAdd(canvas, "canvas".hashCode())
+        imgui.rect(canvas.widthf, canvas.heightf, Color(0, 0, 0, 0).im, 0f, 0f)
+        drawCanvas(imgui)
+        imgui.popClipRect()
     }
 
-    fun drawCanvas() {
+    fun drawCanvas(imgui: ImGui) {
         drawList.addRectFilled(
             canvas.min,
             canvas.max,
-            Colors.layoutTest.background.u32
+            Colors.layoutTest.background.rgb
         )
 
-        val cursor = textOrigin - Vec2(0.5)
-        drawList.addTriangleFilled(cursor, cursor + Vec2(-scale, -scale), cursor + Vec2(-scale, scale), Colors.layoutTest.originIndicator.u32)
-        val textRegion = Rect(textOrigin, canvas.max)
+        val cursor = textOrigin - vec(0.5, 0.5)
+        drawList.addTriangleFilled(cursor, cursor + vec(-scale, -scale), cursor + vec(-scale, scale), Colors.layoutTest.originIndicator.rgb)
+        val textRegion = rect(textOrigin, canvas.max)
 
         typesetString = TypesetString(bitfont, testString, (textRegion.width / scale).toInt())
         typesetString.glyphs.forEach {
-            drawGlyph(it)
+            drawGlyph(imgui, it)
         }
     }
 
-    fun drawGlyph(char: TypesetString.GlyphRender) {
+    fun drawGlyph(imgui: ImGui, char: TypesetString.GlyphRender) {
         val color = char.attributes[Attribute.color] ?: Colors.layoutTest.text
         val font = char.attributes[Attribute.font] ?: bitfont
-        char.glyph.draw(textOrigin + char.pos.toIm() * scale, scale, color.u32)
+        char.glyph.draw(imgui, textOrigin + Vec2(char.pos) * scale, scale, color.rgb)
     }
 }

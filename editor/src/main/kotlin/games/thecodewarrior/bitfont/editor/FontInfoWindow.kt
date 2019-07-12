@@ -4,20 +4,17 @@ import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.editor.data.UnifontImporter
+import games.thecodewarrior.bitfont.editor.imgui.ImGui
+import games.thecodewarrior.bitfont.editor.imgui.withNative
 import games.thecodewarrior.bitfont.editor.testingwindow.GlyphGeneratorTestWindow
 import games.thecodewarrior.bitfont.editor.typesetting.BitfontAtlas
 import games.thecodewarrior.bitfont.editor.utils.ReferenceFonts
 import games.thecodewarrior.bitfont.editor.utils.extensions.addAll
 import games.thecodewarrior.bitfont.editor.utils.keys
-import imgui.ImGui
-import imgui.InputTextFlag
-import imgui.WindowFlag
-import imgui.imgui.imgui_demoDebugInformations.Companion.showHelpMarker
-import imgui.functionalProgramming.button
-import imgui.functionalProgramming.menu
-import imgui.functionalProgramming.menuBar
-import imgui.functionalProgramming.withItemWidth
-import imgui.g
+import org.ice1000.jimgui.flag.JImFocusedFlags
+import org.ice1000.jimgui.flag.JImInputTextFlags
+import org.ice1000.jimgui.flag.JImSelectableFlags
+import org.ice1000.jimgui.flag.JImWindowFlags
 import org.msgpack.core.MessagePack
 import java.io.File
 import java.time.LocalDateTime
@@ -39,78 +36,100 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
     val fName: String get() = bitfont.name.replace("\\s+".toRegex(), "-").replace("[/:]+".toRegex(), "_")
 
     init {
-        windowFlags.addAll(WindowFlag.MenuBar, WindowFlag.AlwaysAutoResize)
+        windowFlags = windowFlags or JImWindowFlags.MenuBar or JImWindowFlags.AlwaysAutoResize
     }
 
-    override fun main() = with(ImGui) {
+    override fun main(imgui: ImGui) {
         if(System.currentTimeMillis() - lastSave > 60_000) {
             File("autosaves").mkdirs()
             File("autosaves/font-$fName-${LocalDateTime.now().minute % 10}.bitfont").writeBytes(bitfont.packToBytes())
             lastSave = System.currentTimeMillis()
         }
-        withItemWidth(150f) {
-            val arr = bitfont.name.toCharArray().let { name ->
-                CharArray(name.size + 1000).also { name.copyInto(it) }
+        imgui.setNextItemWidth(150f)
+        val arr = bitfont.name.toByteArray().let { name ->
+            ByteArray(name.size + 1000).also { name.copyInto(it) }
+        }
+        if(imgui.inputText("Name", arr, JImInputTextFlags.EnterReturnsTrue))
+            bitfont.name = String(arr.sliceArray(0 until arr.indexOf(0.toByte())))
+
+        imgui.pushItemWidth(100f)
+        run {
+            bitfont::ascent.withNative {
+                imgui.inputInt("Ascent", it)
             }
-            if(inputText("Name", arr, InputTextFlag.EnterReturnsTrue.i))
-                bitfont.name = String(g.inputTextState.textW.sliceArray(0 until g.inputTextState.textW.indexOf('\u0000')))
-        }
-        withItemWidth(100f) {
-            inputInt("Ascent", bitfont::ascent)
-            sameLine(); showHelpMarker("The height of the \"top\" of the font above the baseline (added to the descent to get the line spacing)")
-            inputInt("Descent", bitfont::descent)
-            sameLine(); showHelpMarker("The depth of \"bottom\" of the font  below the baseline (added to the ascent to get the line spacing)")
+            imgui.sameLine(); //imgui.showHelpMarker("The height of the \"top\" of the font above the baseline (added to the descent to get the line spacing)")
 
-            inputInt("Cap height", bitfont::capHeight)
-            sameLine(); showHelpMarker("The height of capital letters (X, N, etc.) above the baseline, ignoring letters like A or O which may overshoot this line")
-            inputInt("x height", bitfont::xHeight)
-            sameLine(); showHelpMarker("The height of the short lowercase letters (x, n, etc.) above the baseline, ignoring letters like d or l which overshoot this line")
-            inputInt("Spacing", bitfont::spacing)
-            sameLine(); showHelpMarker("The amount of space between consecutive characters")
-        }
+            bitfont::descent.withNative {
+                imgui.inputInt("Descent", it)
+            }
+            imgui.sameLine(); //imgui.showHelpMarker("The depth of \"bottom\" of the font  below the baseline (added to the ascent to get the line spacing)")
 
-        withItemWidth(175f) {
-            pushAllowKeyboardFocus(false)
-            listBox("##style", document::referenceStyle,
-                ReferenceFonts.styles, 3)
-            val speed = 1f / max(1f, abs(getMouseDragDelta(0).y) / 10)
-            alignTextToFramePadding()
-            text("Size")
-            sameLine()
-            withItemWidth(175f - cursorPosX) {
-                pushAllowKeyboardFocus(false)
-                dragFloat("Size", document::referenceSize, speed, 1f, 1000f)
+            bitfont::capHeight.withNative {
+                imgui.inputInt("Cap height", it)
+            }
+            imgui.sameLine(); //imgui.showHelpMarker("The height of capital letters (X, N, etc.) above the baseline, ignoring letters like A or O which may overshoot this line")
+
+            bitfont::xHeight.withNative {
+                imgui.inputInt("x height", it)
+            }
+            imgui.sameLine(); //imgui.showHelpMarker("The height of the short lowercase letters (x, n, etc.) above the baseline, ignoring letters like d or l which overshoot this line")
+
+            bitfont::spacing.withNative {
+                imgui.inputInt("Spacing", it)
+            }
+            imgui.sameLine(); //imgui.showHelpMarker("The amount of space between consecutive characters")
+        }
+        imgui.popItemWidth()
+
+        imgui.pushItemWidth(175f)
+        run {
+            imgui.pushAllowKeyboardFocus(false)
+            document.referenceStyle = imgui.listBox("##style", document.referenceStyle, ReferenceFonts.styles, 3)
+            val speed = 1f / max(1f, abs(imgui.io.mouseDeltaY) / 10)
+            imgui.alignTextToFramePadding()
+            imgui.text("Size")
+            imgui.sameLine()
+
+            imgui.setNextItemWidth(175f - imgui.cursorPosX)
+
+            imgui.pushAllowKeyboardFocus(false)
+
+            document::referenceSize.withNative {
+                imgui.dragFloat("Size", it, speed, 1f, 1000f)
             }
         }
+        imgui.popItemWidth()
 
-        button("Edit") {
-            document.editorWindow = GlyphEditorWindow(document)
-            document.editorWindow.visible = true
+        if(imgui.button("Edit")) {
+//            document.editorWindow = GlyphEditorWindow(document)
+//            document.editorWindow.visible = true
         }
-        sameLine()
-        button("Browse") {
+        imgui.sameLine()
+        if(imgui.button("Browse")) {
             val browser = GlyphBrowserWindow(document)
             browser.visible = true
-            document.browserWindows.add(browser)
+            document.children.add(browser)
         }
-        text("Tests")
-        button("Old Typesetting") {
+        imgui.text("Tests")
+        if(imgui.button("Old Typesetting")) {
             val test = TestingWindow(document)
             test.visible = true
-            document.testWindows.add(test)
+            document.children.add(test)
         }
-        button("Glyph Generator") {
+        if(imgui.button("Glyph Generator")) {
             val test = GlyphGeneratorTestWindow(document)
             test.visible = true
-            document.testWindows.add(test)
+            document.children.add(test)
         }
 
-        drawMenu()
+        if(imgui.isWindowFocused(JImFocusedFlags.ChildWindows))
+            drawMenu(imgui)
     }
 
-    fun drawMenu() = with(ImGui) {
-        menuBar { keys {
-            menu("File") {
+    fun drawMenu(imgui: ImGui) {
+        imgui.beginMainMenuBar()
+        imgui.keys {
+            imgui.menu("File") {
                 //                menuItem("Open", "Ctrl+O")
 //                menu("Open Recent") {
 //                    menuItem("fish_hat.c")
@@ -121,7 +140,7 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
 //                        menuItem("Sailor")
 //                    }
 //                }
-                if(menuItem("Save")) {
+                if(imgui.menuItem("Save")) {
                     val formatter = DateTimeFormatter.ofPattern("uuuuMMdd.kkmmss")
                     File("fonts").mkdirs()
 
@@ -133,12 +152,12 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
 
                     lastSave = System.currentTimeMillis()
                 }
-                menu("Open") {
+                imgui.menu("Open") {
                     try {
                         val files = File("fonts").listFiles { _, name -> name.endsWith(".bitfont") }
                         var opened = false
                         files.forEach { file ->
-                            if(menuItem(file.name) && !opened) {
+                            if(imgui.menuItem(file.name) && !opened) {
                                 opened = true
                                 val bytes = file.readBytes()
                                 val newDocument = BitfontDocument(Bitfont.unpack(bytes))
@@ -149,39 +168,39 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                         e.printStackTrace()
                     }
                 }
-                if(menuItem("New")) {
+                if(imgui.menuItem("New")) {
                     val bitfont = Bitfont("Untitled", 10, 4, 9, 6, 2)
                     val newDocument = BitfontDocument(bitfont)
                     Main.documents.add(newDocument)
                 }
-                menu("Import") {
-                    menu("Unifont") {
-                        if(menuItem("BMP (unifont.hex)")) {
+                imgui.menu("Import") {
+                    imgui.menu("Unifont") {
+                        if(imgui.menuItem("BMP (unifont.hex)")) {
                             Main.documents.add(BitfontDocument(importUnifont("Unifont BMP", false, "unifont.hex")))
                             Main.documents.add(BitfontDocument(importUnifont("Unifont BMP", true, "unifont.hex")))
                         }
-                        if(menuItem("Plane 1 (unifont_upper.hex)")) {
+                        if(imgui.menuItem("Plane 1 (unifont_upper.hex)")) {
                             Main.documents.add(BitfontDocument(importUnifont("Unifont Plane 1", false, "unifont_upper.hex")))
                             Main.documents.add(BitfontDocument(importUnifont("Unifont Plane 1", true, "unifont_upper.hex")))
                         }
-                        if(menuItem("All (unifont.hex, unifont_upper.hex)")) {
+                        if(imgui.menuItem("All (unifont.hex, unifont_upper.hex)")) {
                             Main.documents.add(BitfontDocument(importUnifont("Unifont", false, "unifont.hex", "unifont_upper.hex")))
                             Main.documents.add(BitfontDocument(importUnifont("Unifont", true, "unifont.hex", "unifont_upper.hex")))
                         }
-                        if(menuItem("CSUR (unifont_csur.hex, unifont_csur_lower.hex)")) {
+                        if(imgui.menuItem("CSUR (unifont_csur.hex, unifont_csur_lower.hex)")) {
                             Main.documents.add(BitfontDocument(importUnifont("Unifont CSUR", false, "unifont.hex", "unifont_upper.hex")))
                             Main.documents.add(BitfontDocument(importUnifont("Unifont CSUR", true, "unifont.hex", "unifont_upper.hex")))
                         }
                     }
                 }
-                if(menuItem("Optimize")) {
+                if(imgui.menuItem("Optimize")) {
                     bitfont.glyphs.forEach { _, glyph -> glyph.crop() }
                 }
-                if(menuItem("Pack")) {
+                if(imgui.menuItem("Pack")) {
                     val atlas = BitfontAtlas(bitfont)
                     ImageIO.write(atlas.image(), "png", File("atlas.png"))
                 }
-                if(menuItem("Close")) {
+                if(imgui.menuItem("Close")) {
                     Main.documents.remove(document)
                 }
 //                menuItem("Save As..")
@@ -189,7 +208,7 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
 //                menuItem("Checked", selected = true)
 //                menuItem("Quit", "Alt+F4")
             }
-        } }
+        }
     }
 
     fun importUnifont(name: String, autoAdvance: Boolean, vararg files: String): Bitfont {
@@ -207,5 +226,4 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
 
         return bitfont
     }
-
 }

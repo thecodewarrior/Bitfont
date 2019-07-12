@@ -1,10 +1,7 @@
 package games.thecodewarrior.bitfont.editor.utils.extensions
 
-import glm_.vec2.Vec2i
-
-typealias BitVec2i = games.thecodewarrior.bitfont.utils.Vec2i
-fun BitVec2i.toIm(): Vec2i = Vec2i(this.x, this.y)
-fun Vec2i.toBit(): BitVec2i = BitVec2i(this.x, this.y)
+import games.thecodewarrior.bitfont.utils.Vec2i
+import kotlin.math.abs
 
 fun Vec2i.lineTo(other: Vec2i): List<Vec2i> {
     val x1 = x
@@ -13,8 +10,8 @@ fun Vec2i.lineTo(other: Vec2i): List<Vec2i> {
     val y2 = other.y
 
     var d = 0
-    val dy = Math.abs(y2 - y1)
-    val dx = Math.abs(x2 - x1)
+    val dy = abs(y2 - y1)
+    val dx = abs(x2 - x1)
     val dy2 = dy shl 1
     val dx2 = dx shl 1
     val ix = if (x1 < x2)  1 else -1

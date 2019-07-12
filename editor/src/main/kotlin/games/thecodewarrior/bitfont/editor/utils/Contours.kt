@@ -1,6 +1,6 @@
 package games.thecodewarrior.bitfont.editor.utils
 
-import glm_.vec2.Vec2i
+import games.thecodewarrior.bitfont.utils.Vec2i
 
 private val contourCache = mutableMapOf<Set<Vec2i>, List<List<Vec2i>>>()
 

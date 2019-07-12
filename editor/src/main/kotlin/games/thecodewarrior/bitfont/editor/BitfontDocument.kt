@@ -1,26 +1,25 @@
 package games.thecodewarrior.bitfont.editor
 
 import games.thecodewarrior.bitfont.data.Bitfont
-import glm_.func.common.clamp
+import games.thecodewarrior.bitfont.editor.imgui.ImGui
+import games.thecodewarrior.bitfont.editor.utils.extensions.clamp
 
 class BitfontDocument(val bitfont: Bitfont) {
     var infoWindow = FontInfoWindow(this)
-    var editorWindow = GlyphEditorWindow(this)
-    var browserWindows = mutableListOf<GlyphBrowserWindow>()
-    var testWindows = mutableListOf<IMWindow>()
+//    var editorWindow = GlyphEditorWindow(this)
+    val children = infoWindow.children
 
     var referenceStyle = 0
     var referenceSize = 1f
         set(value) { field = value.clamp(1f, 1000f) }
 
-    fun push() {
+    fun push(imgui: ImGui) {
+        children.removeIf {
+//            it != editorWindow &&
+            !it.visible
+        }
         infoWindow.visible = true
-        infoWindow.push()
-        editorWindow.push()
-        browserWindows.removeIf { !it.visible }
-        browserWindows.toList().forEach { it.push() }
-        testWindows.removeIf { !it.visible }
-        testWindows.toList().forEach { it.push() }
+        infoWindow.push(imgui)
     }
 
     companion object {

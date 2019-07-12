@@ -2,8 +2,9 @@ package games.thecodewarrior.bitfont.editor.typesetting
 
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.editor.utils.Colors
+import games.thecodewarrior.bitfont.editor.utils.math.Vec4
+import games.thecodewarrior.bitfont.editor.utils.math.vec
 import games.thecodewarrior.bitfont.utils.RectanglePacker
-import glm_.vec4.Vec4
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -71,10 +72,10 @@ class BitfontAtlas(val font: Bitfont) {
     }
 
     fun texCoords(codepoint: Int): Vec4 {
-        val rect = rects[codepoint] ?: return Vec4()
+        val rect = rects[codepoint] ?: return vec(0, 0, 0, 0)
         val width = width.toDouble()
         val height = height.toDouble()
-        return Vec4(rect.x/width, rect.y/height, (rect.x + rect.width)/width, (rect.y + rect.height)/height)
+        return vec(rect.x/width, rect.y/height, (rect.x + rect.width)/width, (rect.y + rect.height)/height)
     }
 
     private class AtlasSizeException: RuntimeException()

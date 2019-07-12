@@ -1,11 +1,7 @@
 package games.thecodewarrior.bitfont.editor.utils.opengl
 
-import gln.checkError
 import java.util.concurrent.ConcurrentLinkedDeque
 
-import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL12
-import org.lwjgl.opengl.GL14
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.RenderingHints
@@ -28,7 +24,7 @@ class Java2DTexture(width: Int, height: Int) {
 
     private var initialized = false
     private val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-    val texID = GL11.glGenTextures()
+    val texID = 0//GL11.glGenTextures()
 
     init {
         edit(clear = true)
@@ -51,27 +47,27 @@ class Java2DTexture(width: Int, height: Int) {
 
     private fun initTexture() {
         initialized = true
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID)
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL, 0)
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MIN_LOD, 0)
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LOD, 0)
-        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0.0F)
-        checkError("J2D texture init params")
-
-        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL12.GL_BGRA,
-            GL12.GL_UNSIGNED_INT_8_8_8_8_REV, null as IntBuffer?)
-        checkError("J2D texture init texImage2D")
+//        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID)
+//        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL, 0)
+//        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MIN_LOD, 0)
+//        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LOD, 0)
+//        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0.0F)
+//        checkError("J2D texture init params")
+//
+//        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL12.GL_BGRA,
+//            GL12.GL_UNSIGNED_INT_8_8_8_8_REV, null as IntBuffer?)
+//        checkError("J2D texture init texImage2D")
     }
 
     private fun updateFilters() {
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID)
-        if(filters) {
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR)
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR)
-        } else {
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST)
-        }
+//        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID)
+//        if(filters) {
+//            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR)
+//            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR)
+//        } else {
+//            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
+//            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST)
+//        }
     }
 
     fun delete() {
@@ -106,8 +102,8 @@ class Java2DTexture(width: Int, height: Int) {
                 DATA_BUFFER.put(aint, 0, scanPixelCount)
                 DATA_BUFFER.position(0).limit(scanPixelCount)
 
-                GL11.glTexSubImage2D(3553, 0, xOffset, yOffset + startY, w, scanHeight,
-                    GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, DATA_BUFFER)
+//                GL11.glTexSubImage2D(3553, 0, xOffset, yOffset + startY, w, scanHeight,
+//                    GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, DATA_BUFFER)
                 l += w * k
             }
         }
@@ -115,19 +111,19 @@ class Java2DTexture(width: Int, height: Int) {
 
         fun cleanUpTextures() {
             texturesToDelete.forEach {
-                GL11.glDeleteTextures(it)
+//                GL11.glDeleteTextures(it)
             }
-            checkError("cleanUpTextures")
+//            checkError("cleanUpTextures")
             texturesToDelete.clear()
         }
 
         fun updateTextures() {
             texturesToUpdate.forEach { texture ->
                 if(!texture.initialized) texture.initTexture()
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.texID)
+//                GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.texID)
                 uploadTextureImageSub(texture.image, 0, 0)
             }
-            checkError("J2D texture upload")
+//            checkError("J2D texture upload")
             texturesToUpdate.clear()
         }
     }

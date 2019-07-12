@@ -1,6 +1,6 @@
 package games.thecodewarrior.bitfont.editor.utils
 
-import glm_.vec2.Vec2
+import games.thecodewarrior.bitfont.editor.utils.math.Vec2
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.awt.Font
 import java.awt.font.FontRenderContext

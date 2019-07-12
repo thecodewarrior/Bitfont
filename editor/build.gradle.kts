@@ -16,28 +16,17 @@ repositories {
 }
 
 dependencies {
-    "compile"(project(":bitfontcore"))
-    "compile"(kotlin("stdlib-jdk8", "1.3.0"))
-    "compile"(kotlin("reflect", "1.3.0"))
-    "compile"("it.unimi.dsi:fastutil:8.2.2")
-    "compile"("com.ibm.icu:icu4j:63.1")
-    "compile"("com.github.kotlin-graphics:imgui:v1.63-beta-03")
-    "compile"("com.beust:klaxon:5.0.1")
-    "compile"("com.google.guava:guava:27.0.1-jre")
-    "compile"("org.msgpack:msgpack-core:0.8.16")
-    val lwjglNatives = when (OperatingSystem.current()) {
-        OperatingSystem.WINDOWS -> "natives-windows"
-        OperatingSystem.LINUX   -> "natives-linux"
-        OperatingSystem.MAC_OS  -> "natives-macos"
-        else                    -> ""
-    }
-
-    // Look up which modules and versions of LWJGL are required and add setup the approriate natives.
-    configurations["compile"].resolvedConfiguration.resolvedArtifacts.forEach {
-        if (it.moduleVersion.id.group == "org.lwjgl") {
-            "runtime"("org.lwjgl:${it.moduleVersion.id.name}:${it.moduleVersion.id.version}:$lwjglNatives")
-        }
-    }
+    compile(project(":bitfontcore"))
+    compile(kotlin("stdlib-jdk8", "1.3.0"))
+    compile(kotlin("reflect", "1.3.0"))
+    compile("it.unimi.dsi:fastutil:8.2.2")
+    compile("com.ibm.icu:icu4j:63.1")
+    compile("com.beust:klaxon:5.0.1")
+    compile("com.google.guava:guava:27.0.1-jre")
+    compile("org.msgpack:msgpack-core:0.8.16")
+    val jimguiVersion = "v0.9"
+    compile("org.ice1000.jimgui:core:$jimguiVersion") // basic functionality
+    compile("org.ice1000.jimgui:kotlin-dsl:$jimguiVersion") // kotlin dsl wrapper
 }
 
 configure<JavaPluginConvention> {

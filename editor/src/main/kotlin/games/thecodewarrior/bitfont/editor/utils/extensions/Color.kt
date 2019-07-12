@@ -1,29 +1,23 @@
 package games.thecodewarrior.bitfont.editor.utils.extensions
 
-import glm_.vec4.Vec4
-import imgui.ImGui.u32
+import org.ice1000.jimgui.JImVec4
+import java.awt.Color
 
-typealias IColor = imgui.Color
-typealias JColor = java.awt.Color
+typealias IColor = JImVec4
+typealias JColor = Color
 
 // imgui
 
-val IColor.u32: Int
-    get() = value.u32
+val IColor.rgb: Int
+    get() = awt.rgb
 
-fun IColor.toAwt(): JColor
-    = JColor(value.x, value.y, value.z, value.w)
+val IColor.awt: JColor
+    get() = JColor(w, x, y, z)
 
 // awt
 
-val JColor.u32: Int
-    get() = IColor(red, green, blue, alpha).u32
-
-val JColor.vec4: Vec4
-    get() = Vec4(red/255f, green/255f, blue/255f, alpha/255f)
-
-fun JColor.toImGui(): IColor
-    = IColor(red, green, blue, alpha)
+val JColor.im: IColor
+    get() = JImVec4(red/255f, green/255f, blue/255f, alpha/255f)
 
 fun JColor.copy(
     red: Int = this.red,

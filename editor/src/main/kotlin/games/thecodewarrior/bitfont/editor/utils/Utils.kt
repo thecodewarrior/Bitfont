@@ -1,7 +1,6 @@
 package games.thecodewarrior.bitfont.editor.utils
 
-import imgui.ImGui
-import org.lwjgl.system.Platform
+import games.thecodewarrior.bitfont.editor.imgui.ImGui
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.awt.image.IndexColorModel
@@ -9,32 +8,34 @@ import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty0
 
+private fun isMacSystem(): Boolean = false
+
 inline fun <T> ifMac(f: () -> T): T? {
-    if(ImGui.io.configMacOSXBehaviors)
+    if(ImGui.IO.configMacOSXBehaviors)
         return f()
     return null
 }
 inline fun <T> ifMac(mac: T, others: () -> T): T {
-    return if (ImGui.io.configMacOSXBehaviors) mac else others()
+    return if (ImGui.IO.configMacOSXBehaviors) mac else others()
 }
 fun <T> ifMac(mac: T, others: T): T {
     return ifMac(mac) { others }
 }
 
-inline fun <T> ifMacSystem(f: () -> T): T? {
-    if(Platform.get() == Platform.MACOSX)
-        return f()
-    return null
-}
-inline fun <T> ifMacSystem(mac: T, others: () -> T): T {
-    return if (Platform.get() == Platform.MACOSX) mac else others()
-}
-fun <T> ifMacSystem(mac: T, others: T): T {
-    return ifMacSystem(mac) { others }
+operator fun <T> KMutableProperty0<T>.setValue(target: Any, property: KProperty<*>, value: T) = this.set(value)
+operator fun <T> KProperty0<T>.getValue(target: Any, property: KProperty<*>): T = this.get()
+
+fun <T> delegate(property: KMutableProperty0<T>) = MutablePropertyDelegate(property)
+fun <T> delegate(property: KProperty0<T>) = PropertyDelegate(property)
+
+class MutablePropertyDelegate<T>(private val wrapped: KMutableProperty0<T>) {
+    operator fun setValue(target: Any, property: KProperty<*>, value: T) = wrapped.set(value)
+    operator fun getValue(target: Any, property: KProperty<*>): T = wrapped.get()
 }
 
-operator fun <R> KMutableProperty0<R>.setValue(host: Any?, property: KProperty<*>, value: R) = set(value)
-operator fun <R> KProperty0<R>.getValue(host: Any?, property: KProperty<*>): R = get()
+class PropertyDelegate<T>(private val wrapped: KProperty0<T>) {
+    operator fun getValue(target: Any, property: KProperty<*>): T = wrapped.get()
+}
 
 fun Color.toHexString(): String {
     val a = if(alpha != 255) "%02x".format(alpha) else ""

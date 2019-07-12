@@ -1,29 +1,13 @@
 package games.thecodewarrior.bitfont.editor
 
+import games.thecodewarrior.bitfont.editor.imgui.ImGui
 import games.thecodewarrior.bitfont.editor.utils.Colors
 import games.thecodewarrior.bitfont.editor.utils.Constants
-import games.thecodewarrior.bitfont.editor.utils.extensions.u32
-import games.thecodewarrior.bitfont.editor.utils.ifMacSystem
 import games.thecodewarrior.bitfont.editor.utils.keys
-import games.thecodewarrior.bitfont.editor.utils.opengl.Java2DTexture
-import glm_.vec2.Vec2
-import gln.checkError
-import gln.glClearColor
-import gln.glViewport
-import imgui.Context
-import imgui.ImGui
-import imgui.destroy
-import imgui.impl.ImplGL3
-import imgui.impl.LwjglGlfw
-import imgui.impl.LwjglGlfw.GlfwClientApi
-import org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT
-import org.lwjgl.opengl.GL11.glClear
-import org.lwjgl.system.MemoryStack
-import uno.glfw.GlfwWindow
-import uno.glfw.glfw
-import uno.glfw.windowHint
+import org.ice1000.jimgui.JImGuiIO
+import org.ice1000.jimgui.util.JImGuiUtil
+import org.ice1000.jimgui.util.JniLoader
 import kotlin.math.max
-import kotlin.math.min
 
 fun main(args: Array<String>) {
     System.setProperty("java.awt.headless", "true")
@@ -31,11 +15,6 @@ fun main(args: Array<String>) {
 }
 
 object Main {
-
-    lateinit var window: GlfwWindow
-    lateinit var ctx: Context
-
-    var showDemo = true
 
     lateinit var documents: MutableList<BitfontDocument>
 
@@ -58,28 +37,12 @@ object Main {
         private set
 
     fun run() {
-        glfw.init(ifMacSystem("3.2", "3.0"))
-        ifMacSystem {
-            glfw.windowHint {
-                profile = windowHint.Profile.core
-                forwardComp = true
-            }
-        }
-
-        window = GlfwWindow(1280, 720, "Bitfont font editor").apply {
-            init()
-        }
-        window.setSizeLimit(800 .. 2400, 300 .. 1500)
-
-        glfw.swapInterval = 1   // Enable vsync
-
-        // Setup ImGui binding
-        ctx = Context()
-        ImGui.io.iniFilename = null
-        ImGui.io.configMacOSXBehaviors = ifMacSystem(true, false)
-        LwjglGlfw.init(window, true, GlfwClientApi.OpenGL)
-
-        ImGui.styleColorsDark()
+        JniLoader.load()
+        var imgui: ImGui? = null
+        JImGuiUtil.runPer({ 1000L / targetFPS }, { jimgui ->
+            ImGui.current = imgui ?: ImGui(jimgui).also { imgui = it }
+            mainLoop(ImGui.current)
+        })
 
         documents = mutableListOf(
             BitfontDocument.blank()
@@ -88,59 +51,28 @@ object Main {
         Constants // load class
 
         targetFPS = 20
-        window.loop(Main::mainLoop)
-
-        LwjglGlfw.shutdown()
-        ctx.destroy()
-
-        window.destroy()
-        glfw.terminate()
     }
 
-    fun mainLoop(stack: MemoryStack) {
+    fun mainLoop(imgui: ImGui) {
         val timeLeft = (lastFrameTime + targetFrameDuration) - System.currentTimeMillis()
-        if(timeLeft > 0)
-            Thread.sleep(timeLeft)
         waitHistory[frameNum++ % waitHistory.size] = timeLeft / targetFrameDuration.toDouble()
         lastFrameTime = System.currentTimeMillis()
 
-        Java2DTexture.cleanUpTextures()
-
-        // Start the Dear ImGui frame
-        LwjglGlfw.newFrame()
-
-        with(ImGui) {
-            if (showDemo)
-                showDemoWindow(Main::showDemo)
-
-            if(documents.isEmpty())
-                documents.add(BitfontDocument.blank())
-            documents.toList().forEach { it.push() }
-            val fpsText = "%4.1f".format(io.framerate) + if(targetFPS == 0)
-                ""
-            else
-                "/%d (%2.0f%%)".format(targetFPS, 100*(1 - waitHistory.sum()/waitHistory.size))
-            overlayDrawList.addText(Vec2(0, 0), Colors.white.u32, fpsText.toCharArray())
-            keys {
-                "prim+[" pressed {
-                    targetFPS--
-                }
-                "prim+]" pressed {
-                    targetFPS++
-                }
+        if(documents.isEmpty())
+            documents.add(BitfontDocument.blank())
+        documents.toList().forEach { it.push(imgui) }
+        val fpsText = "%4.1f".format(JImGuiIO.getFramerate()) + if(targetFPS == 0)
+            ""
+        else
+            "/%d (%2.0f%%)".format(targetFPS, 100*(1 - waitHistory.sum()/waitHistory.size))
+        imgui.windowDrawList.addText(0f, 0f, Colors.white.rgb, fpsText)
+        imgui.keys {
+            "prim+[" pressed {
+                targetFPS--
+            }
+            "prim+]" pressed {
+                targetFPS++
             }
         }
-
-        // Rendering
-        glViewport(window.framebufferSize)
-        glClearColor(Colors.main.background)
-        glClear(GL_COLOR_BUFFER_BIT)
-
-        Java2DTexture.updateTextures()
-
-        ImGui.render()
-        ImplGL3.renderDrawData(ImGui.drawData!!)
-
-        checkError("mainLoop")
     }
 }

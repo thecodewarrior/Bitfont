@@ -1,19 +1,20 @@
 package games.thecodewarrior.bitfont.editor
 
+import games.thecodewarrior.bitfont.editor.imgui.ImGui
 import games.thecodewarrior.bitfont.editor.utils.Colors
 import games.thecodewarrior.bitfont.editor.utils.ReferenceFonts
-import games.thecodewarrior.bitfont.editor.utils.extensions.ImGuiDrags
-import games.thecodewarrior.bitfont.editor.utils.extensions.u32
+import games.thecodewarrior.bitfont.editor.utils.extensions.clamp
+import games.thecodewarrior.bitfont.editor.utils.extensions.im
+import games.thecodewarrior.bitfont.editor.utils.math.Rect
+import games.thecodewarrior.bitfont.editor.utils.math.Vec2
+import games.thecodewarrior.bitfont.editor.utils.math.rect
+import games.thecodewarrior.bitfont.editor.utils.math.vec
 import games.thecodewarrior.bitfont.editor.utils.opengl.Java2DTexture
-import glm_.func.common.clamp
-import glm_.vec2.Vec2
-import glm_.vec2.Vec2i
-import imgui.Dir
-import imgui.ImGui
-import imgui.WindowFlag
-import imgui.functionalProgramming.withChild
-import imgui.functionalProgramming.withItemWidth
-import imgui.internal.Rect
+import games.thecodewarrior.bitfont.utils.Vec2i
+import org.ice1000.jimgui.flag.JImDirection
+import org.ice1000.jimgui.flag.JImHoveredFlags
+import org.ice1000.jimgui.flag.JImWindowFlags
+import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.font.FontRenderContext
 import java.awt.geom.AffineTransform
@@ -27,7 +28,7 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         get() = "${bitfont.name}: Glyphs"
 
     init {
-        windowFlags.add(WindowFlag.AlwaysAutoResize)
+        windowFlags = JImWindowFlags.AlwaysAutoResize
     }
 
     var page = 0
@@ -37,7 +38,7 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
             field = value.clamp(0, 0x10ff)
         }
     var needsRedraw = true
-    var canvas = Rect()
+    var canvas = rect(0, 0, 0, 0)
     val detail = GlyphDetailPane(document)
     var lastSelectTime = 0L
 
@@ -46,61 +47,63 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
 
     var wasHovered = false
 
-    override fun main() = with(ImGui) {
-        if(isWindowHovered() && !wasHovered) needsRedraw = true
-        wasHovered = isWindowHovered()
+    override fun main(imgui: ImGui) {
+        if(imgui.isWindowHovered(JImHoveredFlags.Default) && !wasHovered) needsRedraw = true
+        wasHovered = imgui.isWindowHovered(JImHoveredFlags.Default)
 
-        var menuHeight = -cursorPos
-        val contentRect = win.contentsRegionRect
-        menuHeight = menuHeight + cursorPos
-        withChild("Controls", Vec2(detail.width, contentRect.height), false) {
-            drawControls()
-        }
+        var menuHeight = -imgui.cursorPos
+        val contentRect = imgui.windowContentRegionRect
+        menuHeight += imgui.cursorPos
+        imgui.beginChild("Controls".hashCode(), detail.width, contentRect.heightf, false)
+            drawControls(imgui)
+        imgui.endChild()
 
-        sameLine()
+        imgui.sameLine()
 
-        val canvasPos = contentRect.min + Vec2(detail.width + 5, menuHeight.y)
-        canvas = Rect(canvasPos, canvasPos + Vec2(cellSize*17))
-        itemSize(canvas)
-        pushClipRect(canvas.min, canvas.max, true)
-        itemHoverable(canvas, "canvas".hashCode())
-        itemAdd(canvas, "canvas".hashCode())
-        drawCanvas()
-        popClipRect()
+        val canvasPos = contentRect.min + vec(detail.width + 5, menuHeight.y)
+        canvas = rect(canvasPos, canvasPos + vec(cellSize*17, cellSize*17))
+        imgui.pushClipRect(canvas.min.xf, canvas.min.yf, canvas.max.xf, canvas.max.yf, true)
+        imgui.rect(canvas.widthf, canvas.heightf, Color(0, 0, 0, 0).im, 0f, 0f)
+        drawCanvas(imgui)
+        imgui.popClipRect()
     }
 
-    fun drawControls() = with(ImGui) { withItemWidth(detail.width) {
-        pushButtonRepeat(true)
-        if (arrowButton("##left", Dir.Left)) page--
-        sameLine()
-        withItemWidth(detail.width - frameHeight*2 - style.itemSpacing.x*2) {
-            ImGuiDrags.dragScalar(
-                label = "##pageDrag",
-                value = ::page,
-                speed = 0.5,
-                power = 1.0,
-                minValue = 0,
-                maxValue = 0x10FFFF,
-                valueToDisplay = { "U+%04X".format(it) },
-                correct = { it.roundToInt() },
-                valueToString = { "%04X".format(it) },
-                stringToValue = { current, new -> (new.toIntOrNull(16) ?: current) to "" }
-            )
-        }
-        sameLine()
-        if (arrowButton("##right", Dir.Right)) page++
-        popButtonRepeat()
+    fun drawControls(imgui: ImGui) {
+        imgui.pushItemWidth(detail.width)
+        imgui.pushButtonRepeat(true)
+        if (imgui.arrowButton("##left", JImDirection.Left)) page--
+        imgui.sameLine()
 
-        separator()
+        imgui.pushItemWidth(detail.width - imgui.frameHeight*2 - imgui.style.itemSpacingX*2)
+//            ImGuiDrags.dragScalar(
+//                label = "##pageDrag",
+//                value = ::page,
+//                speed = 0.5,
+//                power = 1.0,
+//                minValue = 0,
+//                maxValue = 0x10FFFF,
+//                valueToDisplay = { "U+%04X".format(it) },
+//                correct = { it.roundToInt() },
+//                valueToString = { "%04X".format(it) },
+//                stringToValue = { current, new -> (new.toIntOrNull(16) ?: current) to "" }
+//            )
+        imgui.popItemWidth()
 
-        detail.draw()
-    } }
+        imgui.sameLine()
+        if (imgui.arrowButton("##right", JImDirection.Right)) page++
+        imgui.popButtonRepeat()
 
-    fun drawCanvas() = with(ImGui) {
-        drawList.addRectFilled(
-            canvas.min,
-            canvas.max,
-            Colors.browser.background.u32
+        imgui.separator()
+
+        detail.draw(imgui)
+        imgui.popItemWidth()
+    }
+
+    private fun drawCanvas(imgui: ImGui) {
+        imgui.windowDrawList.addRectFilled(
+            canvas.min.xf, canvas.min.yf,
+            canvas.max.xf, canvas.max.yf,
+            Colors.browser.background.rgb
         )
 
         if(needsRedraw) {
@@ -120,22 +123,26 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
             }
         }
 
-        val bb = Rect(canvas.min, canvas.min + Vec2(cellSize*17))
-        drawList.addImage(referenceImages.texID, bb.min, bb.max)
+        val bb = Rect(canvas.min, canvas.min + vec(cellSize*17, cellSize*17))
+//        drawList.addImage(referenceImages.texID, bb.min, bb.max)
         needsRedraw = false
 
-        val cursorPos = cell(io.mousePos - canvas.min)
+        val cursorPos = cell(imgui.io.mousePos - canvas.min)
         if(cursorPos.x in 1 .. 16 && cursorPos.y in 1 .. 16) {
-            drawList.addRect(canvas.min + pos(cursorPos), canvas.min + pos(cursorPos + Vec2i(1)), Colors.browser.cellHighlight.u32)
+            drawList.addRect(
+                canvas.min + pos(cursorPos),
+                canvas.min + pos(cursorPos + Vec2i(1, 1)),
+                Colors.browser.cellHighlight.rgb
+            )
 
-            if(isWindowHovered() && isMouseClicked(0)) {
+            if(imgui.isWindowHovered(JImHoveredFlags.Default) && imgui.isMouseClicked(0)) {
                 val codepoint = (page shl 8) or ((cursorPos.y-1) shl 4) or (cursorPos.x-1)
                 detail.codepoint = codepoint
                 if(System.currentTimeMillis() - lastSelectTime < 250) {
-                    document.editorWindow.codepoint = codepoint
-                    document.editorWindow.codepointHistory.push(codepoint)
-                    document.editorWindow.visible = true
-                    document.editorWindow.focus()
+//                    document.editorWindow.codepoint = codepoint
+//                    document.editorWindow.codepointHistory.push(codepoint)
+//                    document.editorWindow.visible = true
+//                    document.editorWindow.focus()
                 }
                 lastSelectTime = System.currentTimeMillis()
             }
@@ -148,7 +155,7 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
     }
 
     fun pos(cell: Vec2i): Vec2 {
-        return Vec2(cell * cellSize)
+        return vec(cell.x * cellSize, cell.y * cellSize)
     }
 
     fun pos(point: Vec2): Vec2 {
@@ -173,7 +180,7 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
 
         val scale = cellSize / (metrics.ascent + metrics.descent)
         val baseline = metrics.ascent * scale
-        val origin = Vec2i(x*cellSize, y*cellSize) + Vec2i((cellSize - profile.visualBounds.width*scale)/2 - profile.visualBounds.minX*scale, baseline)
+        val origin = Vec2i(x*cellSize, y*cellSize) + Vec2i(( (cellSize - profile.visualBounds.width*scale)/2 - profile.visualBounds.minX*scale ).toInt(), baseline.toInt())
 
         if(x == 0 || y == 0) {
             g.color = Colors.browser.hexLabels

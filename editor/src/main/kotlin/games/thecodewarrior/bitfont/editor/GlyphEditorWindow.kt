@@ -1,47 +1,32 @@
 package games.thecodewarrior.bitfont.editor
 
 import com.ibm.icu.lang.UCharacter
-import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.BitGrid
+import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.data.Glyph
+import games.thecodewarrior.bitfont.editor.imgui.ImGui
+import games.thecodewarrior.bitfont.editor.imgui.withNative
 import games.thecodewarrior.bitfont.editor.utils.Colors
 import games.thecodewarrior.bitfont.editor.utils.HistoryTracker
 import games.thecodewarrior.bitfont.editor.utils.ReferenceFonts
-import games.thecodewarrior.bitfont.editor.utils.alignedText
-import games.thecodewarrior.bitfont.editor.utils.contours
-import games.thecodewarrior.bitfont.editor.utils.extensions.ImGuiDrags
 import games.thecodewarrior.bitfont.editor.utils.extensions.JColor
-import games.thecodewarrior.bitfont.editor.utils.extensions.lineTo
-import games.thecodewarrior.bitfont.editor.utils.extensions.primaryModifier
-import games.thecodewarrior.bitfont.editor.utils.extensions.set
-import games.thecodewarrior.bitfont.editor.utils.extensions.u32
-import games.thecodewarrior.bitfont.editor.utils.glyphProfile
-import games.thecodewarrior.bitfont.editor.utils.ifMac
+import games.thecodewarrior.bitfont.editor.utils.extensions.clamp
 import games.thecodewarrior.bitfont.editor.utils.keys
+import games.thecodewarrior.bitfont.editor.utils.math.Rect
+import games.thecodewarrior.bitfont.editor.utils.math.rect
+import games.thecodewarrior.bitfont.editor.utils.math.vec
 import games.thecodewarrior.bitfont.editor.utils.opengl.Java2DTexture
-import glm_.func.common.clamp
-import glm_.vec2.Vec2
-import glm_.vec2.Vec2i
-import imgui.Col
-import imgui.Dir
-import imgui.FocusedFlag
-import imgui.ImGui
-import imgui.functionalProgramming.withChild
-import imgui.functionalProgramming.withItemWidth
-import imgui.functionalProgramming.button
-import imgui.imgui.withFloat
-import imgui.internal.Rect
-import org.lwjgl.glfw.GLFW
+import games.thecodewarrior.bitfont.utils.Vec2i
+import org.ice1000.jimgui.flag.JImDirection
 import java.awt.font.FontRenderContext
 import java.awt.geom.AffineTransform
 import kotlin.math.abs
-import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-import kotlin.math.sqrt
 
+/*
 class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
     val bitfont: Bitfont = document.bitfont
 
@@ -58,7 +43,7 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
 
     var tool: EditorTool = brush
 
-    var canvas = Rect()
+    var canvas = rect(0, 0, 0, 0)
     val controlsWidth: Float = 175f
 
     var originX = 4
@@ -201,10 +186,10 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         }
     }
 
-    override fun main() = with(ImGui) {
-        keys {
+    override fun main(imgui: ImGui) {
+        imgui.keys {
             "tab" pressed {
-                if(io.keyShift)
+                if(imgui.io.keyShift)
                     codepoint--
                 else
                     codepoint++
@@ -219,53 +204,54 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         }
 
         val wasChanged = codepointChanged
-        var menuHeight = -cursorPos
-        val contentRect = win.contentsRegionRect
-        menuHeight = menuHeight + cursorPos
-        withChild("Controls", Vec2(controlsWidth, contentRect.height), false) {
+        var menuHeight = -imgui.cursorPos
+        val contentRect = imgui.windowContentRegionRect
+        menuHeight += imgui.cursorPos
+        imgui.beginChild("Controls".hashCode(), controlsWidth, contentRect.heightf, false)
             drawControls()
-        }
+        imgui.endChild()
 
-        sameLine()
+        imgui.sameLine()
 
-        canvas = Rect(contentRect.min + Vec2(controlsWidth + 5, menuHeight.y), contentRect.max)
+        canvas = Rect(contentRect.min + vec(controlsWidth + 5, menuHeight.y), contentRect.max)
         drawCanvas()
         if(wasChanged)
             codepointChanged = false
     }
 
-    fun drawControls() = with(ImGui) { withItemWidth(controlsWidth) {
-        pushAllowKeyboardFocus(false)
+    fun drawControls(imgui: ImGui) {
+        imgui.pushItemWidth(controlsWidth)
+        imgui.pushAllowKeyboardFocus(false)
         val oldCodepoint = codepoint
-        pushButtonRepeat(true)
-        if (arrowButton("##left", Dir.Left)) codepoint--
-        sameLine()
-        withItemWidth(controlsWidth - frameHeight*2 - style.itemSpacing.x*2) {
-            val speed = max(1.0, abs(getMouseDragDelta(0).y) / 10.0)
-            ImGuiDrags.dragScalar(
-                label = "##codepointDrag",
-                value = ::codepoint,
-                speed = speed,
-                power = 1.0,
-                minValue = 0,
-                maxValue = 0x10FFFF,
-                valueToDisplay = { "U+%04X".format(it) },
-                correct = { codepointScrubbing = true; it.roundToInt() },
-                valueToString = { "%04X".format(it) },
-                stringToValue = { current, new -> (new.toIntOrNull(16) ?: current) to "" }
-            )
-        }
-        sameLine()
-        if (arrowButton("##right", Dir.Right)) codepoint++
-        popButtonRepeat()
+        imgui.pushButtonRepeat(true)
+        if (imgui.arrowButton("##left", JImDirection.Left)) codepoint--
+        imgui.sameLine()
+        imgui.pushItemWidth(controlsWidth - imgui.frameHeight*2 - imgui.style.itemSpacingX*2)
+        val speed = max(1.0, abs(imgui.io.getMouseClickedPosY(0) - imgui.io.mousePosY) / 10.0)
+        ImGuiDrags.dragScalar(
+            label = "##codepointDrag",
+            value = ::codepoint,
+            speed = speed,
+            power = 1.0,
+            minValue = 0,
+            maxValue = 0x10FFFF,
+            valueToDisplay = { "U+%04X".format(it) },
+            correct = { codepointScrubbing = true; it.roundToInt() },
+            valueToString = { "%04X".format(it) },
+            stringToValue = { current, new -> (new.toIntOrNull(16) ?: current) to "" }
+        )
+        imgui.popItemWidth()
+        imgui.sameLine()
+        if (imgui.arrowButton("##right", JImDirection.Right)) codepoint++
+        imgui.popButtonRepeat()
 
-        if (arrowButton("##historyBack", Dir.Left)) codepointHistory.undo()
-        sameLine()
-        withItemWidth(controlsWidth - frameHeight*2 - style.itemSpacing.x*2) {
-            text("")
-        }
-        sameLine()
-        if (arrowButton("##historyBack", Dir.Right)) codepointHistory.redo()
+        if (imgui.arrowButton("##historyBack", JImDirection.Left)) codepointHistory.undo()
+        imgui.sameLine()
+        imgui.pushItemWidth(controlsWidth - imgui.frameHeight*2 - imgui.style.itemSpacingX*2)
+            imgui.text("")
+        imgui.popItemWidth()
+        imgui.sameLine()
+        if (imgui.arrowButton("##historyBack", JImDirection.Right)) codepointHistory.redo()
 
         if(codepoint != oldCodepoint) {
             codepointScrubbing = true
@@ -274,70 +260,66 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
             codepointHistory.push(codepoint)
         }
 
-        var labelWidth = calcTextSize("Advance").x + 1
-        withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
-            alignTextToFramePadding(); alignedText("Advance", Vec2(1, 0.5), labelWidth); sameLine()
-            inputInt("##advance", data::advance)
-            alignTextToFramePadding(); alignedText("Auto", Vec2(1, 0.5), labelWidth); sameLine()
-            checkbox("##autoAdvance", data::autoAdvance)
-        }
+        var labelWidth = 1 //imgui.calcTextSize("Advance").x + 1
+        imgui.pushItemWidth(controlsWidth - labelWidth - imgui.style.itemSpacingX)
+//            imgui.alignTextToFramePadding(); imgui.alignedText("Advance", vec(1, 0.5), labelWidth); imgui.sameLine()
+//            imgui.inputInt("##advance", data::advance)
+//            imgui.alignTextToFramePadding(); imgui.alignedText("Auto", vec(1, 0.5), labelWidth); imgui.sameLine()
+//            imgui.checkbox("##autoAdvance", data::autoAdvance)
+        imgui.popItemWidth()
 
-        separator()
+        imgui.separator()
 
-        labelWidth = calcTextSize("Local Grid").x + 1
-        withItemWidth(controlsWidth - labelWidth - style.itemSpacing.x) {
-            alignTextToFramePadding(); alignedText("Origin X", Vec2(1, 0.5), labelWidth); sameLine()
-            inputInt("Origin X", ::originX)
-            alignTextToFramePadding(); alignedText("Origin Y", Vec2(1, 0.5), labelWidth); sameLine()
-            inputInt("Origin Y", ::originY)
-            alignTextToFramePadding(); alignedText("Scale", Vec2(1, 0.5), labelWidth); sameLine()
-            inputInt("Scale", ::granularity)
-            alignTextToFramePadding(); alignedText("Grid", Vec2(1, 0.5), labelWidth); sameLine()
-            checkbox("##showGrid", ::displayGrid)
-            alignTextToFramePadding(); alignedText("Local Grid", Vec2(1, 0.5), labelWidth); sameLine()
-            inputInt("##localGridRadius", ::localGridRadius)
-            alignTextToFramePadding(); alignedText("Guides", Vec2(1, 0.5), labelWidth); sameLine()
-            checkbox("##showGuides", ::displayGuides)
-        }
+//        labelWidth = imgui.calcTextSize("Local Grid").x + 1
+//        imgui.pushItemWidth(controlsWidth - labelWidth - imgui.style.itemSpacing.x) {
+//            imgui.alignTextToFramePadding(); imgui.alignedText("Origin X", Vec2(1, 0.5), labelWidth); imgui.sameLine()
+//            imgui.inputInt("Origin X", ::originX)
+//            imgui.alignTextToFramePadding(); imgui.alignedText("Origin Y", Vec2(1, 0.5), labelWidth); imgui.sameLine()
+//            imgui.inputInt("Origin Y", ::originY)
+//            imgui.alignTextToFramePadding(); imgui.alignedText("Scale", Vec2(1, 0.5), labelWidth); imgui.sameLine()
+//            imgui.inputInt("Scale", ::granularity)
+//            imgui.alignTextToFramePadding(); imgui.alignedText("Grid", Vec2(1, 0.5), labelWidth); imgui.sameLine()
+//            imgui.checkbox("##showGrid", ::displayGrid)
+//            imgui.alignTextToFramePadding(); imgui.alignedText("Local Grid", Vec2(1, 0.5), labelWidth); imgui.sameLine()
+//            imgui.inputInt("##localGridRadius", ::localGridRadius)
+//            imgui.alignTextToFramePadding(); imgui.alignedText("Guides", Vec2(1, 0.5), labelWidth); imgui.sameLine()
+//            imgui.checkbox("##showGuides", ::displayGuides)
+//        }
 
-        separator()
+        imgui.separator()
 
-        text("Horizontal")
+        imgui.text("Horizontal")
         horizontalGuides.forEachIndexed { i, value ->
-            val arr = floatArrayOf(value)
-            withFloat(arr, 0) { prop ->
-                dragFloat("##horizontal.$i", prop, 0.5f, -100f, 100f)
+            horizontalGuides[i] = withNative(value) { prop ->
+                imgui.dragFloat("##horizontal.$i", prop, 0.5f, -100f, 100f)
             }
-            horizontalGuides[i] = arr[0]
         }
-        button("+##horizontal") {
+        if(imgui.button("+##horizontal")) {
             horizontalGuides.add(0f)
         }
 
-        text("Vertical")
+        imgui.text("Vertical")
         verticalGuides.forEachIndexed { i, value ->
-            val arr = floatArrayOf(value)
-            withFloat(arr, 0) { prop ->
-                dragFloat("##vertical.$i", prop, 0.5f, -100f, 100f)
+            verticalGuides[i] = withNative(value) { prop ->
+                imgui.dragFloat("##vertical.$i", prop, 0.5f, -100f, 100f)
             }
-            verticalGuides[i] = arr[0]
         }
-        button("+##vertical") {
+        if(imgui.button("+##vertical")) {
             verticalGuides.add(0f)
         }
 
-        separator()
+        imgui.separator()
 
-        val prevCursor = Vec2(cursorPos)
-        alignedText("Reference Font", Vec2(0.5), width = controlsWidth)
-        cursorPos = prevCursor
-        checkbox("##displayReference", ::displayReference)
-        text(ReferenceFonts.style(document.referenceStyle).fontName(codepoint))
+        val prevCursor = imgui.cursorPos
+//        imgui.alignedText("Reference Font", vec(0.5), width = controlsWidth)
+//        imgui.cursorPos = prevCursor
+//        imgui.checkbox("##displayReference", ::displayReference)
+        imgui.text(ReferenceFonts.style(document.referenceStyle).fontName(codepoint))
 
-        popAllowKeyboardFocus()
-        val bb = Rect(win.dc.cursorPos, win.dc.cursorPos + Vec2(controlsWidth))
-        drawReference(bb)
-    } }
+        imgui.popAllowKeyboardFocus()
+//        val bb = Rect(win.dc.cursorPos, win.dc.cursorPos + vec(controlsWidth, controlsWidth))
+//        drawReference(bb)
+    }
 
     fun drawCell(cell: Vec2i, col: Col) {
         drawList.addRectFilled(
@@ -838,3 +820,4 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         }
     }
 }
+ */

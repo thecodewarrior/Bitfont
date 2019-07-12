@@ -1,44 +1,45 @@
 package games.thecodewarrior.bitfont.editor
 
-import imgui.DrawList
-import imgui.ImGui
-import imgui.WindowFlag
-import imgui.internal.Window
+import games.thecodewarrior.bitfont.editor.imgui.AutoDeallocator
+import games.thecodewarrior.bitfont.editor.imgui.ImDrawList
+import games.thecodewarrior.bitfont.editor.imgui.ImGui
+import org.ice1000.jimgui.JImDrawList
+import org.ice1000.jimgui.NativeBool
+import org.ice1000.jimgui.flag.JImWindowFlags
 
-abstract class IMWindow {
-    var visible: Boolean = false
+abstract class IMWindow: AutoDeallocator() {
+    var visible: Boolean by native()
     abstract val title: String
-    protected abstract fun main()
+    protected abstract fun main(imgui: ImGui)
 
     open val children = mutableListOf<IMWindow>()
-    val windowFlags = mutableSetOf<WindowFlag>()
+    var windowFlags = JImWindowFlags.Nothing
 
     private var takeFocus = false
 
     fun focus() { takeFocus = true }
 
-    fun push() {
+    fun push(imgui: ImGui) {
         if(visible) {
             if(takeFocus) {
                 ImGui.setNextWindowFocus()
                 takeFocus = false
             }
-            if(ImGui.begin_("$title###${System.identityHashCode(this@IMWindow)}", ::visible,
-                    windowFlags.fold(0) { acc, it -> acc or it.i })
-            ) {
-                main()
+            if(imgui.begin("$title###${System.identityHashCode(this@IMWindow)}", native(::visible), windowFlags)) {
+                currentWindow = this
+                main(imgui)
             }
-            ImGui.end()
+            imgui.end()
         }
         children.forEach {
-            it.push()
+            it.push(imgui)
+            currentWindow = this
         }
     }
 
     companion object {
-        val drawList: DrawList
-            get() = ImGui.windowDrawList
-        val win: Window
-            get() = ImGui.currentWindow
+        lateinit var currentWindow: IMWindow
+        val drawList: ImDrawList
+            get() = ImGui.current.windowDrawList
     }
 }
