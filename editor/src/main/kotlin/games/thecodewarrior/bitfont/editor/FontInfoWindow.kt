@@ -57,27 +57,27 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
             bitfont::ascent.withNative {
                 imgui.inputInt("Ascent", it)
             }
-            imgui.sameLine(); //imgui.showHelpMarker("The height of the \"top\" of the font above the baseline (added to the descent to get the line spacing)")
+            //imgui.sameLine(); imgui.showHelpMarker("The height of the \"top\" of the font above the baseline (added to the descent to get the line spacing)")
 
             bitfont::descent.withNative {
                 imgui.inputInt("Descent", it)
             }
-            imgui.sameLine(); //imgui.showHelpMarker("The depth of \"bottom\" of the font  below the baseline (added to the ascent to get the line spacing)")
+            //imgui.sameLine(); imgui.showHelpMarker("The depth of \"bottom\" of the font  below the baseline (added to the ascent to get the line spacing)")
 
             bitfont::capHeight.withNative {
                 imgui.inputInt("Cap height", it)
             }
-            imgui.sameLine(); //imgui.showHelpMarker("The height of capital letters (X, N, etc.) above the baseline, ignoring letters like A or O which may overshoot this line")
+            //imgui.sameLine(); imgui.showHelpMarker("The height of capital letters (X, N, etc.) above the baseline, ignoring letters like A or O which may overshoot this line")
 
             bitfont::xHeight.withNative {
                 imgui.inputInt("x height", it)
             }
-            imgui.sameLine(); //imgui.showHelpMarker("The height of the short lowercase letters (x, n, etc.) above the baseline, ignoring letters like d or l which overshoot this line")
+            //imgui.sameLine(); imgui.showHelpMarker("The height of the short lowercase letters (x, n, etc.) above the baseline, ignoring letters like d or l which overshoot this line")
 
             bitfont::spacing.withNative {
                 imgui.inputInt("Spacing", it)
             }
-            imgui.sameLine(); //imgui.showHelpMarker("The amount of space between consecutive characters")
+            //imgui.sameLine(); imgui.showHelpMarker("The amount of space between consecutive characters")
         }
         imgui.popItemWidth()
 
@@ -121,13 +121,10 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
             test.visible = true
             document.children.add(test)
         }
-
-        if(imgui.isWindowFocused(JImFocusedFlags.ChildWindows))
-            drawMenu(imgui)
     }
 
-    fun drawMenu(imgui: ImGui) {
-        imgui.beginMainMenuBar()
+    override fun drawMenu(imgui: ImGui) {
+        if(!imgui.beginMenuBar()) return
         imgui.keys {
             imgui.menu("File") {
                 //                menuItem("Open", "Ctrl+O")
@@ -209,6 +206,7 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
 //                menuItem("Quit", "Alt+F4")
             }
         }
+        imgui.endMenuBar()
     }
 
     fun importUnifont(name: String, autoAdvance: Boolean, vararg files: String): Bitfont {

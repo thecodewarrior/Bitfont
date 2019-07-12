@@ -26,7 +26,8 @@ dependencies {
     compile("org.msgpack:msgpack-core:0.8.16")
     val jimguiVersion = "v0.9"
     compile("org.ice1000.jimgui:core:$jimguiVersion") // basic functionality
-    compile("org.ice1000.jimgui:kotlin-dsl:$jimguiVersion") // kotlin dsl wrapper
+    runtime("org.ice1000.jimgui:core:$jimguiVersion") // basic functionality
+//    compile("org.ice1000.jimgui:kotlin-dsl:$jimguiVersion") // kotlin dsl wrapper
 }
 
 configure<JavaPluginConvention> {

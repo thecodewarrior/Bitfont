@@ -1452,7 +1452,8 @@ class ImGui(val wrapped: JImGui) {
     // extensions =====================================================================================================
 
     fun listBox(label: String, selectedIndex: Int, items: List<String>, height: Int): Int {
-        listBoxHeader(label, height)
+        if(!listBoxHeader(label, height))
+            return selectedIndex
         var newSelectedIndex = selectedIndex
         withNative(false) { selected ->
             items.forEachIndexed { i, item ->
@@ -1467,7 +1468,8 @@ class ImGui(val wrapped: JImGui) {
     }
 
     inline fun menu(label: String, callback: () -> Unit) {
-        this.beginMenu(label)
+        if(!this.beginMenu(label))
+            return
         callback()
         this.endMenu()
     }

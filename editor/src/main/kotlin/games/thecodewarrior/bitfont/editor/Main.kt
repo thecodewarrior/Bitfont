@@ -38,19 +38,19 @@ object Main {
 
     fun run() {
         JniLoader.load()
-        var imgui: ImGui? = null
-        JImGuiUtil.runPer({ 1000L / targetFPS }, { jimgui ->
-            ImGui.current = imgui ?: ImGui(jimgui).also { imgui = it }
-            mainLoop(ImGui.current)
-        })
+        Constants // load class
 
         documents = mutableListOf(
             BitfontDocument.blank()
         )
 
-        Constants // load class
-
         targetFPS = 20
+
+        var imgui: ImGui? = null
+        JImGuiUtil.runPer({ 1000L / targetFPS }, { jimgui ->
+            ImGui.current = imgui ?: ImGui(jimgui).also { imgui = it }
+            mainLoop(ImGui.current)
+        })
     }
 
     fun mainLoop(imgui: ImGui) {
@@ -65,7 +65,7 @@ object Main {
             ""
         else
             "/%d (%2.0f%%)".format(targetFPS, 100*(1 - waitHistory.sum()/waitHistory.size))
-        imgui.windowDrawList.addText(0f, 0f, Colors.white.rgb, fpsText)
+        imgui.foregroundDrawList.addText(0f, 0f, Colors.white.rgb, fpsText)
         imgui.keys {
             "prim+[" pressed {
                 targetFPS--

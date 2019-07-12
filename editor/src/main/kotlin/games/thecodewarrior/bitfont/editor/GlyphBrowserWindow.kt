@@ -48,15 +48,16 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
     var wasHovered = false
 
     override fun main(imgui: ImGui) {
-        if(imgui.isWindowHovered(JImHoveredFlags.Default) && !wasHovered) needsRedraw = true
+        if (imgui.isWindowHovered(JImHoveredFlags.Default) && !wasHovered) needsRedraw = true
         wasHovered = imgui.isWindowHovered(JImHoveredFlags.Default)
 
         var menuHeight = -imgui.cursorPos
         val contentRect = imgui.windowContentRegionRect
         menuHeight += imgui.cursorPos
-        imgui.beginChild("Controls".hashCode(), detail.width, contentRect.heightf, false)
+        if (imgui.beginChild("Controls".hashCode(), detail.width, contentRect.heightf, false)) {
             drawControls(imgui)
-        imgui.endChild()
+            imgui.endChild()
+        }
 
         imgui.sameLine()
 

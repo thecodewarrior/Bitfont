@@ -11,6 +11,7 @@ import java.lang.IllegalArgumentException
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty0
+import kotlin.reflect.jvm.isAccessible
 
 open class AutoDeallocator {
     private val objects = mutableListOf<DeallocatableObject>()
@@ -31,42 +32,42 @@ open class AutoDeallocator {
         when(T::class) {
             Boolean::class -> {
                 val native = nativeBool()
-                return object : NativeDelegate<Boolean>() {
+                return object : NativeDelegate<Boolean>(native) {
                     override fun getValue(): Boolean = native.accessValue()
                     override fun setValue(value: Boolean) = native.modifyValue(value)
                 } as ReadWriteProperty<Any?, T>
             }
             Double::class -> {
                 val native = nativeDouble()
-                return object : NativeDelegate<Double>() {
+                return object : NativeDelegate<Double>(native) {
                     override fun getValue(): Double = native.accessValue()
                     override fun setValue(value: Double) = native.modifyValue(value)
                 } as ReadWriteProperty<Any?, T>
             }
             Float::class -> {
                 val native = nativeFloat()
-                return object : NativeDelegate<Float>() {
+                return object : NativeDelegate<Float>(native) {
                     override fun getValue(): Float = native.accessValue()
                     override fun setValue(value: Float) = native.modifyValue(value)
                 } as ReadWriteProperty<Any?, T>
             }
             Int::class -> {
                 val native = nativeInt()
-                return object : NativeDelegate<Int>() {
+                return object : NativeDelegate<Int>(native) {
                     override fun getValue(): Int = native.accessValue()
                     override fun setValue(value: Int) = native.modifyValue(value)
                 } as ReadWriteProperty<Any?, T>
             }
             Long::class -> {
                 val native = nativeLong()
-                return object : NativeDelegate<Long>() {
+                return object : NativeDelegate<Long>(native) {
                     override fun getValue(): Long = native.accessValue()
                     override fun setValue(value: Long) = native.modifyValue(value)
                 } as ReadWriteProperty<Any?, T>
             }
             Short::class -> {
                 val native = nativeShort()
-                return object : NativeDelegate<Short>() {
+                return object : NativeDelegate<Short>(native) {
                     override fun getValue(): Short = native.accessValue()
                     override fun setValue(value: Short) = native.modifyValue(value)
                 } as ReadWriteProperty<Any?, T>
@@ -76,19 +77,37 @@ open class AutoDeallocator {
     }
 
     @JvmName("getNativeBoolDelegate")
-    fun native(property: KProperty0<Boolean>): NativeBool = property.getDelegate() as NativeBool
+    fun native(property: KProperty0<Boolean>): NativeBool {
+        property.isAccessible = true
+        return (property.getDelegate() as NativeDelegate<*>).native as NativeBool
+    }
     @JvmName("getNativeDoubleDelegate")
-    fun native(property: KProperty0<Double>): NativeDouble = property.getDelegate() as NativeDouble
+    fun native(property: KProperty0<Double>): NativeDouble {
+        property.isAccessible = true
+        return (property.getDelegate() as NativeDelegate<*>).native as NativeDouble
+    }
     @JvmName("getNativeFloatDelegate")
-    fun native(property: KProperty0<Float>): NativeFloat = property.getDelegate() as NativeFloat
+    fun native(property: KProperty0<Float>): NativeFloat {
+        property.isAccessible = true
+        return (property.getDelegate() as NativeDelegate<*>).native as NativeFloat
+    }
     @JvmName("getNativeIntDelegate")
-    fun native(property: KProperty0<Int>): NativeInt = property.getDelegate() as NativeInt
+    fun native(property: KProperty0<Int>): NativeInt {
+        property.isAccessible = true
+        return (property.getDelegate() as NativeDelegate<*>).native as NativeInt
+    }
     @JvmName("getNativeLongDelegate")
-    fun native(property: KProperty0<Long>): NativeLong = property.getDelegate() as NativeLong
+    fun native(property: KProperty0<Long>): NativeLong {
+        property.isAccessible = true
+        return (property.getDelegate() as NativeDelegate<*>).native as NativeLong
+    }
     @JvmName("getNativeShortDelegate")
-    fun native(property: KProperty0<Short>): NativeShort = property.getDelegate() as NativeShort
+    fun native(property: KProperty0<Short>): NativeShort {
+        property.isAccessible = true
+        return (property.getDelegate() as NativeDelegate<*>).native as NativeShort
+    }
 
-    abstract class NativeDelegate<T>: ReadWriteProperty<Any?, T> {
+    abstract class NativeDelegate<T>(val native: Any): ReadWriteProperty<Any?, T> {
         abstract fun getValue(): T
         abstract fun setValue(value: T)
 
