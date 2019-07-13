@@ -48,15 +48,15 @@ open class TestingWindow(val document: BitfontDocument): IMWindow() {
         imgui.keys {
             "prim+v" pressed {
                 val clipboard = imgui.clipboardText
-                if("shift".pressed()) {
-                    val hue = Math.random().toFloat()
-                    val saturation = 0.25f + Math.random().toFloat() * 0.75f
-                    val brightness = 0.75f + Math.random().toFloat() * 0.25f
-                    val color = JColor.getHSBColor(hue, saturation, brightness)
-                    testString.insert(Random.nextInt(0, testString.length), AttributedString(clipboard, Attribute.color to color))
-                } else {
+//                if("shift".pressed()) {
+//                    val hue = Math.random().toFloat()
+//                    val saturation = 0.25f + Math.random().toFloat() * 0.75f
+//                    val brightness = 0.75f + Math.random().toFloat() * 0.25f
+//                    val color = JColor.getHSBColor(hue, saturation, brightness)
+//                    testString.insert(Random.nextInt(0, testString.length), AttributedString(clipboard, Attribute.color to color))
+//                } else {
                     testString = MutableAttributedString(clipboard)
-                }
+//                }
             }
         }
     }

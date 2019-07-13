@@ -21,11 +21,19 @@ class TypesetterTestWindow(document: BitfontDocument): AbstractTestWindow(docume
         val typesetter = Typesetter(glyphs)
 
         val height = document.bitfont.ascent + document.bitfont.descent
-        val min = canvas.min + vec(height/4 * scale, height * scale)
+        val min = canvas.min + vec(height * scale, canvas.heighti / 2)
 
         for(typesetGlyph in typesetter) {
-            typesetGlyph.glyph.draw(imgui,
-                min + vec(typesetGlyph.posX, typesetGlyph.posY) * scale, scale, Colors.layoutTest.text.rgb)
+            val main = typesetGlyph.mainGlyph
+            main.attributedGlyph.draw(imgui, min + vec(main.posX, main.posY) * scale, scale, Colors.layoutTest.text.rgb)
+            typesetGlyph.attachments?.also { attachments ->
+                for(attachment in attachments) {
+                    attachment.attributedGlyph.draw(imgui,
+                        min + vec(main.posX + attachment.posX, main.posY + attachment.posY) * scale,
+                        scale, Colors.layoutTest.text.rgb
+                    )
+                }
+            }
         }
     }
 }

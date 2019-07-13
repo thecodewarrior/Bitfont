@@ -20,6 +20,13 @@ abstract class BufferedIterator<T>: Iterator<T> {
         return !buffer.isEmpty
     }
 
+    fun peekNext(): T {
+        refillBufferIfNeeded()
+        if(buffer.isEmpty)
+            throw NoSuchElementException()
+        return buffer.peek()
+    }
+
     override fun next(): T {
         refillBufferIfNeeded()
         if(buffer.isEmpty)

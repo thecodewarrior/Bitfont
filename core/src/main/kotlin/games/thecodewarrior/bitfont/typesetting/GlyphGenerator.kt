@@ -21,7 +21,8 @@ class GlyphGenerator(string: AttributedString, val fallbackFonts: List<Bitfont>)
             ?: fallbackFonts.find { codepoint in it.glyphs }
             ?: attributeValue(Attribute.font)
             ?: fallbackFonts.first()
-        push(font.glyphs[codepoint] ?: font.defaultGlyph)
+        val glyph = font.glyphs[codepoint] ?: font.defaultGlyph
+        push(AttributedGlyph(codepoint, glyph, string, index, offset))
         advance()
     }
 }

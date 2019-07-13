@@ -51,6 +51,10 @@ class ArrayQueue<E>: Iterable<E> {
         return element
     }
 
+    fun peek(): E {
+        return array[head]
+    }
+
     override fun iterator(): Iterator<E> {
         return ArrayQueueIterator()
     }
