@@ -9,7 +9,7 @@ import org.msgpack.core.MessageUnpacker
 import kotlin.math.max
 import kotlin.math.min
 
-class Glyph(): MsgPackable {
+class Glyph(var font: Bitfont?): MsgPackable {
     var bearingX: Int = 0
         set(value) {
             field = value.clamp(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
@@ -29,6 +29,8 @@ class Glyph(): MsgPackable {
             field = value?.clamp(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
         }
 
+    // TODO: remove this. Advance should be hardcoded. automatic advance calculation should be on the editor side
+    fun calcAdvance(): Int = font?.let { calcAdvance(it.spacing) } ?: advance ?: 0
     fun calcAdvance(spacing: Int): Int = advance ?: if (image.isEmpty()) 0 else bearingX + image.width + spacing
 
     var image: BitGrid = BitGrid(1, 1)
@@ -87,7 +89,7 @@ class Glyph(): MsgPackable {
     companion object: MsgUnpackable<Glyph> {
         override fun unpack(unpacker: MessageUnpacker): Glyph {
             unpacker.apply {
-                val glyph = Glyph()
+                val glyph = Glyph(null)
                 glyph.bearingX = unpackInt()
                 glyph.bearingY = unpackInt()
                 glyph.advance = if (tryUnpackNil()) null else unpackInt()

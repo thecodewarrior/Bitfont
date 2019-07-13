@@ -7,6 +7,7 @@ import games.thecodewarrior.bitfont.editor.data.UnifontImporter
 import games.thecodewarrior.bitfont.editor.imgui.ImGui
 import games.thecodewarrior.bitfont.editor.imgui.withNative
 import games.thecodewarrior.bitfont.editor.testingwindow.GlyphGeneratorTestWindow
+import games.thecodewarrior.bitfont.editor.testingwindow.TypesetterTestWindow
 import games.thecodewarrior.bitfont.editor.typesetting.BitfontAtlas
 import games.thecodewarrior.bitfont.editor.utils.ReferenceFonts
 import games.thecodewarrior.bitfont.editor.utils.extensions.addAll
@@ -111,16 +112,16 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
             document.children.add(browser)
         }
         imgui.text("Tests")
-        if(imgui.button("Old Typesetting")) {
-            val test = TestingWindow(document)
-            test.visible = true
-            document.children.add(test)
+        fun test(name: String, constructor: (BitfontDocument) -> IMWindow) {
+            if(imgui.button(name)) {
+                val test = constructor(document)
+                test.visible = true
+                document.children.add(test)
+            }
         }
-        if(imgui.button("Glyph Generator")) {
-            val test = GlyphGeneratorTestWindow(document)
-            test.visible = true
-            document.children.add(test)
-        }
+        test("Old Typesetting", ::TestingWindow)
+        test("Glyph Generator", ::GlyphGeneratorTestWindow)
+        test("Typesetter", ::TypesetterTestWindow)
     }
 
     override fun drawMenu(imgui: ImGui) {

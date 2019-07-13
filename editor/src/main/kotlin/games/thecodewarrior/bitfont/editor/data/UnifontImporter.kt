@@ -34,7 +34,7 @@ object UnifontImporter {
                     Integer.reverse(it.toInt(16) shl 24).toUByte()
                 }
                 .forEachIndexed { i, v -> grid.data[i] = v }
-            val glyph = Glyph()
+            val glyph = Glyph(font)
             glyph.image = grid
             glyph.bearingX = 0
             glyph.bearingY = -14

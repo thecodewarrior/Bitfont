@@ -47,7 +47,7 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
     private fun createDefaultGlyph(): Glyph {
         val capHeight = if(capHeight == 0) 1 else capHeight
         val xHeight = if(xHeight == 0) 1 else xHeight
-        val glyph = Glyph()
+        val glyph = Glyph(this)
         glyph.bearingX = 0
         glyph.bearingY = -capHeight
         val grid = BitGrid(xHeight, capHeight)
@@ -158,7 +158,10 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
                     val glyphCount = unpacker.unpackMapHeader()
                     try {
                         for (i in 0 until glyphCount) {
-                            font.glyphs[unpacker.unpackInt()] = Glyph.unpack(unpacker)
+                            val codepoint = unpacker.unpackInt()
+                            val glyph = Glyph.unpack(unpacker)
+                            glyph.font = font
+                            font.glyphs[codepoint] = glyph
                         }
                     } catch(e: MessageInsufficientBufferException) {
                         e.printStackTrace()
