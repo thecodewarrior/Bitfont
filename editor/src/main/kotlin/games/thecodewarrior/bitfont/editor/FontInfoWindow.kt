@@ -2,6 +2,7 @@ package games.thecodewarrior.bitfont.editor
 
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
+import com.ibm.icu.lang.UCharacter
 import games.thecodewarrior.bitfont.data.Bitfont
 import games.thecodewarrior.bitfont.editor.data.UnifontImporter
 import games.thecodewarrior.bitfont.editor.imgui.ImGui
@@ -12,6 +13,7 @@ import games.thecodewarrior.bitfont.editor.typesetting.BitfontAtlas
 import games.thecodewarrior.bitfont.editor.utils.ReferenceFonts
 import games.thecodewarrior.bitfont.editor.utils.extensions.addAll
 import games.thecodewarrior.bitfont.editor.utils.keys
+import games.thecodewarrior.bitfont.utils.CombiningClass
 import org.ice1000.jimgui.flag.JImFocusedFlags
 import org.ice1000.jimgui.flag.JImInputTextFlags
 import org.ice1000.jimgui.flag.JImSelectableFlags
@@ -191,12 +193,32 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                         }
                     }
                 }
-                if(imgui.menuItem("Optimize")) {
-                    bitfont.glyphs.forEach { _, glyph -> glyph.crop() }
-                }
-                if(imgui.menuItem("Pack")) {
-                    val atlas = BitfontAtlas(bitfont)
-                    ImageIO.write(atlas.image(), "png", File("atlas.png"))
+                imgui.menu("Advanced") {
+                    if (imgui.menuItem("Optimize")) {
+                        bitfont.glyphs.forEach { (_, glyph) -> glyph.crop() }
+                    }
+                    if (imgui.menuItem("Pack")) {
+                        val atlas = BitfontAtlas(bitfont)
+                        ImageIO.write(atlas.image(), "png", File("atlas.png"))
+                    }
+                    if (imgui.menuItem("Copy Codepoints")) {
+                        val builder = StringBuilder()
+                        var previous = 0
+                        bitfont.glyphs.keys.sorted().forEach { codepoint ->
+                            val glyph = bitfont.glyphs[codepoint]
+                            glyph.crop()
+                            if(!glyph.image.isEmpty()) {
+                                if(previous / 256 != codepoint / 256)
+                                    builder.append('\n')
+//                                val combiningClass = CombiningClass[UCharacter.getCombiningClass(codepoint)]
+//                                if(combiningClass != CombiningClass.NOT_REORDERED)
+//                                    builder.append('◌')
+                                builder.append(Character.toChars(codepoint))
+                                previous = codepoint
+                            }
+                        }
+                        imgui.clipboardText = builder.toString()
+                    }
                 }
                 if(imgui.menuItem("Close")) {
                     Main.documents.remove(document)

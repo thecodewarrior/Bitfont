@@ -36,6 +36,7 @@ abstract class AbstractTestWindow(val document: BitfontDocument, testName: Strin
     abstract fun stringInput(string: String)
 
     abstract fun drawCanvas(imgui: ImGui)
+    open fun drawControls(imgui: ImGui) {}
 
     open fun handleInput(imgui: ImGui) {
         imgui.keys {
@@ -45,7 +46,7 @@ abstract class AbstractTestWindow(val document: BitfontDocument, testName: Strin
         }
     }
 
-    override fun main(imgui: ImGui): Unit {
+    override fun main(imgui: ImGui) {
         if(imgui.isWindowFocused(JImFocusedFlags.RootAndChildWindows) /*&& g.activeId == 0*/) handleInput(imgui)
         imgui.pushAllowKeyboardFocus(false)
         imgui.sameLine()
@@ -55,6 +56,7 @@ abstract class AbstractTestWindow(val document: BitfontDocument, testName: Strin
             imgui.inputInt("Scale", it)
         }
         imgui.popItemWidth()
+        drawControls(imgui)
         imgui.popAllowKeyboardFocus()
 
         val canvasPos = imgui.windowContentRegionRect.min + vec(imgui.windowPosX, imgui.windowPosY + imgui.frameHeightWithSpacing)

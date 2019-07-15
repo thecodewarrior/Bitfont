@@ -18,13 +18,14 @@ class GlyphGeneratorTestWindow(document: BitfontDocument): AbstractTestWindow(do
     override fun drawCanvas(imgui: ImGui) {
         val glyphs = GlyphGenerator(text, listOf(document.bitfont))
 
-        val height = document.bitfont.ascent + document.bitfont.descent
-        val columns = canvas.width.toInt() / (height * scale)
-        val rows = canvas.height.toInt() / (height * scale)
-        val min = canvas.min + vec(height/4, (document.bitfont.ascent * 1.5).toInt())
+        val size = document.bitfont.ascent + document.bitfont.descent + 4
+        val columns = canvas.width.toInt() / (size * scale)
+        val rows = canvas.height.toInt() / (size * scale)
+        val min = canvas.min + vec(size/4, (document.bitfont.ascent * 1.5).toInt())
 
+        /*
         for(i in 0 until columns) {
-            val pos = min + vec(height, 0) * i * scale
+            val pos = min + vec(size, 0) * i * scale
             drawList.addLine(
                 pos,
                 pos + vec(0, canvas.height),
@@ -34,7 +35,7 @@ class GlyphGeneratorTestWindow(document: BitfontDocument): AbstractTestWindow(do
         }
 
         for(i in 0 until rows) {
-            val pos = min + vec(0, height) * i * scale
+            val pos = min + vec(0, size) * i * scale
             drawList.addLine(
                 pos,
                 pos + vec(canvas.width, 0),
@@ -42,12 +43,12 @@ class GlyphGeneratorTestWindow(document: BitfontDocument): AbstractTestWindow(do
                 1f
             )
         }
-
+         */
 
         for((i, glyph) in glyphs.withIndex()) {
             val line = i / columns + 1
             val column = i % columns
-            glyph.draw(imgui, min + vec(column * height, line * height) * scale, scale, Colors.layoutTest.text.rgb)
+            glyph.draw(imgui, min + vec(column * size, line * size) * scale, scale, Colors.layoutTest.text.rgb)
         }
     }
 }

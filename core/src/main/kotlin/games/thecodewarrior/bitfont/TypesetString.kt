@@ -227,45 +227,42 @@ open class TypesetString(
                 val cls = combiningClass
                 val rectMin = combiningRectMin
                 val rectMax = combiningRectMax
-                val gapX = if(cls.attached || cls.yAlign != 0) 0 else combiningGap
-                val gapY = if(cls.attached && cls.yAlign != 0) 0 else combiningGap
+                val gapX = if(cls.attached || cls.yAlign != CombiningClass.YAlignment.CENTER) 0 else combiningGap
+                val gapY = if(cls.attached && cls.yAlign != CombiningClass.YAlignment.CENTER) 0 else combiningGap
 
                 val newX = when(cls.xAlign) {
-                    -2 -> {
+                    CombiningClass.XAlignment.LEFT -> {
                         rectMin.x - glyph.bearingX - glyph.image.width - gapX
                     }
-                    -1 -> {
+                    CombiningClass.XAlignment.LEFT_CORNER -> {
                         rectMin.x - glyph.bearingX
                     }
-                    0 -> {
+                    CombiningClass.XAlignment.CENTER -> {
                         rectMin.x - glyph.bearingX + (rectMax.x - rectMin.x - glyph.image.width)/2
                     }
-                    1 -> {
+                    CombiningClass.XAlignment.RIGHT_CORNER -> {
                         rectMax.x - glyph.bearingX - glyph.image.width
                     }
-                    2 -> {
+                    CombiningClass.XAlignment.RIGHT -> {
                         rectMax.x - glyph.bearingX + gapX
                     }
-                    3 -> {
+                    CombiningClass.XAlignment.DOUBLE -> {
                         rectMax.x - glyph.bearingX - (glyph.image.width)/2
                     }
                     else -> rectMin.x
                 }
                 val newY: Int
                 when(cls.yAlign) {
-                    -1 -> {
+                    CombiningClass.YAlignment.ABOVE -> {
                         newY = rectMin.y - gapY - glyph.image.height - glyph.bearingY
                         combiningRectMin -= Vec2i(0, glyph.image.height + gapY)
                     }
-                    0 -> {
+                    CombiningClass.YAlignment.CENTER -> {
                         newY = rectMin.y - glyph.bearingY + (rectMax.y - rectMin.y - glyph.image.height)/2
                     }
-                    1 -> {
+                    CombiningClass.YAlignment.BELOW -> {
                         newY = rectMax.y + gapY - glyph.bearingY
                         combiningRectMax += Vec2i(0, glyph.image.height + gapY)
-                    }
-                    else -> {
-                        newY = 0
                     }
                 }
 
@@ -319,7 +316,9 @@ open class TypesetString(
                     addBreak(i+1)
             } else {
                 val combiningClass = CombiningClass[UCharacter.getCombiningClass(codepoints[i])]
-                if(combiningClass == CombiningClass.NOT_REORDERED || combiningClass.xAlign == -2 || combiningClass.xAlign == 2)
+                if(combiningClass == CombiningClass.NOT_REORDERED ||
+                    combiningClass.xAlign == CombiningClass.XAlignment.LEFT ||
+                    combiningClass.xAlign == CombiningClass.XAlignment.RIGHT)
                     x += advanceFor(i)
                 // if we are past the end of the line and aren't whitespace, wrap.
                 // (whitespace shouldn't wrap to the beginning of a line)

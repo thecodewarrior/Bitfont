@@ -3,7 +3,7 @@ package games.thecodewarrior.bitfont.typesetting
 import games.thecodewarrior.bitfont.data.Glyph
 import games.thecodewarrior.bitfont.utils.Attribute
 
-class AttributedGlyph(
+open class AttributedGlyph(
     val codepoint: Int,
     val glyph: Glyph,
     val source: AttributedString,

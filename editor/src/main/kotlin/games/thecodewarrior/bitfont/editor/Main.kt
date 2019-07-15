@@ -8,6 +8,11 @@ import org.ice1000.jimgui.JImGuiIO
 import org.ice1000.jimgui.util.JImGuiUtil
 import org.ice1000.jimgui.util.JniLoader
 import kotlin.math.max
+import kotlin.reflect.jvm.internal.impl.descriptors.ModuleDescriptor.DefaultImpls.accept
+import org.ice1000.jimgui.JImGui
+import java.util.function.Consumer
+import java.util.function.LongSupplier
+import kotlin.math.min
 
 fun main(args: Array<String>) {
     System.setProperty("java.awt.headless", "true")
@@ -47,10 +52,33 @@ object Main {
         targetFPS = 20
 
         var imgui: ImGui? = null
-        JImGuiUtil.runPer({ 1000L / targetFPS }, { jimgui ->
+        runPer({ 1000L / targetFPS }, { jimgui ->
             ImGui.current = imgui ?: ImGui(jimgui).also { imgui = it }
             mainLoop(ImGui.current)
         })
+    }
+
+    fun runPer(millisSupplier: () -> Long, runnable: (JImGui) -> Unit) {
+        try {
+            JImGui().use { imGui ->
+                var latestRefresh = System.currentTimeMillis()
+                imGui.initBeforeMainLoop()
+                while (!imGui.windowShouldClose()) {
+                    val targetTime = millisSupplier()
+                    val deltaTime = System.currentTimeMillis() - latestRefresh
+                    if (targetTime > deltaTime) {
+                        Thread.sleep(targetTime - deltaTime)
+                    }
+                    val currentTimeMillis = System.currentTimeMillis()
+                    imGui.initNewFrame()
+                    runnable(imGui)
+                    imGui.render()
+                    latestRefresh = currentTimeMillis
+                }
+            }
+        } catch (e: InterruptedException) {
+            throw RuntimeException(e)
+        }
     }
 
     fun mainLoop(imgui: ImGui) {

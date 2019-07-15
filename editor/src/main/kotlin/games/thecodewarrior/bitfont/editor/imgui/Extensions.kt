@@ -141,6 +141,7 @@ inline fun withNative(property: KMutableProperty0<Boolean>, callback: (NativeBoo
     callback(native)
     val newValue = native.accessValue()
     native.deallocateNativeObject()
+    property.set(newValue)
 }
 @JvmName("withNativeBooleanExt")
 inline fun KMutableProperty0<Boolean>.withNative(callback: (NativeBool) -> Unit) = withNative(this, callback)
