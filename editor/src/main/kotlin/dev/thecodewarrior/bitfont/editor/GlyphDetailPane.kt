@@ -13,7 +13,7 @@ import dev.thecodewarrior.bitfont.editor.utils.nameslist.FormalAliasLine
 import dev.thecodewarrior.bitfont.editor.utils.nameslist.NoticeLine
 import dev.thecodewarrior.bitfont.editor.utils.nameslist.VariationLine
 
-class GlyphDetailPane(val document: dev.thecodewarrior.bitfont.editor.BitfontDocument) {
+class GlyphDetailPane(val document: BitfontDocument) {
     val width: Float
         get() = 175f
     var codepoint = 0

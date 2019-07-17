@@ -12,7 +12,7 @@ open class AttributedString internal constructor(
     protected open val attributes: Map<Attribute<*>, RangeMap<Int, Any>>
 ) {
 
-    constructor(other: dev.thecodewarrior.bitfont.typesetting.AttributedString): this(
+    constructor(other: AttributedString): this(
         other.plaintext,
         other.getAllAttributes()
     )
@@ -47,8 +47,8 @@ open class AttributedString internal constructor(
         return attributes[attr]?.get(index) as T?
     }
 
-    open fun substring(start: Int, end: Int): dev.thecodewarrior.bitfont.typesetting.AttributedString {
-        return dev.thecodewarrior.bitfont.typesetting.AttributedString(
+    open fun substring(start: Int, end: Int): AttributedString {
+        return AttributedString(
             plaintext.substring(start, end),
             attributes.mapValues {
                 val map = it.value.copy { it - start }
@@ -59,12 +59,12 @@ open class AttributedString internal constructor(
         )
     }
 
-    open fun staticCopy(): dev.thecodewarrior.bitfont.typesetting.AttributedString {
-        return dev.thecodewarrior.bitfont.typesetting.AttributedString(this)
+    open fun staticCopy(): AttributedString {
+        return AttributedString(this)
     }
 
-    open fun mutableCopy(): dev.thecodewarrior.bitfont.typesetting.MutableAttributedString {
-        return dev.thecodewarrior.bitfont.typesetting.MutableAttributedString(this)
+    open fun mutableCopy(): MutableAttributedString {
+        return MutableAttributedString(this)
     }
 
     override fun toString(): String {

@@ -21,7 +21,7 @@ import java.awt.geom.AffineTransform
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
-class GlyphBrowserWindow(val document: dev.thecodewarrior.bitfont.editor.BitfontDocument): dev.thecodewarrior.bitfont.editor.IMWindow() {
+class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
     val bitfont = document.bitfont
 
     override val title: String
@@ -39,7 +39,7 @@ class GlyphBrowserWindow(val document: dev.thecodewarrior.bitfont.editor.Bitfont
         }
     var needsRedraw = true
     var canvas = rect(0, 0, 0, 0)
-    val detail = dev.thecodewarrior.bitfont.editor.GlyphDetailPane(document)
+    val detail = GlyphDetailPane(document)
     var lastSelectTime = 0L
 
     val cellSize = 32

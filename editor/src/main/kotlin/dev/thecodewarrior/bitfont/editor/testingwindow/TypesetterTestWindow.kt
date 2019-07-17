@@ -10,12 +10,12 @@ import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.GlyphGenerator
 import dev.thecodewarrior.bitfont.typesetting.Typesetter
 
-class TypesetterTestWindow(document: dev.thecodewarrior.bitfont.editor.BitfontDocument): AbstractTestWindow(document, "Typesetter Test") {
-    var text: dev.thecodewarrior.bitfont.typesetting.AttributedString = dev.thecodewarrior.bitfont.typesetting.AttributedString("")
-    val options = dev.thecodewarrior.bitfont.typesetting.Typesetter.Options()
+class TypesetterTestWindow(document: BitfontDocument): AbstractTestWindow(document, "Typesetter Test") {
+    var text: AttributedString = AttributedString("")
+    val options = Typesetter.Options()
 
     override fun stringInput(string: String) {
-        text = dev.thecodewarrior.bitfont.typesetting.AttributedString(string)
+        text = AttributedString(string)
     }
 
     override fun drawControls(imgui: ImGui) {
@@ -31,7 +31,7 @@ class TypesetterTestWindow(document: dev.thecodewarrior.bitfont.editor.BitfontDo
 
     override fun drawCanvas(imgui: ImGui) {
         val glyphs = GlyphGenerator(text, listOf(document.bitfont))
-        val typesetter = dev.thecodewarrior.bitfont.typesetting.Typesetter(glyphs)
+        val typesetter = Typesetter(glyphs)
         typesetter.options = options
 
         val height = document.bitfont.ascent + document.bitfont.descent

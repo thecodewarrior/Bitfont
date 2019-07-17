@@ -13,5 +13,5 @@ open class TextStorage : MutableAttributedString {
     constructor(plaintext: String): super(plaintext)
     constructor(plaintext: String, attributes: AttributeMap): super(plaintext, attributes)
     constructor(plaintext: String, attributes: Map<Attribute<*>, RangeMap<Int, Any>>): super(plaintext, attributes)
-    constructor(other: dev.thecodewarrior.bitfont.typesetting.AttributedString): super(other)
+    constructor(other: AttributedString): super(other)
 }

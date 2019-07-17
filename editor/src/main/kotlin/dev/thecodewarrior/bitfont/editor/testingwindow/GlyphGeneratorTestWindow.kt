@@ -8,11 +8,11 @@ import dev.thecodewarrior.bitfont.editor.utils.math.vec
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.GlyphGenerator
 
-class GlyphGeneratorTestWindow(document: dev.thecodewarrior.bitfont.editor.BitfontDocument): AbstractTestWindow(document, "Glyph Generator Test") {
-    var text: dev.thecodewarrior.bitfont.typesetting.AttributedString = dev.thecodewarrior.bitfont.typesetting.AttributedString("")
+class GlyphGeneratorTestWindow(document: BitfontDocument): AbstractTestWindow(document, "Glyph Generator Test") {
+    var text: AttributedString = AttributedString("")
 
     override fun stringInput(string: String) {
-        text = dev.thecodewarrior.bitfont.typesetting.AttributedString(string)
+        text = AttributedString(string)
     }
 
     override fun drawCanvas(imgui: ImGui) {

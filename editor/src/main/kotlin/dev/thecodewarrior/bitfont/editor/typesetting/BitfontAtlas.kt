@@ -1,5 +1,6 @@
 package dev.thecodewarrior.bitfont.editor.typesetting
 
+import dev.thecodewarrior.bitfont.data.Bitfont
 import dev.thecodewarrior.bitfont.editor.utils.Colors
 import dev.thecodewarrior.bitfont.editor.utils.math.Vec4
 import dev.thecodewarrior.bitfont.editor.utils.math.vec
@@ -13,7 +14,7 @@ import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.sqrt
 
-class BitfontAtlas(val font: dev.thecodewarrior.bitfont.data.Bitfont) {
+class BitfontAtlas(val font: Bitfont) {
     private var packer = RectanglePacker<Int>(1, 1, 0)
     var width: Int
         private set

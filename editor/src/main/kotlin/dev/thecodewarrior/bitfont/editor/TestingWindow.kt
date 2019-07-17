@@ -25,14 +25,14 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
-open class TestingWindow(val document: dev.thecodewarrior.bitfont.editor.BitfontDocument): dev.thecodewarrior.bitfont.editor.IMWindow() {
-    val bitfont: dev.thecodewarrior.bitfont.data.Bitfont = document.bitfont
+open class TestingWindow(val document: BitfontDocument): IMWindow() {
+    val bitfont: Bitfont = document.bitfont
 
     override val title: String
         get() = "${bitfont.name}: Testing"
 
     var testString: MutableAttributedString = MutableAttributedString("")
-    var typesetString = dev.thecodewarrior.bitfont.TypesetString(bitfont, testString, -1)
+    var typesetString = TypesetString(bitfont, testString, -1)
     var scale = 2
         set(value) {
             field = max(value, 1)
@@ -102,13 +102,13 @@ open class TestingWindow(val document: dev.thecodewarrior.bitfont.editor.Bitfont
         drawList.addTriangleFilled(cursor, cursor + vec(-scale, -scale), cursor + vec(-scale, scale), Colors.layoutTest.originIndicator.rgb)
         val textRegion = rect(textOrigin, canvas.max)
 
-        typesetString = dev.thecodewarrior.bitfont.TypesetString(bitfont, testString, (textRegion.width / scale).toInt())
+        typesetString = TypesetString(bitfont, testString, (textRegion.width / scale).toInt())
         typesetString.glyphs.forEach {
             drawGlyph(imgui, it)
         }
     }
 
-    fun drawGlyph(imgui: ImGui, char: dev.thecodewarrior.bitfont.TypesetString.GlyphRender) {
+    fun drawGlyph(imgui: ImGui, char: TypesetString.GlyphRender) {
         val color = char.attributes[Attribute.color] ?: Colors.layoutTest.text
         val font = char.attributes[Attribute.font] ?: bitfont
         char.glyph.draw(imgui, textOrigin + Vec2(char.pos) * scale, scale, color.rgb)

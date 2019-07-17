@@ -9,7 +9,7 @@ import org.msgpack.core.MessageUnpacker
 import kotlin.math.max
 import kotlin.math.min
 
-class Glyph(var font: dev.thecodewarrior.bitfont.data.Bitfont?): MsgPackable {
+class Glyph(var font: Bitfont?): MsgPackable {
     var bearingX: Int = 0
         set(value) {
             field = value.clamp(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
@@ -31,13 +31,13 @@ class Glyph(var font: dev.thecodewarrior.bitfont.data.Bitfont?): MsgPackable {
 
     fun calcAdvance(spacing: Int): Int = advance ?: if (image.isEmpty()) 0 else bearingX + image.width + spacing
 
-    var image: dev.thecodewarrior.bitfont.data.BitGrid = dev.thecodewarrior.bitfont.data.BitGrid(1, 1)
+    var image: BitGrid = BitGrid(1, 1)
 
     fun isEmpty(): Boolean = image.isEmpty() && advance == null
 
     fun crop() {
         if(image.isEmpty())  {
-            image = dev.thecodewarrior.bitfont.data.BitGrid(1, 1)
+            image = BitGrid(1, 1)
             bearingX = 0
             bearingY = 0
             return
@@ -56,7 +56,7 @@ class Glyph(var font: dev.thecodewarrior.bitfont.data.Bitfont?): MsgPackable {
                 }
             }
         }
-        val grid = dev.thecodewarrior.bitfont.data.BitGrid(maxX - minX + 1, maxY - minY + 1)
+        val grid = BitGrid(maxX - minX + 1, maxY - minY + 1)
         for(x in 0 until image.width) {
             for(y in 0 until image.height) {
                 if(image[x, y]) {
@@ -84,14 +84,14 @@ class Glyph(var font: dev.thecodewarrior.bitfont.data.Bitfont?): MsgPackable {
         }
     }
 
-    companion object: MsgUnpackable<dev.thecodewarrior.bitfont.data.Glyph> {
-        override fun unpack(unpacker: MessageUnpacker): dev.thecodewarrior.bitfont.data.Glyph {
+    companion object: MsgUnpackable<Glyph> {
+        override fun unpack(unpacker: MessageUnpacker): Glyph {
             unpacker.apply {
-                val glyph = dev.thecodewarrior.bitfont.data.Glyph(null)
+                val glyph = Glyph(null)
                 glyph.bearingX = unpackInt()
                 glyph.bearingY = unpackInt()
                 glyph.advance = if (tryUnpackNil()) null else unpackInt()
-                glyph.image = dev.thecodewarrior.bitfont.data.BitGrid.Companion.unpack(unpacker)
+                glyph.image = BitGrid.unpack(unpacker)
                 glyph.crop()
                 return glyph
             }

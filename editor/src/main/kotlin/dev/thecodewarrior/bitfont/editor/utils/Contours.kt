@@ -79,7 +79,7 @@ private enum class ContourSide(
     LEFT(Vec2i(-1, 0), Vec2i(0, 1));
 
     val next: ContourSide
-        get() = ContourSide.values()[(ordinal + 1) % 4]
+        get() = values()[(ordinal + 1) % 4]
     val prev: ContourSide
-        get() = ContourSide.values()[(ordinal + 4 - 1) % 4]
+        get() = values()[(ordinal + 4 - 1) % 4]
 }

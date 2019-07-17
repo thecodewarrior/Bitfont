@@ -26,8 +26,8 @@ import javax.imageio.ImageIO
 import kotlin.math.abs
 import kotlin.math.max
 
-class FontInfoWindow(val document: dev.thecodewarrior.bitfont.editor.BitfontDocument): dev.thecodewarrior.bitfont.editor.IMWindow() {
-    val bitfont: dev.thecodewarrior.bitfont.data.Bitfont = document.bitfont
+class FontInfoWindow(val document: BitfontDocument): IMWindow() {
+    val bitfont: Bitfont = document.bitfont
 
     override val title: String
         get() = "${bitfont.name}: Font Information"
@@ -109,12 +109,12 @@ class FontInfoWindow(val document: dev.thecodewarrior.bitfont.editor.BitfontDocu
         }
         imgui.sameLine()
         if(imgui.button("Browse")) {
-            val browser = dev.thecodewarrior.bitfont.editor.GlyphBrowserWindow(document)
+            val browser = GlyphBrowserWindow(document)
             browser.visible = true
             document.children.add(browser)
         }
         imgui.text("Tests")
-        fun test(name: String, constructor: (dev.thecodewarrior.bitfont.editor.BitfontDocument) -> dev.thecodewarrior.bitfont.editor.IMWindow) {
+        fun test(name: String, constructor: (BitfontDocument) -> IMWindow) {
             if(imgui.button(name)) {
                 val test = constructor(document)
                 test.visible = true
@@ -160,8 +160,8 @@ class FontInfoWindow(val document: dev.thecodewarrior.bitfont.editor.BitfontDocu
                             if(imgui.menuItem(file.name) && !opened) {
                                 opened = true
                                 val bytes = file.readBytes()
-                                val newDocument = dev.thecodewarrior.bitfont.editor.BitfontDocument(dev.thecodewarrior.bitfont.data.Bitfont.unpack(bytes))
-                                dev.thecodewarrior.bitfont.editor.Main.documents.add(newDocument)
+                                val newDocument = BitfontDocument(Bitfont.unpack(bytes))
+                                Main.documents.add(newDocument)
                             }
                         }
                     } catch(e: Exception) {
@@ -169,27 +169,27 @@ class FontInfoWindow(val document: dev.thecodewarrior.bitfont.editor.BitfontDocu
                     }
                 }
                 if(imgui.menuItem("New")) {
-                    val bitfont = dev.thecodewarrior.bitfont.data.Bitfont("Untitled", 10, 4, 9, 6, 2)
-                    val newDocument = dev.thecodewarrior.bitfont.editor.BitfontDocument(bitfont)
-                    dev.thecodewarrior.bitfont.editor.Main.documents.add(newDocument)
+                    val bitfont = Bitfont("Untitled", 10, 4, 9, 6, 2)
+                    val newDocument = BitfontDocument(bitfont)
+                    Main.documents.add(newDocument)
                 }
                 imgui.menu("Import") {
                     imgui.menu("Unifont") {
                         if(imgui.menuItem("BMP (unifont.hex)")) {
-                            dev.thecodewarrior.bitfont.editor.Main.documents.add(dev.thecodewarrior.bitfont.editor.BitfontDocument(importUnifont("Unifont BMP", false, "unifont.hex")))
-                            dev.thecodewarrior.bitfont.editor.Main.documents.add(dev.thecodewarrior.bitfont.editor.BitfontDocument(importUnifont("Unifont BMP", true, "unifont.hex")))
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont BMP", false, "unifont.hex")))
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont BMP", true, "unifont.hex")))
                         }
                         if(imgui.menuItem("Plane 1 (unifont_upper.hex)")) {
-                            dev.thecodewarrior.bitfont.editor.Main.documents.add(dev.thecodewarrior.bitfont.editor.BitfontDocument(importUnifont("Unifont Plane 1", false, "unifont_upper.hex")))
-                            dev.thecodewarrior.bitfont.editor.Main.documents.add(dev.thecodewarrior.bitfont.editor.BitfontDocument(importUnifont("Unifont Plane 1", true, "unifont_upper.hex")))
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont Plane 1", false, "unifont_upper.hex")))
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont Plane 1", true, "unifont_upper.hex")))
                         }
                         if(imgui.menuItem("All (unifont.hex, unifont_upper.hex)")) {
-                            dev.thecodewarrior.bitfont.editor.Main.documents.add(dev.thecodewarrior.bitfont.editor.BitfontDocument(importUnifont("Unifont", false, "unifont.hex", "unifont_upper.hex")))
-                            dev.thecodewarrior.bitfont.editor.Main.documents.add(dev.thecodewarrior.bitfont.editor.BitfontDocument(importUnifont("Unifont", true, "unifont.hex", "unifont_upper.hex")))
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont", false, "unifont.hex", "unifont_upper.hex")))
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont", true, "unifont.hex", "unifont_upper.hex")))
                         }
                         if(imgui.menuItem("CSUR (unifont_csur.hex, unifont_csur_lower.hex)")) {
-                            dev.thecodewarrior.bitfont.editor.Main.documents.add(dev.thecodewarrior.bitfont.editor.BitfontDocument(importUnifont("Unifont CSUR", false, "unifont.hex", "unifont_upper.hex")))
-                            dev.thecodewarrior.bitfont.editor.Main.documents.add(dev.thecodewarrior.bitfont.editor.BitfontDocument(importUnifont("Unifont CSUR", true, "unifont.hex", "unifont_upper.hex")))
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont CSUR", false, "unifont.hex", "unifont_upper.hex")))
+                            Main.documents.add(BitfontDocument(importUnifont("Unifont CSUR", true, "unifont.hex", "unifont_upper.hex")))
                         }
                     }
                 }
@@ -221,7 +221,7 @@ class FontInfoWindow(val document: dev.thecodewarrior.bitfont.editor.BitfontDocu
                     }
                 }
                 if(imgui.menuItem("Close")) {
-                    dev.thecodewarrior.bitfont.editor.Main.documents.remove(document)
+                    Main.documents.remove(document)
                 }
 //                menuItem("Save As..")
 //                separator()
@@ -232,7 +232,7 @@ class FontInfoWindow(val document: dev.thecodewarrior.bitfont.editor.BitfontDocu
         imgui.endMenuBar()
     }
 
-    fun importUnifont(name: String, autoAdvance: Boolean, vararg files: String): dev.thecodewarrior.bitfont.data.Bitfont {
+    fun importUnifont(name: String, autoAdvance: Boolean, vararg files: String): Bitfont {
         val lines = files.flatMap { File(it).readLines() }
         val bitfont = UnifontImporter.import(lines)
 

@@ -19,7 +19,7 @@ private interface IMutableAttributedString {
     /*    //----------------- Implementations -----------------\\    */
     fun append(string: String, attributes: AttributeMap): MutableAttributedString
     @ExperimentalBitfont
-    fun append(string: dev.thecodewarrior.bitfont.typesetting.AttributedString): MutableAttributedString
+    fun append(string: AttributedString): MutableAttributedString
     /*    //-------------------- Overloads --------------------\\    */
     @JvmDefault
     fun append(string: String, attributes: Map<Attribute<*>, Any>): MutableAttributedString
@@ -53,7 +53,7 @@ private interface IMutableAttributedString {
     /*    //----------------- Implementations -----------------\\    */
     fun insert(pos: Int, string: String, attributes: AttributeMap): MutableAttributedString
     @ExperimentalBitfont
-    fun insert(pos: Int, string: dev.thecodewarrior.bitfont.typesetting.AttributedString): MutableAttributedString
+    fun insert(pos: Int, string: AttributedString): MutableAttributedString
     /*    //-------------------- Overloads --------------------\\    */
     @JvmDefault
     fun insert(pos: Int, string: String, attributes: Map<Attribute<*>, Any>): MutableAttributedString
@@ -101,7 +101,7 @@ private interface IMutableAttributedString {
 }
 
 @ExperimentalBitfont
-open class MutableAttributedString: dev.thecodewarrior.bitfont.typesetting.AttributedString, IMutableAttributedString {
+open class MutableAttributedString: AttributedString, IMutableAttributedString {
     private val buffer: StringBuffer = StringBuffer(super.plaintext)
 
     override val attributes: MutableMap<Attribute<*>, RangeMap<Int, Any>> = super.attributes.toMutableMap()
@@ -110,7 +110,7 @@ open class MutableAttributedString: dev.thecodewarrior.bitfont.typesetting.Attri
     constructor(plaintext: String): super(plaintext)
     constructor(plaintext: String, attributes: AttributeMap): super(plaintext, attributes)
     internal constructor(plaintext: String, attributes: Map<Attribute<*>, RangeMap<Int, Any>>): super(plaintext, attributes)
-    constructor(other: dev.thecodewarrior.bitfont.typesetting.AttributedString): super(other)
+    constructor(other: AttributedString): super(other)
 
     override fun append(string: String, attributes: AttributeMap): MutableAttributedString {
         val start = buffer.length
@@ -119,7 +119,7 @@ open class MutableAttributedString: dev.thecodewarrior.bitfont.typesetting.Attri
         return this
     }
 
-    override fun append(string: dev.thecodewarrior.bitfont.typesetting.AttributedString): MutableAttributedString {
+    override fun append(string: AttributedString): MutableAttributedString {
         val start = buffer.length
         buffer.append(string.plaintext)
         applyAttributes(string.getAllAttributes(), start)
@@ -148,7 +148,7 @@ open class MutableAttributedString: dev.thecodewarrior.bitfont.typesetting.Attri
         return this
     }
 
-    override fun insert(pos: Int, string: dev.thecodewarrior.bitfont.typesetting.AttributedString): MutableAttributedString {
+    override fun insert(pos: Int, string: AttributedString): MutableAttributedString {
         buffer.insert(pos, string.plaintext)
         this.attributes.forEach { key, value ->
             value.shift(pos, null) { it + string.length }
@@ -180,8 +180,8 @@ open class MutableAttributedString: dev.thecodewarrior.bitfont.typesetting.Attri
         return this
     }
 
-    override fun substring(start: Int, end: Int): dev.thecodewarrior.bitfont.typesetting.AttributedString {
-        return dev.thecodewarrior.bitfont.typesetting.AttributedString(
+    override fun substring(start: Int, end: Int): AttributedString {
+        return AttributedString(
             plaintext.substring(start, end),
             attributes.mapValues {
                 val map = it.value.copy { it - start }

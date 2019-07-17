@@ -4,8 +4,8 @@ import dev.thecodewarrior.bitfont.data.Bitfont
 import dev.thecodewarrior.bitfont.editor.imgui.ImGui
 import dev.thecodewarrior.bitfont.editor.utils.extensions.clamp
 
-class BitfontDocument(val bitfont: dev.thecodewarrior.bitfont.data.Bitfont) {
-    var infoWindow = dev.thecodewarrior.bitfont.editor.FontInfoWindow(this)
+class BitfontDocument(val bitfont: Bitfont) {
+    var infoWindow = FontInfoWindow(this)
 //    var editorWindow = GlyphEditorWindow(this)
     val children = infoWindow.children
 
@@ -23,8 +23,8 @@ class BitfontDocument(val bitfont: dev.thecodewarrior.bitfont.data.Bitfont) {
     }
 
     companion object {
-        fun blank(): dev.thecodewarrior.bitfont.editor.BitfontDocument {
-            return dev.thecodewarrior.bitfont.editor.BitfontDocument(dev.thecodewarrior.bitfont.data.Bitfont("Untitled", 10, 4, 9, 6, 2))
+        fun blank(): BitfontDocument {
+            return BitfontDocument(Bitfont("Untitled", 10, 4, 9, 6, 2))
         }
     }
 }

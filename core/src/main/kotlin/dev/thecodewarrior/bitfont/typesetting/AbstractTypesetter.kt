@@ -7,8 +7,8 @@ import dev.thecodewarrior.bitfont.utils.CombiningClass
 import kotlin.math.max
 import kotlin.math.min
 
-class Typesetter(val glyphs: BufferedIterator<dev.thecodewarrior.bitfont.typesetting.AttributedGlyph>): BufferedIterator<dev.thecodewarrior.bitfont.typesetting.GraphemeCluster>() {
-    var options: dev.thecodewarrior.bitfont.typesetting.Typesetter.Options = dev.thecodewarrior.bitfont.typesetting.Typesetter.Options()
+class Typesetter(val glyphs: BufferedIterator<AttributedGlyph>): BufferedIterator<GraphemeCluster>() {
+    var options: Options = Options()
 
     class Options {
         var enableKerning: Boolean = true
@@ -17,13 +17,13 @@ class Typesetter(val glyphs: BufferedIterator<dev.thecodewarrior.bitfont.typeset
 
     private var cursorX: Int = 0
     private var cursorY: Int = 0
-    private var previousGlyph: dev.thecodewarrior.bitfont.typesetting.GraphemeCluster? = null
+    private var previousGlyph: GraphemeCluster? = null
 
     override fun refillBuffer() {
         if(!glyphs.hasNext())
             return
 
-        var typesetGlyph = dev.thecodewarrior.bitfont.typesetting.TypesetGlyph(cursorX, cursorY, glyphs.next())
+        var typesetGlyph = TypesetGlyph(cursorX, cursorY, glyphs.next())
         val previous = previousGlyph
         // only kern if neither glyph has an explicit advance width.
         if(options.enableKerning && previous != null &&
@@ -31,11 +31,11 @@ class Typesetter(val glyphs: BufferedIterator<dev.thecodewarrior.bitfont.typeset
             val gap = getKernGap(previous, typesetGlyph) - TARGET_GAP
             if(gap > 0) {
                 cursorX -= gap
-                typesetGlyph = dev.thecodewarrior.bitfont.typesetting.TypesetGlyph(cursorX, cursorY, typesetGlyph)
+                typesetGlyph = TypesetGlyph(cursorX, cursorY, typesetGlyph)
             }
         }
 
-        val cluster = dev.thecodewarrior.bitfont.typesetting.GraphemeCluster(typesetGlyph)
+        val cluster = GraphemeCluster(typesetGlyph)
 
         if(options.enableCombiningCharacters)
             addAttachments(cluster)
@@ -50,7 +50,7 @@ class Typesetter(val glyphs: BufferedIterator<dev.thecodewarrior.bitfont.typeset
      * Consume any combining characters and add them to the passed grapheme cluster. Once a non-combining character
      * is found, this method returns without consuming it
      */
-    fun addAttachments(cluster: dev.thecodewarrior.bitfont.typesetting.GraphemeCluster) {
+    fun addAttachments(cluster: GraphemeCluster) {
         // how far to space combining characters apart
         val combiningGap = max(1, (cluster.glyph.font?.capHeight ?: 0) / 8)
 
@@ -120,7 +120,7 @@ class Typesetter(val glyphs: BufferedIterator<dev.thecodewarrior.bitfont.typeset
                 }
             } - attachment.glyph.bearingY
 
-            attachments.add(dev.thecodewarrior.bitfont.typesetting.TypesetGlyph(attachmentX, attachmentY, attachment))
+            attachments.add(TypesetGlyph(attachmentX, attachmentY, attachment))
         }
     }
 
@@ -129,7 +129,7 @@ class Typesetter(val glyphs: BufferedIterator<dev.thecodewarrior.bitfont.typeset
     private val TARGET_GAP = 2
     private val MAX_KERN_DEPTH = 3
 
-    fun getKernGap(first: dev.thecodewarrior.bitfont.typesetting.TypesetGlyph, second: dev.thecodewarrior.bitfont.typesetting.TypesetGlyph): Int {
+    fun getKernGap(first: TypesetGlyph, second: TypesetGlyph): Int {
         // these should be parameters in the font
         val secondFontYExpansion = Y_EXPANSION
         val firstFontYExpansion = Y_EXPANSION
@@ -151,7 +151,7 @@ class Typesetter(val glyphs: BufferedIterator<dev.thecodewarrior.bitfont.typeset
         return max(0, minGap)
     }
 
-    fun getKernGap(first: dev.thecodewarrior.bitfont.typesetting.TypesetGlyph, second: dev.thecodewarrior.bitfont.typesetting.TypesetGlyph, row: Int): Int {
+    fun getKernGap(first: TypesetGlyph, second: TypesetGlyph, row: Int): Int {
         // these should be parameters in the font
         val secondFontYExpansion = Y_EXPANSION
         val firstFontYExpansion = Y_EXPANSION
@@ -161,7 +161,7 @@ class Typesetter(val glyphs: BufferedIterator<dev.thecodewarrior.bitfont.typeset
         )
     }
 
-    fun getProfileX(glyph: dev.thecodewarrior.bitfont.typesetting.TypesetGlyph, left: Boolean, row: Int, yExpansion: Int): Int {
+    fun getProfileX(glyph: TypesetGlyph, left: Boolean, row: Int, yExpansion: Int): Int {
         val glyphRow = row - (glyph.posY + glyph.glyph.bearingY)
         val image = glyph.glyph.image
         val edge = if (left)
@@ -195,7 +195,7 @@ class Typesetter(val glyphs: BufferedIterator<dev.thecodewarrior.bitfont.typeset
     }
 }
 
-open class GraphemeCluster(mainGlyph: dev.thecodewarrior.bitfont.typesetting.TypesetGlyph): dev.thecodewarrior.bitfont.typesetting.TypesetGlyph(
+open class GraphemeCluster(mainGlyph: TypesetGlyph): TypesetGlyph(
     mainGlyph.posX,
     mainGlyph.posY,
     mainGlyph.codepoint,
@@ -204,18 +204,18 @@ open class GraphemeCluster(mainGlyph: dev.thecodewarrior.bitfont.typesetting.Typ
     mainGlyph.codepointIndex,
     mainGlyph.characterIndex
 ) {
-    var attachments: MutableList<dev.thecodewarrior.bitfont.typesetting.TypesetGlyph>? = null
+    var attachments: MutableList<TypesetGlyph>? = null
 }
 
 open class TypesetGlyph(
     val posX: Int, val posY: Int,
     codepoint: Int,
-    glyph: dev.thecodewarrior.bitfont.data.Glyph,
-    source: dev.thecodewarrior.bitfont.typesetting.AttributedString,
+    glyph: Glyph,
+    source: AttributedString,
     codepointIndex: Int,
     characterIndex: Int
-): dev.thecodewarrior.bitfont.typesetting.AttributedGlyph(codepoint, glyph, source, codepointIndex, characterIndex) {
-    constructor(posX: Int, posY: Int, attributedGlyph: dev.thecodewarrior.bitfont.typesetting.AttributedGlyph): this(
+): AttributedGlyph(codepoint, glyph, source, codepointIndex, characterIndex) {
+    constructor(posX: Int, posY: Int, attributedGlyph: AttributedGlyph): this(
         posX, posY,
         attributedGlyph.codepoint,
         attributedGlyph.glyph,

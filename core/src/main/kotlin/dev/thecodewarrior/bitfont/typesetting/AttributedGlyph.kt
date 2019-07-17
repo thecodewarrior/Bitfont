@@ -5,8 +5,8 @@ import dev.thecodewarrior.bitfont.utils.Attribute
 
 open class AttributedGlyph(
     val codepoint: Int,
-    val glyph: dev.thecodewarrior.bitfont.data.Glyph,
-    val source: dev.thecodewarrior.bitfont.typesetting.AttributedString,
+    val glyph: Glyph,
+    val source: AttributedString,
     val codepointIndex: Int,
     val characterIndex: Int
 ) {

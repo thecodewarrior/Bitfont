@@ -28,11 +28,11 @@ open class TypesetString(
     /**
      * The default font.
      */
-    val defaultFont: dev.thecodewarrior.bitfont.data.Bitfont,
+    val defaultFont: Bitfont,
     /**
      * The string to typeset.
      */
-    val attributedString: dev.thecodewarrior.bitfont.typesetting.AttributedString,
+    val attributedString: AttributedString,
     /**
      * The width to wrap to.
      */
@@ -52,11 +52,11 @@ open class TypesetString(
      */
     protected val codepointIndices: IntArray
 
-    open var glyphs: List<dev.thecodewarrior.bitfont.TypesetString.GlyphRender> = emptyList()
+    open var glyphs: List<GlyphRender> = emptyList()
         protected set
-    open var lines: List<dev.thecodewarrior.bitfont.TypesetString.Line> = emptyList()
+    open var lines: List<Line> = emptyList()
         protected set
-    open var glyphMap: Map<Int, dev.thecodewarrior.bitfont.TypesetString.GlyphRender> = emptyMap()
+    open var glyphMap: Map<Int, GlyphRender> = emptyMap()
         protected set
 
     fun closestLine(y: Int): Int {
@@ -98,13 +98,13 @@ open class TypesetString(
         return line.containingCharacter(pos.x)
     }
 
-    protected open fun fontFor(index: Int): dev.thecodewarrior.bitfont.data.Bitfont {
+    protected open fun fontFor(index: Int): Bitfont {
         return attributedString[Attribute.font, codepointIndices[index]]?.let {
             if(codepoints[index] in it.glyphs) it else null
         } ?: defaultFont
     }
 
-    protected open fun glyphFor(index: Int): dev.thecodewarrior.bitfont.data.Glyph {
+    protected open fun glyphFor(index: Int): Glyph {
         val font = fontFor(index)
         return font.glyphs[codepoints[index]] ?: font.defaultGlyph
     }
@@ -130,7 +130,7 @@ open class TypesetString(
         this.codepointIndices = codepointIndices.toIntArray()
 
         @Suppress("LeakingThis")
-        if(this.javaClass == dev.thecodewarrior.bitfont.TypesetString::class.java)
+        if(this.javaClass == TypesetString::class.java)
             typeset()
     }
 
@@ -142,8 +142,8 @@ open class TypesetString(
     protected open fun typeset() {
         val runRanges = makeRuns()
         val runGlyphs = runRanges.mapIndexed { i, range -> range to layoutRun(i, range) }
-        val lineGlyphs = mutableListOf<MutableList<dev.thecodewarrior.bitfont.TypesetString.GlyphRender>>()
-        val lines = mutableListOf<dev.thecodewarrior.bitfont.TypesetString.Line>()
+        val lineGlyphs = mutableListOf<MutableList<GlyphRender>>()
+        val lines = mutableListOf<Line>()
         var y = 0
         runGlyphs.forEachIndexed { i, (range, run) ->
             var maxAscent = 0
@@ -167,12 +167,12 @@ open class TypesetString(
             }
             lineGlyphs.lastOrNull()?.also { prevLine ->
                 val lineStart = offsetGlyphs.first().pos
-                if(prevLine.last().codepoint in dev.thecodewarrior.bitfont.TypesetString.Companion.newlineInts) {
+                if(prevLine.last().codepoint in newlineInts) {
                     prevLine[prevLine.size-1] = prevLine.last().copy(posAfter = lineStart)
                 }
             }
             lineGlyphs.add(offsetGlyphs.toMutableList())
-            lines.add(dev.thecodewarrior.bitfont.TypesetString.Line(
+            lines.add(Line(
                 i, y, maxAscent, maxDescent,
                 offsetGlyphs.first().pos.x, offsetGlyphs.last().posAfter.x,
                 emptyList()
@@ -182,7 +182,7 @@ open class TypesetString(
 
         // set the posAfter for trailing newlines
         lineGlyphs.lastOrNull()?.also { prevLine ->
-            if(prevLine.last().codepoint in dev.thecodewarrior.bitfont.TypesetString.Companion.newlineInts) {
+            if(prevLine.last().codepoint in newlineInts) {
                 y += prevLine.last().font.ascent
                 prevLine[prevLine.size-1] = prevLine.last().copy(posAfter = Vec2i(0, y))
             }
@@ -194,8 +194,8 @@ open class TypesetString(
         this.glyphMap = glyphs.associateBy { it.characterIndex }
     }
 
-    protected open fun layoutRun(line: Int, range: IntRange): List<dev.thecodewarrior.bitfont.TypesetString.GlyphRender> {
-        val list = mutableListOf<dev.thecodewarrior.bitfont.TypesetString.GlyphRender>()
+    protected open fun layoutRun(line: Int, range: IntRange): List<GlyphRender> {
+        val list = mutableListOf<GlyphRender>()
         var cursor = 0
         var combiningGap = 0
         var combiningRectMin = Vec2i(0, 0)
@@ -217,7 +217,7 @@ open class TypesetString(
                 )
                 combiningPosAfter = Vec2i(cursor + advance, 0)
                 list.add(
-                    dev.thecodewarrior.bitfont.TypesetString.GlyphRender(codepointIndices[it], it, codepoints[it], line,
+                    GlyphRender(codepointIndices[it], it, codepoints[it], line,
                         font, glyph,
                         Vec2i(cursor, 0), Vec2i(cursor + advance, 0),
                         attributedString.getAttributes(codepointIndices[it]))
@@ -267,7 +267,7 @@ open class TypesetString(
                 }
 
                 list.add(
-                    dev.thecodewarrior.bitfont.TypesetString.GlyphRender(codepointIndices[it], it, codepoints[it], line,
+                    GlyphRender(codepointIndices[it], it, codepoints[it], line,
                         font, glyph,
                         Vec2i(newX, newY), combiningPosAfter,
                         attributedString.getAttributes(codepointIndices[it]))
@@ -308,7 +308,7 @@ open class TypesetString(
         }
 
         while(i < codepoints.size) {
-            if(codepoints[i] in dev.thecodewarrior.bitfont.TypesetString.Companion.newlineInts) {
+            if(codepoints[i] in newlineInts) {
                 val isCrBeforeLf = codepoints[i] == 0x000D && codepoints.getOrNull(i+1) == 0x000A
                 if(isCrBeforeLf)
                     addBreak(i+2)
@@ -346,7 +346,7 @@ open class TypesetString(
 
     data class GlyphRender(
         val characterIndex: Int, val codepointIndex: Int, val codepoint: Int, val line: Int,
-        val font: dev.thecodewarrior.bitfont.data.Bitfont, val glyph: dev.thecodewarrior.bitfont.data.Glyph,
+        val font: Bitfont, val glyph: Glyph,
         var pos: Vec2i, var posAfter: Vec2i, val attributes: AttributeMap) {
     }
 
@@ -354,7 +354,7 @@ open class TypesetString(
         val lineNumber: Int, val baseline: Int,
         val maxAscent: Int, val maxDescent: Int,
         val startX: Int, val endX: Int,
-        val glyphs: List<dev.thecodewarrior.bitfont.TypesetString.GlyphRender>
+        val glyphs: List<GlyphRender>
     ) {
         var offset: Vec2i = Vec2i(0, 0)
             set(value) {
@@ -387,7 +387,7 @@ open class TypesetString(
 
     companion object {
         val newlines = "\u000a\u000b\u000c\u000d\u0085\u2028\u2029"
-        val newlineInts = dev.thecodewarrior.bitfont.TypesetString.Companion.newlines.chars().toList()
+        val newlineInts = TypesetString.Companion.newlines.chars().toList()
     }
 }
 

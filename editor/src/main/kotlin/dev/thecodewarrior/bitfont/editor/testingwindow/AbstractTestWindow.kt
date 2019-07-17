@@ -22,8 +22,8 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
-abstract class AbstractTestWindow(val document: dev.thecodewarrior.bitfont.editor.BitfontDocument, testName: String): dev.thecodewarrior.bitfont.editor.IMWindow() {
-    val bitfont: dev.thecodewarrior.bitfont.data.Bitfont = document.bitfont
+abstract class AbstractTestWindow(val document: BitfontDocument, testName: String): IMWindow() {
+    val bitfont: Bitfont = document.bitfont
 
     override val title: String = "${bitfont.name}: $testName"
 

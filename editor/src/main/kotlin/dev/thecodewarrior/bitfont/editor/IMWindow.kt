@@ -14,7 +14,7 @@ abstract class IMWindow: AutoDeallocator() {
     protected abstract fun main(imgui: ImGui)
     open fun drawMenu(imgui: ImGui) {}
 
-    open val children = mutableListOf<dev.thecodewarrior.bitfont.editor.IMWindow>()
+    open val children = mutableListOf<IMWindow>()
     var windowFlags = JImWindowFlags.Nothing
 
     private var takeFocus = false
@@ -28,7 +28,7 @@ abstract class IMWindow: AutoDeallocator() {
                 takeFocus = false
             }
             if(imgui.begin("$title###${System.identityHashCode(this@IMWindow)}", native(::visible), windowFlags)) {
-                dev.thecodewarrior.bitfont.editor.IMWindow.Companion.currentWindow = this
+                currentWindow = this
                 drawMenu(imgui)
                 main(imgui)
                 imgui.end()
@@ -37,12 +37,12 @@ abstract class IMWindow: AutoDeallocator() {
         }
         children.forEach {
             it.push(imgui)
-            dev.thecodewarrior.bitfont.editor.IMWindow.Companion.currentWindow = this
+            currentWindow = this
         }
     }
 
     companion object {
-        lateinit var currentWindow: dev.thecodewarrior.bitfont.editor.IMWindow
+        lateinit var currentWindow: IMWindow
         val drawList: ImDrawList
             get() = ImGui.current.windowDrawList
     }

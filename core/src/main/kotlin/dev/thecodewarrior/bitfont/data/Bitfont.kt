@@ -40,17 +40,17 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
             defaultGlyph = createDefaultGlyph()
         }
 
-    val glyphs = Int2ObjectOpenHashMap<dev.thecodewarrior.bitfont.data.Glyph>()
-    var defaultGlyph: dev.thecodewarrior.bitfont.data.Glyph = createDefaultGlyph()
+    val glyphs = Int2ObjectOpenHashMap<Glyph>()
+    var defaultGlyph: Glyph = createDefaultGlyph()
         private set
 
-    private fun createDefaultGlyph(): dev.thecodewarrior.bitfont.data.Glyph {
+    private fun createDefaultGlyph(): Glyph {
         val capHeight = if(capHeight == 0) 1 else capHeight
         val xHeight = if(xHeight == 0) 1 else xHeight
-        val glyph = dev.thecodewarrior.bitfont.data.Glyph(this)
+        val glyph = Glyph(this)
         glyph.bearingX = 0
         glyph.bearingY = -capHeight
-        val grid = dev.thecodewarrior.bitfont.data.BitGrid(xHeight, capHeight)
+        val grid = BitGrid(xHeight, capHeight)
         for(x in 0 until xHeight) {
             grid[x, 0] = true
             grid[x, capHeight-1] = true
@@ -65,8 +65,8 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
 
     override fun pack(packer: MessagePacker) {
         packer.apply {
-            writePayload(dev.thecodewarrior.bitfont.data.Bitfont.Companion.magicBytes)
-            packInt(dev.thecodewarrior.bitfont.data.Bitfont.Companion.version)
+            writePayload(Companion.magicBytes)
+            packInt(version)
 
             val tables = packTables()
             packArrayHeader(tables.size)
@@ -108,22 +108,22 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
         return map
     }
 
-    companion object: MsgUnpackable<dev.thecodewarrior.bitfont.data.Bitfont> {
+    companion object: MsgUnpackable<Bitfont> {
         val version = 1
         val magic = "BITFONT"
-        val magicBytes = dev.thecodewarrior.bitfont.data.Bitfont.Companion.magic.toByteArray()
+        val magicBytes = magic.toByteArray()
 
-        override fun unpack(unpacker: MessageUnpacker): dev.thecodewarrior.bitfont.data.Bitfont {
+        override fun unpack(unpacker: MessageUnpacker): Bitfont {
             val fileMagic = (try {
-                unpacker.readPayload(dev.thecodewarrior.bitfont.data.Bitfont.Companion.magicBytes.size)
+                unpacker.readPayload(Companion.magicBytes.size)
             } catch(e: MessageInsufficientBufferException) {
                 ByteArray(0)
             } catch(e: Exception) {
                 throw e
             })!!
 
-            if(!fileMagic.contentEquals(dev.thecodewarrior.bitfont.data.Bitfont.Companion.magicBytes))
-                throw IllegalArgumentException("Passed data is not a bitfont file. Missing magic constant `${dev.thecodewarrior.bitfont.data.Bitfont.Companion.magic}` " +
+            if(!fileMagic.contentEquals(Companion.magicBytes))
+                throw IllegalArgumentException("Passed data is not a bitfont file. Missing magic constant `$magic` " +
                     "at the start of the file.")
 
             val fileVersion = unpacker.unpackInt()
@@ -134,14 +134,14 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
                 tables[unpacker.unpackString()] = unpacker.readPayload(unpacker.unpackInt())
             }
 
-            val font = dev.thecodewarrior.bitfont.data.Bitfont("<none>", 0, 0, 0, 0, 0)
+            val font = Bitfont("<none>", 0, 0, 0, 0, 0)
 
-            dev.thecodewarrior.bitfont.data.Bitfont.Companion.unpackTables(font, tables)
+            unpackTables(font, tables)
 
             return font
         }
 
-        private fun unpackTables(font: dev.thecodewarrior.bitfont.data.Bitfont, map: Map<String, ByteArray>) {
+        private fun unpackTables(font: Bitfont, map: Map<String, ByteArray>) {
             map["info"]?.also { data ->
                 MsgUnpackable.unpack(data) { unpacker ->
                     font.name = unpacker.unpackString()
@@ -159,7 +159,7 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
                     try {
                         for (i in 0 until glyphCount) {
                             val codepoint = unpacker.unpackInt()
-                            val glyph = dev.thecodewarrior.bitfont.data.Glyph.Companion.unpack(unpacker)
+                            val glyph = Glyph.unpack(unpacker)
                             glyph.font = font
                             font.glyphs[codepoint] = glyph
                         }

@@ -21,7 +21,7 @@ fun main(args: Array<String>) {
 
 object Main {
 
-    lateinit var documents: MutableList<dev.thecodewarrior.bitfont.editor.BitfontDocument>
+    lateinit var documents: MutableList<BitfontDocument>
 
     var targetFPS = 0
         set(value) {
@@ -46,7 +46,7 @@ object Main {
         Constants // load class
 
         documents = mutableListOf(
-            dev.thecodewarrior.bitfont.editor.BitfontDocument.blank()
+            BitfontDocument.blank()
         )
 
         targetFPS = 20
@@ -87,7 +87,7 @@ object Main {
         lastFrameTime = System.currentTimeMillis()
 
         if(documents.isEmpty())
-            documents.add(dev.thecodewarrior.bitfont.editor.BitfontDocument.blank())
+            documents.add(BitfontDocument.blank())
         documents.toList().forEach { it.push(imgui) }
         val fpsText = "%4.1f".format(JImGuiIO.getFramerate()) + if(targetFPS == 0)
             ""

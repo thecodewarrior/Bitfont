@@ -7,7 +7,7 @@ import dev.thecodewarrior.bitfont.utils.BufferedIterator
  * Generates a sequence of glyphs for the given attributed string. Behavior is undefined if the string is mutated
  * during iteration.
  */
-abstract class AbstractGlyphGenerator(val string: dev.thecodewarrior.bitfont.typesetting.AttributedString): BufferedIterator<dev.thecodewarrior.bitfont.typesetting.AttributedGlyph>() {
+abstract class AbstractGlyphGenerator(val string: AttributedString): BufferedIterator<AttributedGlyph>() {
     /**
      * True if the entire string has been consumed
      */

@@ -57,7 +57,7 @@ class BitGrid(val width: Int, val height: Int): MsgPackable {
     /**
      * Sets an area starting at [pos] to the contents of the passed grid. Out-of-bounds elements will be ignored.
      */
-    fun draw(grid: dev.thecodewarrior.bitfont.data.BitGrid, pos: Vec2i) {
+    fun draw(grid: BitGrid, pos: Vec2i) {
         for(x in 0 until grid.width) {
             for(y in 0 until grid.height) {
                 val src = Vec2i(x, y)
@@ -70,7 +70,7 @@ class BitGrid(val width: Int, val height: Int): MsgPackable {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is dev.thecodewarrior.bitfont.data.BitGrid) return false
+        if (other !is BitGrid) return false
 
         if (width != other.width) return false
         if (height != other.height) return false
@@ -94,12 +94,12 @@ class BitGrid(val width: Int, val height: Int): MsgPackable {
         }
     }
 
-    companion object: MsgUnpackable<dev.thecodewarrior.bitfont.data.BitGrid> {
-        override fun unpack(unpacker: MessageUnpacker): dev.thecodewarrior.bitfont.data.BitGrid {
+    companion object: MsgUnpackable<BitGrid> {
+        override fun unpack(unpacker: MessageUnpacker): BitGrid {
             unpacker.apply {
                 val width = unpackInt()
                 val height = unpackInt()
-                val grid = dev.thecodewarrior.bitfont.data.BitGrid(width, height)
+                val grid = BitGrid(width, height)
                 readPayload(grid.data.size).toUByteArray().copyInto(grid.data)
                 return grid
             }
