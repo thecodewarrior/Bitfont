@@ -8,6 +8,7 @@ import dev.thecodewarrior.bitfont.editor.data.UnifontImporter
 import dev.thecodewarrior.bitfont.editor.imgui.ImGui
 import dev.thecodewarrior.bitfont.editor.imgui.withNative
 import dev.thecodewarrior.bitfont.editor.testingwindow.GlyphGeneratorTestWindow
+import dev.thecodewarrior.bitfont.editor.testingwindow.TextLayoutTestWindow
 import dev.thecodewarrior.bitfont.editor.testingwindow.TypesetterTestWindow
 import dev.thecodewarrior.bitfont.editor.typesetting.BitfontAtlas
 import dev.thecodewarrior.bitfont.editor.utils.ReferenceFonts
@@ -124,6 +125,7 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
         test("Old Typesetting", ::TestingWindow)
         test("Glyph Generator", ::GlyphGeneratorTestWindow)
         test("Typesetter", ::TypesetterTestWindow)
+        test("Text Layout", ::TextLayoutTestWindow)
     }
 
     override fun drawMenu(imgui: ImGui) {

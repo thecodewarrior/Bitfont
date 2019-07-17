@@ -19,6 +19,10 @@ class Typesetter(val glyphs: BufferedIterator<AttributedGlyph>): BufferedIterato
     private var cursorY: Int = 0
     private var previousGlyph: GraphemeCluster? = null
 
+    fun resetCursor(cursor: Int) {
+        cursorX = cursor
+    }
+
     override fun refillBuffer() {
         if(!glyphs.hasNext())
             return
@@ -40,7 +44,7 @@ class Typesetter(val glyphs: BufferedIterator<AttributedGlyph>): BufferedIterato
         if(options.enableCombiningCharacters)
             addAttachments(cluster)
 
-        cursorX += cluster.glyph.calcAdvance(cluster.glyph.font?.spacing ?: 0)
+        cursorX += cluster.glyph.calcAdvance()
 
         previousGlyph = cluster
         push(cluster)
@@ -195,20 +199,41 @@ class Typesetter(val glyphs: BufferedIterator<AttributedGlyph>): BufferedIterato
     }
 }
 
-open class GraphemeCluster(mainGlyph: TypesetGlyph): TypesetGlyph(
-    mainGlyph.posX,
-    mainGlyph.posY,
-    mainGlyph.codepoint,
-    mainGlyph.glyph,
-    mainGlyph.source,
-    mainGlyph.codepointIndex,
-    mainGlyph.characterIndex
-) {
+open class GraphemeCluster(
+    posX: Int, posY: Int,
+    codepoint: Int,
+    glyph: Glyph,
+    source: AttributedString,
+    codepointIndex: Int,
+    characterIndex: Int
+): TypesetGlyph(posX, posY, codepoint, glyph, source, codepointIndex, characterIndex) {
+
+    constructor(mainGlyph: TypesetGlyph): this(
+        mainGlyph.posX,
+        mainGlyph.posY,
+        mainGlyph.codepoint,
+        mainGlyph.glyph,
+        mainGlyph.source,
+        mainGlyph.codepointIndex,
+        mainGlyph.characterIndex
+    )
+
+    constructor(posX: Int, posY: Int, cluster: GraphemeCluster): this(
+        posX, posY,
+        cluster.codepoint,
+        cluster.glyph,
+        cluster.source,
+        cluster.codepointIndex,
+        cluster.characterIndex
+    ) {
+        this.attachments = cluster.attachments?.toMutableList()
+    }
+
     var attachments: MutableList<TypesetGlyph>? = null
 }
 
 open class TypesetGlyph(
-    val posX: Int, val posY: Int,
+    var posX: Int, var posY: Int,
     codepoint: Int,
     glyph: Glyph,
     source: AttributedString,

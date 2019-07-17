@@ -27,10 +27,10 @@ class ImGui(val wrapped: JImGui) {
         get() = wrapped.font
 
     val windowDrawList: ImDrawList
-        get() = ImDrawList.wrap(wrapped.windowDrawList)
+        get() = ImDrawList(wrapped.windowDrawList)
 
     val foregroundDrawList: ImDrawList
-        get() = ImDrawList.wrap(wrapped.foregroundDrawList)
+        get() = ImDrawList(wrapped.foregroundDrawList)
 
     val isDisposed: Boolean
         get() = wrapped.isDisposed

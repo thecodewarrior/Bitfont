@@ -265,13 +265,6 @@ class ImDrawList(val wrapped: JImDrawList) {
     fun updateTextureID()
         = wrapped.updateTextureID()
 
-
-    companion object {
-        private val cache = WeakHashMap<JImDrawList, ImDrawList>()
-
-        fun wrap(list: JImDrawList): ImDrawList = cache.getOrPut(list) { ImDrawList(list) }
-    }
-
     // extensions ======================================================================================================
 
     fun addText(pos: Vec2, u32Color: Int, text: String)
