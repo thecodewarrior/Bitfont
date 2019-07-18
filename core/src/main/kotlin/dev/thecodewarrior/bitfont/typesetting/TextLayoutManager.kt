@@ -4,6 +4,7 @@ import com.sun.tools.corba.se.idl.InterfaceGen
 import dev.thecodewarrior.bitfont.data.Bitfont
 import dev.thecodewarrior.bitfont.utils.BufferedIterator
 import dev.thecodewarrior.bitfont.utils.extensions.lineBreakIterator
+import kotlin.math.max
 
 open class TextLayoutManager(val fallbackFonts: List<Bitfont>) {
     val textContainers: MutableList<TextContainer> = mutableListOf()
@@ -22,8 +23,6 @@ open class TextLayoutManager(val fallbackFonts: List<Bitfont>) {
         breakIterator.setText(attributedString.plaintext)
 
         val container = textContainers.first()
-        var line = LineFragment(0, 0, attributedString)
-        container.lines.add(line)
 
         val pushBackTypesetter = object: BufferedIterator<GraphemeCluster>() {
             private var pushingBack = false
@@ -43,13 +42,22 @@ open class TextLayoutManager(val fallbackFonts: List<Bitfont>) {
             }
         }
 
+        var line = LineFragment(0, 0, container.size.x, 0)
+        container.lines.add(line)
+        var nextFragment: LineFragment? = null
+        var continuedBaseline: Int? = null
+
         for(glyph in pushBackTypesetter) {
             line.glyphs.add(glyph)
+            if(line.height < glyph.height) {
+                line.height = glyph.height
+                nextFragment = container.fixLineFragment(line)
+            }
 
             // If the new cursor pos is beyond the end of the line, _and_ we have glyphs we can wrap, try to wrap.
             // We only wrap if this glyph is not the first in the line, since zero-glyph lines will often lead to
             // infinite wrapping
-            if(glyph.afterX > container.size.x && line.glyphs.size > 1) {
+            if(glyph.afterX > line.width - 4 && line.glyphs.size > 1) {
                 var wrapPoint =
                     if(breakIterator.isBoundary(glyph.characterIndex))
                         glyph.characterIndex
@@ -77,18 +85,47 @@ open class TextLayoutManager(val fallbackFonts: List<Bitfont>) {
                     it.posX -= xOffset
                 }
                 typesetter.resetCursor(bufferedGlyphs.last().afterX)
+                val baselineShift = max(
+                    line.glyphs.map { it.glyph.font?.ascent ?: 0 }.max() ?: 0,
+                    continuedBaseline ?: 0
+                )
+                continuedBaseline = baselineShift
+                line.glyphs.forEach {
+                    it.posX += 2
+                    it.posY += baselineShift
+                }
 
-                line = LineFragment(0, container.lines.size * 10, attributedString)
+                if(nextFragment != null) {
+                    line = nextFragment
+                    nextFragment = null
+                } else {
+                    line = LineFragment(0, line.posY + line.height, container.size.x, 0)
+                    continuedBaseline = null
+                }
                 container.lines.add(line)
             }
+        }
+
+        val baselineShift = max(
+            line.glyphs.map { it.glyph.font?.ascent ?: 0 }.max() ?: 0,
+            continuedBaseline ?: 0
+        )
+        line.glyphs.forEach {
+            it.posY += baselineShift
         }
     }
 
     private val TypesetGlyph.afterX: Int
-        get() = posX + glyph.calcAdvance()
+        get() = this.posX + this.glyph.calcAdvance()
+    private val TypesetGlyph.height: Int
+        get() = (this.glyph.font?.height ?: 0) + 1 //TODO +1 line spacing shouldn't be hard-coded
+    private val Bitfont.height: Int
+        get() = this.ascent + this.descent
 }
 
-class LineFragment(val posX: Int, val posY: Int, val source: AttributedString) {
+class LineFragment(var posX: Int, var posY: Int, var width: Int, var height: Int) {
+    val maxX: Int get() = posX + width
+    val maxY: Int get() = posY + height
     val glyphs: MutableList<GraphemeCluster> = mutableListOf()
 
     val codepointRange: IntRange

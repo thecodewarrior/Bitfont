@@ -4,6 +4,7 @@ import dev.thecodewarrior.bitfont.utils.Rect2i
 import dev.thecodewarrior.bitfont.utils.Vec2i
 
 open class TextContainer {
+
     var size: Vec2i = Vec2i(0, 0)
 //    val exclusionPaths: MutableList<Any /*BezierPath*/> get() = TODO("not implemented")
 //    var lineBreakMode: LineBreakMode = LineBreakMode.WRAP_WORDS
@@ -22,4 +23,8 @@ open class TextContainer {
 //    fun createLineFragment(proposedRect: Rect2i/*, characterIndex: Int*/) {
 //        TODO("not implemented")
 //    }
+
+    open fun fixLineFragment(line: LineFragment): LineFragment? {
+        return null
+    }
 }
