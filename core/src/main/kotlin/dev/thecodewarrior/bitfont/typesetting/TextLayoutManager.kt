@@ -45,6 +45,11 @@ open class TextLayoutManager(val fallbackFonts: List<Bitfont>) {
         var line = LineFragment(0, 0, container.size.x, 0)
         container.lines.add(line)
         var nextFragment: LineFragment? = null
+        /**
+         * Whether glyphs were consumed on this line. If this is false at least one glyph will be consumed, even if it
+         * doesn't fit.
+         */
+        var consumedGlyphs: Boolean = false
         var continuedBaseline: Int? = null
 
         for(glyph in pushBackTypesetter) {
@@ -57,7 +62,7 @@ open class TextLayoutManager(val fallbackFonts: List<Bitfont>) {
             // If the new cursor pos is beyond the end of the line, _and_ we have glyphs we can wrap, try to wrap.
             // We only wrap if this glyph is not the first in the line, since zero-glyph lines will often lead to
             // infinite wrapping
-            if(glyph.afterX > line.width - 4 && line.glyphs.size > 1) {
+            if(glyph.afterX > line.width - container.lineFragmentPadding * 2 && (nextFragment != null || consumedGlyphs || line.glyphs.size > 1)) {
                 var wrapPoint =
                     if(breakIterator.isBoundary(glyph.characterIndex))
                         glyph.characterIndex
@@ -70,7 +75,8 @@ open class TextLayoutManager(val fallbackFonts: List<Bitfont>) {
                 val pushBack = mutableListOf<GraphemeCluster>()
 
                 val iter = line.glyphs.iterator()
-                iter.next() // always keep the first glyph.
+                if(nextFragment == null && !consumedGlyphs) // always keep the first glyph. when wrapping lines
+                    iter.next()
                 for(toWrap in iter) {
                     if(toWrap.characterIndex >= wrapPoint) {
                         pushBack.add(toWrap)
@@ -91,16 +97,18 @@ open class TextLayoutManager(val fallbackFonts: List<Bitfont>) {
                 )
                 continuedBaseline = baselineShift
                 line.glyphs.forEach {
-                    it.posX += 2
+                    it.posX += container.lineFragmentPadding
                     it.posY += baselineShift
                 }
 
                 if(nextFragment != null) {
+                    consumedGlyphs = consumedGlyphs || line.glyphs.isNotEmpty()
                     line = nextFragment
-                    nextFragment = null
+                    nextFragment = container.fixLineFragment(line)
                 } else {
                     line = LineFragment(0, line.posY + line.height, container.size.x, 0)
                     continuedBaseline = null
+                    consumedGlyphs = false
                 }
                 container.lines.add(line)
             }

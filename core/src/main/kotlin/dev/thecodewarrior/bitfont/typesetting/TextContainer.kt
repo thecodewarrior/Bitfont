@@ -9,7 +9,7 @@ open class TextContainer {
 //    val exclusionPaths: MutableList<Any /*BezierPath*/> get() = TODO("not implemented")
 //    var lineBreakMode: LineBreakMode = LineBreakMode.WRAP_WORDS
 //    var maxLineCount: Int = Int.MAX_VALUE
-//    var lineFragmentPadding: Int = 1
+    var lineFragmentPadding: Int = 1
 //    /**
 //     * True if this is a simple rectangle. This is to optimize calls to [createLineFragment]
 //     */
