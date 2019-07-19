@@ -5,6 +5,7 @@ import dev.thecodewarrior.bitfont.editor.imgui.ImGui
 import dev.thecodewarrior.bitfont.editor.imgui.withNative
 import dev.thecodewarrior.bitfont.editor.utils.Colors
 import dev.thecodewarrior.bitfont.editor.utils.extensions.draw
+import dev.thecodewarrior.bitfont.editor.utils.extensions.u32
 import dev.thecodewarrior.bitfont.editor.utils.math.vec
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.GlyphGenerator
@@ -79,7 +80,7 @@ class TextLayoutTestWindow(document: BitfontDocument): AbstractTestWindow(docume
                 imgui.windowDrawList.addRectSized(
                     area.x + line.posX * scalef, area.y + line.posY * scalef,
                     line.width * scalef, line.height * scalef,
-                    Colors.textLayout.lineFragment.rgb
+                    Colors.textLayout.lineFragment.u32
                 )
             }
         }
@@ -87,12 +88,12 @@ class TextLayoutTestWindow(document: BitfontDocument): AbstractTestWindow(docume
         for(line in container.lines) {
             val origin = vec(area.x, area.y) + vec(line.posX, line.posY) * scale
             for(main in line.glyphs) {
-                main.draw(imgui, origin + vec(main.posX, main.posY) * scale, scale, Colors.textLayout.text.rgb)
+                main.draw(imgui, origin + vec(main.posX, main.posY) * scale, scale, Colors.textLayout.text.u32)
                 main.attachments?.also { attachments ->
                     for(attachment in attachments) {
                         attachment.draw(imgui,
                             origin + vec(main.posX + attachment.posX, main.posY + attachment.posY) * scale,
-                            scale, Colors.textLayout.text.rgb
+                            scale, Colors.textLayout.text.u32
                         )
                     }
                 }
@@ -101,7 +102,7 @@ class TextLayoutTestWindow(document: BitfontDocument): AbstractTestWindow(docume
     }
 
     fun configureExclusion(imgui: ImGui, container: ShapeExclusionTextContainer, area: Rect2i, bounds: Rect2i) {
-        container.pathPadding = 3
+        container.verticalPadding = 3
         container.lineFragmentPadding = 3
         run {
             val radius = 100
@@ -169,7 +170,7 @@ class TextLayoutTestWindow(document: BitfontDocument): AbstractTestWindow(docume
         shapeTransform.scale(scale.toDouble(), scale.toDouble())
 
         container.exclusionPaths.forEach {
-            imgui.windowDrawList.addShapeStroke(it, shapeTransform, Colors.textLayout.lineFragment.rgb, true, 2f)
+            imgui.windowDrawList.addShapeStroke(it, shapeTransform, Colors.textLayout.exclusionPath.u32, true, 2f)
         }
     }
 }

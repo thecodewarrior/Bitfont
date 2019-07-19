@@ -8,16 +8,19 @@ typealias JColor = Color
 
 // imgui
 
-val IColor.rgb: Int
-    get() = awt.rgb
+val IColor.u32: Int
+    get() = toU32()
 
 val IColor.awt: JColor
-    get() = JColor(w, x, y, z)
+    get() = toAWT()
 
 // awt
 
 val JColor.im: IColor
-    get() = JImVec4(red/255f, green/255f, blue/255f, alpha/255f)
+    get() = JImVec4.fromAWT(this)
+
+val JColor.u32: Int
+    get() = this.im.u32
 
 fun JColor.copy(
     red: Int = this.red,

@@ -5,6 +5,7 @@ import dev.thecodewarrior.bitfont.editor.imgui.ImGui
 import dev.thecodewarrior.bitfont.editor.imgui.withNative
 import dev.thecodewarrior.bitfont.editor.utils.Colors
 import dev.thecodewarrior.bitfont.editor.utils.extensions.draw
+import dev.thecodewarrior.bitfont.editor.utils.extensions.u32
 import dev.thecodewarrior.bitfont.editor.utils.math.vec
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.GlyphGenerator
@@ -38,12 +39,12 @@ class TypesetterTestWindow(document: BitfontDocument): AbstractTestWindow(docume
         val min = canvas.min + vec(height * scale, canvas.heighti / 2)
 
         for(main in typesetter) {
-            main.draw(imgui, min + vec(main.posX, main.posY) * scale, scale, Colors.layoutTest.text.rgb)
+            main.draw(imgui, min + vec(main.posX, main.posY) * scale, scale, Colors.layoutTest.text.u32)
             main.attachments?.also { attachments ->
                 for(attachment in attachments) {
                     attachment.draw(imgui,
                         min + vec(main.posX + attachment.posX, main.posY + attachment.posY) * scale,
-                        scale, Colors.layoutTest.text.rgb
+                        scale, Colors.layoutTest.text.u32
                     )
                 }
             }

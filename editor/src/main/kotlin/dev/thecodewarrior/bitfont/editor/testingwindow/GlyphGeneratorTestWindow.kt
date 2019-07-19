@@ -4,6 +4,7 @@ import dev.thecodewarrior.bitfont.editor.BitfontDocument
 import dev.thecodewarrior.bitfont.editor.imgui.ImGui
 import dev.thecodewarrior.bitfont.editor.utils.Colors
 import dev.thecodewarrior.bitfont.editor.utils.extensions.draw
+import dev.thecodewarrior.bitfont.editor.utils.extensions.u32
 import dev.thecodewarrior.bitfont.editor.utils.math.vec
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.GlyphGenerator
@@ -29,7 +30,7 @@ class GlyphGeneratorTestWindow(document: BitfontDocument): AbstractTestWindow(do
             drawList.addLine(
                 pos,
                 pos + vec(0, canvas.height),
-                Colors.yellow.rgb,
+                Colors.yellow.u32,
                 1f
             )
         }
@@ -39,7 +40,7 @@ class GlyphGeneratorTestWindow(document: BitfontDocument): AbstractTestWindow(do
             drawList.addLine(
                 pos,
                 pos + vec(canvas.width, 0),
-                Colors.yellow.rgb,
+                Colors.yellow.u32,
                 1f
             )
         }
@@ -48,7 +49,7 @@ class GlyphGeneratorTestWindow(document: BitfontDocument): AbstractTestWindow(do
         for((i, glyph) in glyphs.withIndex()) {
             val line = i / columns + 1
             val column = i % columns
-            glyph.draw(imgui, min + vec(column * size, line * size) * scale, scale, Colors.layoutTest.text.rgb)
+            glyph.draw(imgui, min + vec(column * size, line * size) * scale, scale, Colors.layoutTest.text.u32)
         }
     }
 }

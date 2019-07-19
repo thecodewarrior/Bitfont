@@ -13,6 +13,7 @@ import dev.thecodewarrior.bitfont.editor.utils.extensions.color
 import dev.thecodewarrior.bitfont.editor.utils.extensions.draw
 import dev.thecodewarrior.bitfont.editor.utils.extensions.im
 import dev.thecodewarrior.bitfont.editor.utils.extensions.random
+import dev.thecodewarrior.bitfont.editor.utils.extensions.u32
 import dev.thecodewarrior.bitfont.editor.utils.keys
 import dev.thecodewarrior.bitfont.editor.utils.math.Vec2
 import dev.thecodewarrior.bitfont.editor.utils.math.rect
@@ -95,11 +96,11 @@ open class TestingWindow(val document: BitfontDocument): IMWindow() {
         drawList.addRectFilled(
             canvas.min,
             canvas.max,
-            Colors.layoutTest.background.rgb
+            Colors.layoutTest.background.u32
         )
 
         val cursor = textOrigin - vec(0.5, 0.5)
-        drawList.addTriangleFilled(cursor, cursor + vec(-scale, -scale), cursor + vec(-scale, scale), Colors.layoutTest.originIndicator.rgb)
+        drawList.addTriangleFilled(cursor, cursor + vec(-scale, -scale), cursor + vec(-scale, scale), Colors.layoutTest.originIndicator.u32)
         val textRegion = rect(textOrigin, canvas.max)
 
         typesetString = TypesetString(bitfont, testString, (textRegion.width / scale).toInt())
@@ -111,6 +112,6 @@ open class TestingWindow(val document: BitfontDocument): IMWindow() {
     fun drawGlyph(imgui: ImGui, char: TypesetString.GlyphRender) {
         val color = char.attributes[Attribute.color] ?: Colors.layoutTest.text
         val font = char.attributes[Attribute.font] ?: bitfont
-        char.glyph.draw(imgui, textOrigin + Vec2(char.pos) * scale, scale, color.rgb)
+        char.glyph.draw(imgui, textOrigin + Vec2(char.pos) * scale, scale, color.u32)
     }
 }

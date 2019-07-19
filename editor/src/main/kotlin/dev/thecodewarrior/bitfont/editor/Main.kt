@@ -3,6 +3,7 @@ package dev.thecodewarrior.bitfont.editor
 import dev.thecodewarrior.bitfont.editor.imgui.ImGui
 import dev.thecodewarrior.bitfont.editor.utils.Colors
 import dev.thecodewarrior.bitfont.editor.utils.Constants
+import dev.thecodewarrior.bitfont.editor.utils.extensions.u32
 import dev.thecodewarrior.bitfont.editor.utils.keys
 import org.ice1000.jimgui.JImGuiIO
 import org.ice1000.jimgui.util.JImGuiUtil
@@ -93,7 +94,7 @@ object Main {
             ""
         else
             "/%d (%2.0f%%)".format(targetFPS, 100*(1 - waitHistory.sum()/waitHistory.size))
-        imgui.foregroundDrawList.addText(0f, 0f, Colors.white.rgb, fpsText)
+        imgui.foregroundDrawList.addText(0f, 0f, Colors.white.u32, fpsText)
         imgui.keys {
             "prim+[" pressed {
                 targetFPS--

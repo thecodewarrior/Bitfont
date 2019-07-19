@@ -12,6 +12,7 @@ import dev.thecodewarrior.bitfont.editor.utils.extensions.JColor
 import dev.thecodewarrior.bitfont.editor.utils.extensions.color
 import dev.thecodewarrior.bitfont.editor.utils.extensions.draw
 import dev.thecodewarrior.bitfont.editor.utils.extensions.random
+import dev.thecodewarrior.bitfont.editor.utils.extensions.u32
 import dev.thecodewarrior.bitfont.editor.utils.keys
 import dev.thecodewarrior.bitfont.editor.utils.math.rect
 import dev.thecodewarrior.bitfont.editor.utils.math.vec
@@ -70,7 +71,7 @@ abstract class AbstractTestWindow(val document: BitfontDocument, testName: Strin
         drawList.addRectFilled(
             canvas.min,
             canvas.max,
-            Colors.layoutTest.background.rgb
+            Colors.layoutTest.background.u32
         )
         drawCanvas(imgui)
         imgui.popClipRect()

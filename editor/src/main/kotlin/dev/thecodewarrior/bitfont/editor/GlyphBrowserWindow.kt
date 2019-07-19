@@ -5,6 +5,7 @@ import dev.thecodewarrior.bitfont.editor.utils.Colors
 import dev.thecodewarrior.bitfont.editor.utils.ReferenceFonts
 import dev.thecodewarrior.bitfont.editor.utils.extensions.clamp
 import dev.thecodewarrior.bitfont.editor.utils.extensions.im
+import dev.thecodewarrior.bitfont.editor.utils.extensions.u32
 import dev.thecodewarrior.bitfont.editor.utils.math.Rect
 import dev.thecodewarrior.bitfont.editor.utils.math.Vec2
 import dev.thecodewarrior.bitfont.editor.utils.math.rect
@@ -104,7 +105,7 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
         imgui.windowDrawList.addRectFilled(
             canvas.min.xf, canvas.min.yf,
             canvas.max.xf, canvas.max.yf,
-            Colors.browser.background.rgb
+            Colors.browser.background.u32
         )
 
         if(needsRedraw) {
@@ -133,7 +134,7 @@ class GlyphBrowserWindow(val document: BitfontDocument): IMWindow() {
             dev.thecodewarrior.bitfont.editor.IMWindow.Companion.drawList.addRect(
                 canvas.min + pos(cursorPos),
                 canvas.min + pos(cursorPos + Vec2i(1, 1)),
-                Colors.browser.cellHighlight.rgb
+                Colors.browser.cellHighlight.u32
             )
 
             if(imgui.isWindowHovered(JImHoveredFlags.Default) && imgui.isMouseClicked(0)) {
