@@ -59,9 +59,10 @@ abstract class AbstractTestWindow(val document: BitfontDocument, testName: Strin
         drawControls(imgui)
         imgui.popAllowKeyboardFocus()
 
-        val canvasPos = imgui.windowContentRegionRect.min + vec(imgui.windowPosX, imgui.windowPosY + imgui.frameHeightWithSpacing)
+        val headerHeight = imgui.cursorPosY - imgui.frameHeightWithSpacing
+        val canvasPos = imgui.windowContentRegionRect.min + vec(imgui.windowPosX, imgui.windowPosY + headerHeight)
 
-        canvas = rect(canvasPos, canvasPos + vec(imgui.windowContentRegionRect.width, imgui.windowContentRegionRect.height - imgui.frameHeightWithSpacing))
+        canvas = rect(canvasPos, canvasPos + vec(imgui.windowContentRegionRect.width, imgui.windowContentRegionRect.height - headerHeight))
 //        imgui.itemSize(canvas)
         imgui.pushClipRect(canvas, true)
 //        imgui.itemHoverable(canvas, "canvas".hashCode())

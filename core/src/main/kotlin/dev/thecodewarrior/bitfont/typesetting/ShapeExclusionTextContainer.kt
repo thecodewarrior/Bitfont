@@ -2,6 +2,7 @@ package dev.thecodewarrior.bitfont.typesetting
 
 import java.awt.Shape
 import java.awt.geom.Area
+import java.awt.geom.FlatteningPathIterator
 import java.awt.geom.Path2D
 import java.awt.geom.PathIterator
 import java.awt.geom.Rectangle2D
@@ -11,10 +12,16 @@ import kotlin.math.max
 import kotlin.math.min
 
 open class ShapeExclusionTextContainer: TextContainer() {
+    var verticalPadding: Int = 1
     val exclusionPaths: MutableList<Shape> = mutableListOf()
 
     override fun fixLineFragment(line: LineFragment): LineFragment? {
-        val rect = Rectangle2D.Float(line.posX.toFloat(), line.posY.toFloat(), line.width.toFloat(), line.height.toFloat())
+        val rect = Rectangle2D.Float(
+            line.posX.toFloat(),
+            line.posY.toFloat() - verticalPadding,
+            line.width.toFloat(),
+            line.height.toFloat() + verticalPadding * 2
+        )
         if(exclusionPaths.none { it.intersects(rect) })
             return super.fixLineFragment(line)
 
@@ -25,31 +32,46 @@ open class ShapeExclusionTextContainer: TextContainer() {
 
         exclusion.intersect(Area(rect))
 
-        var range = IntRange.EMPTY
-
         val ranges = exclusion.mapPaths { path ->
             floor(path.bounds2D.minX).toInt()..ceil(path.bounds2D.maxX).toInt()
-        }
-        ranges.forEach { xRange ->
-            if(range == IntRange.EMPTY) {
-                range = xRange
+        }.sortedBy { it.first }
+
+        val merged = mutableListOf<IntRange>()
+
+        ranges.forEach { range ->
+            val lastRange = merged.lastOrNull()
+            if(lastRange == null) {
+                merged.add(range)
             } else {
-                if(xRange.last < range.first || range.last < xRange.first) { // if they don't overlap
-                    if(xRange.first < range.first)
-                        range = xRange
-                } else { // if they overlap
-                    range = min(range.first, xRange.first) .. max(range.last, xRange.last)
+                if(range.first <= lastRange.last) {
+                    merged[merged.lastIndex] = lastRange.first .. max(lastRange.last, range.last)
+                } else {
+                    merged.add(range)
                 }
             }
         }
 
-        if(range == IntRange.EMPTY)
+        if(merged.isEmpty())
             return super.fixLineFragment(line)
 
+        var range = merged.first()
+
+        if(range.first <= line.posX) {
+            line.width = line.maxX - range.last
+            line.posX = range.last
+            if(merged.size > 1)
+                range = merged[1]
+            else
+                return null
+        }
+
         when {
-            line.posX >= range.first -> {
-                line.width = line.maxX - range.last
-                line.posX = range.last
+            range.first <= line.posX -> {
+                // This should never happen. If this was true, the if statement above would catch it. The line's posX
+                // would be set to the end of the first range, and `range` would be set to the second range. The
+                // second range's start would by necessity be greater than the first range's end, or they would have
+                // merged, and thus the line's posX is by necessity greater than the second range's start, so this is
+                // always false
                 return null
             }
             line.maxX <= range.last -> {

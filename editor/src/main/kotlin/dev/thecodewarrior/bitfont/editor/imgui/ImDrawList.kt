@@ -8,12 +8,17 @@ import org.ice1000.jimgui.JImTextureID
 import org.ice1000.jimgui.JImVec4
 import org.ice1000.jimgui.flag.JImDrawListFlags
 import org.intellij.lang.annotations.MagicConstant
+import java.awt.Shape
+import java.awt.geom.AffineTransform
+import java.awt.geom.FlatteningPathIterator
+import java.awt.geom.PathIterator
 
 import java.nio.charset.StandardCharsets
 import java.util.WeakHashMap
 
 class ImDrawList(val wrapped: JImDrawList) {
 
+    //region wrapping ===========================================================================================================
     var flags: Int
         get() = wrapped.flags
         set(value) { wrapped.flags = value }
@@ -264,8 +269,11 @@ class ImDrawList(val wrapped: JImDrawList) {
 
     fun updateTextureID()
         = wrapped.updateTextureID()
+    //endregion
 
     // extensions ======================================================================================================
+
+    //region Vec2 versions ======================================================================================================
 
     fun addText(pos: Vec2, u32Color: Int, text: String)
         = wrapped.addText(pos.xf, pos.yf, u32Color, text)
@@ -455,4 +463,140 @@ class ImDrawList(val wrapped: JImDrawList) {
 
     fun primVtx(pos: Vec2, uv: Vec2, u32Color: Int)
         = wrapped.primVtx(pos.xf, pos.yf, uv.xf, uv.yf, u32Color)
+    //endregion
+
+    //region Sized Rects ========================================================================================================
+
+    fun addRectSized(aX: Float, aY: Float, sizeX: Float, sizeY: Float, u32Color: Int, rounding: Float, roundingCornersFlags: Int, thickness: Float)
+        = wrapped.addRect(aX, aY, aX + sizeX, aY + sizeY, u32Color, rounding, roundingCornersFlags, thickness)
+
+    fun addRectSized(aX: Float, aY: Float, sizeX: Float, sizeY: Float, u32Color: Int, rounding: Float, roundingCornersFlags: Int)
+        = wrapped.addRect(aX, aY, aX + sizeX, aY + sizeY, u32Color, rounding, roundingCornersFlags)
+
+    fun addRectSized(aX: Float, aY: Float, sizeX: Float, sizeY: Float, u32Color: Int, rounding: Float)
+        = wrapped.addRect(aX, aY, aX + sizeX, aY + sizeY, u32Color, rounding)
+
+    fun addRectSized(aX: Float, aY: Float, sizeX: Float, sizeY: Float, u32Color: Int)
+        = wrapped.addRect(aX, aY, aX + sizeX, aY + sizeY, u32Color)
+
+    fun addRectFilledSized(aX: Float, aY: Float, sizeX: Float, sizeY: Float, u32Color: Int, rounding: Float, roundingCornersFlags: Int)
+        = wrapped.addRectFilled(aX, aY, aX + sizeX, aY + sizeY, u32Color, rounding, roundingCornersFlags)
+
+    fun addRectFilledSized(aX: Float, aY: Float, sizeX: Float, sizeY: Float, u32Color: Int, rounding: Float)
+        = wrapped.addRectFilled(aX, aY, aX + sizeX, aY + sizeY, u32Color, rounding)
+
+    fun addRectFilledSized(aX: Float, aY: Float, sizeX: Float, sizeY: Float, u32Color: Int)
+        = wrapped.addRectFilled(aX, aY, aX + sizeX, aY + sizeY, u32Color)
+
+    fun addRectFilledMultiColorSized(aX: Float, aY: Float, sizeX: Float, sizeY: Float, colorUpperLeft: Int, colorUpperRight: Int, colorBottomRight: Int, colorBottomLeft: Int)
+        = wrapped.addRectFilledMultiColor(aX, aY, aX + sizeX, aY + sizeY, colorUpperLeft, colorUpperRight, colorBottomRight, colorBottomLeft)
+
+    fun addRectSized(a: Vec2, size: Vec2, u32Color: Int, rounding: Float, roundingCornersFlags: Int, thickness: Float)
+        = wrapped.addRect(a.xf, a.yf, a.xf + size.xf, a.yf + size.yf, u32Color, rounding, roundingCornersFlags, thickness)
+
+    fun addRectSized(a: Vec2, size: Vec2, u32Color: Int, rounding: Float, roundingCornersFlags: Int)
+        = wrapped.addRect(a.xf, a.yf, a.xf + size.xf, a.yf + size.yf, u32Color, rounding, roundingCornersFlags)
+
+    fun addRectSized(a: Vec2, size: Vec2, u32Color: Int, rounding: Float)
+        = wrapped.addRect(a.xf, a.yf, a.xf + size.xf, a.yf + size.yf, u32Color, rounding)
+
+    fun addRectSized(a: Vec2, size: Vec2, u32Color: Int)
+        = wrapped.addRect(a.xf, a.yf, a.xf + size.xf, a.yf + size.yf, u32Color)
+
+    fun addRectFilledSized(a: Vec2, size: Vec2, u32Color: Int, rounding: Float, roundingCornersFlags: Int)
+        = wrapped.addRectFilled(a.xf, a.yf, a.xf + size.xf, a.yf + size.yf, u32Color, rounding, roundingCornersFlags)
+
+    fun addRectFilledSized(a: Vec2, size: Vec2, u32Color: Int, rounding: Float)
+        = wrapped.addRectFilled(a.xf, a.yf, a.xf + size.xf, a.yf + size.yf, u32Color, rounding)
+
+    fun addRectFilledSized(a: Vec2, size: Vec2, u32Color: Int)
+        = wrapped.addRectFilled(a.xf, a.yf, a.xf + size.xf, a.yf + size.yf, u32Color)
+
+    fun addRectFilledMultiColorSized(a: Vec2, size: Vec2, colorUpperLeft: Int, colorUpperRight: Int, colorBottomRight: Int, colorBottomLeft: Int)
+        = wrapped.addRectFilledMultiColor(a.xf, a.yf, a.xf + size.xf, a.yf + size.yf, colorUpperLeft, colorUpperRight, colorBottomRight, colorBottomLeft)
+    //endregion
+
+    //region AWT Shapes =========================================================================================================
+    fun addShapeFilled(shape: Shape, u32Color: Int) {
+        addShapeFilled(shape, null, u32Color)
+    }
+
+    fun addShapeFilled(shape: Shape, transform: AffineTransform?, u32Color: Int) {
+        primShape(shape, transform) {
+            this.pathFillConvex(u32Color)
+        }
+    }
+
+    fun addShapeStroke(shape: Shape, u32Color: Int, closed: Boolean, thickness: Float) {
+        addShapeStroke(shape, null, u32Color, closed, thickness)
+    }
+
+    fun addShapeStroke(shape: Shape, transform: AffineTransform?, u32Color: Int, closed: Boolean, thickness: Float) {
+        primShape(shape, transform) {
+            this.pathStroke(u32Color, closed, thickness)
+        }
+    }
+
+    fun addShapeStroke(shape: Shape, u32Color: Int, closed: Boolean) {
+        addShapeStroke(shape, null, u32Color, closed)
+    }
+
+    fun addShapeStroke(shape: Shape, transform: AffineTransform?, u32Color: Int, closed: Boolean) {
+        primShape(shape, transform) {
+            this.pathStroke(u32Color, closed)
+        }
+    }
+
+    inline fun primShape(shape: Shape, transform: AffineTransform?, closePath: () -> Unit) {
+        val iter = FlatteningPathIterator(shape.getPathIterator(transform), 1.0)
+        val point = FloatArray(6)
+        var cursorX = 0f
+        var cursorY = 0f
+        while (!iter.isDone) {
+            when (iter.currentSegment(point)) {
+                PathIterator.SEG_MOVETO -> {
+//                    closePath()
+                    this.pathLineTo(point[0], point[1])
+//                    this.pathClear()
+                    cursorX = point[0]
+                    cursorY = point[1]
+                }
+                PathIterator.SEG_LINETO -> {
+                    this.pathLineTo(point[0], point[1])
+                    cursorX = point[0]
+                    cursorY = point[1]
+                }
+                PathIterator.SEG_QUADTO -> {
+                    // Convert a quadratic bezier to a cubic bezier: https://stackoverflow.com/a/3162732/1541907
+                    val qp0x = cursorX
+                    val qp0y = cursorY
+                    val qp1x = point[0]
+                    val qp1y = point[1]
+                    val qp2x = point[2]
+                    val qp2y = point[3]
+                    this.pathBezierCurveTo(
+                        qp0x + (2f/3)*(qp1x - qp0x), qp0y + (2f/3)*(qp1y - qp0y),
+                        qp2x + (2f/3)*(qp1x - qp2x), qp2y + (2f/3)*(qp1y - qp2y),
+                        qp2x, qp2y
+                    )
+                    cursorX = qp2x
+                    cursorY = qp2y
+                }
+                PathIterator.SEG_CUBICTO -> {
+                    this.pathBezierCurveTo(
+                        point[0], point[1],
+                        point[2], point[3],
+                        point[4], point[5]
+                    )
+                    cursorX = point[4]
+                    cursorY = point[5]
+                }
+                PathIterator.SEG_CLOSE -> {
+                    closePath()
+                }
+            }
+            iter.next()
+        }
+    }
+    //endregion
 }

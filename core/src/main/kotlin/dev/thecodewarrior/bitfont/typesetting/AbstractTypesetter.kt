@@ -11,7 +11,7 @@ class Typesetter(val glyphs: BufferedIterator<AttributedGlyph>): BufferedIterato
     var options: Options = Options()
 
     class Options {
-        var enableKerning: Boolean = true
+        var enableKerning: Boolean = false
         var enableCombiningCharacters: Boolean = true
     }
 

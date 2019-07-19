@@ -29,49 +29,58 @@ object Colors {
 
     val black = Color("000000")
     val grey = Color("a9a9a9")
+    val gray = grey
     val white = Color("ffffff")
 
     object editor {
-        val background = Color("0A0A0A")
-        val axes = orange
-        val selection = magenta
-        val grid = Color("3b3b46")
-        val guides = blue
-        val advance = green
+        val background get() = Color("0A0A0A")
+        val axes get() = orange
+        val selection get() = magenta
+        val grid get() = Color("3b3b46")
+        val guides get() = blue
+        val advance get() = green
 
         object referencePanel {
-            val axes = orange
-            val guides = blue
-            val glyph = white
+            val axes get() = orange
+            val guides get() = blue
+            val glyph get() = white
         }
     }
 
     object browser {
-        val background = editor.background
-        val baseline = maroon
-        val glyph = white
-        val missingGlyph = Color("afafaf")
-        val cellHighlight = red
-        val gridLines = Color("3b3b46")
-        val hexLabels = Color("3b3b46")
+        val background get() = editor.background
+        val baseline get() = maroon
+        val glyph get() = white
+        val missingGlyph get() = Color("afafaf")
+        val cellHighlight get() = red
+        val gridLines get() = Color("3b3b46")
+        val hexLabels get() = Color("3b3b46")
     }
 
     object inputTest {
-        val background = editor.background
-        val originIndicator = orange
-        val cursor = white
-        val text = white
+        val background get() = editor.background
+        val originIndicator get() = orange
+        val cursor get() = white
+        val text get() = white
     }
 
     object layoutTest {
-        val background = editor.background
-        val originIndicator = orange
-        val text = white
-        val boundingBoxes = magenta
+        val background get() = editor.background
+        val originIndicator get() = orange
+        val text get() = white
+        val boundingBoxes get() = magenta
+    }
+
+
+    object textLayout {
+        val background get() = editor.background
+        val text get() = white
+        val lineFragment get() = grey
+        val exclusionPath get() = orange
     }
 
     object main {
-        val background = Color("738c99")
+        val background get() = Color("738c99")
     }
 
 
