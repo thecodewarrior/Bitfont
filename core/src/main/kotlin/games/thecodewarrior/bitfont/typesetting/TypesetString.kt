@@ -196,16 +196,18 @@ open class TypesetString(
         val list = mutableListOf<GlyphRender>()
         var cursor = 0
         var combiningGap = 0
+        var combiningWhitespace = false
         var combiningRectMin = Vec2i(0, 0)
         var combiningRectMax = Vec2i(0, 0)
         var combiningPosAfter = Vec2i(0, 0)
-        range.forEach {
-            val glyph = glyphFor(it)
-            val font = fontFor(it)
+        range.forEach { index ->
+            val glyph = glyphFor(index)
+            val font = fontFor(index)
             val advance = glyph.calcAdvance(font.spacing)
-            val combiningClass = CombiningClass[UCharacter.getCombiningClass(codepoints[it])]
+            val combiningClass = CombiningClass[UCharacter.getCombiningClass(codepoints[index])]
 
-            if(combiningClass == CombiningClass.NOT_REORDERED) {
+            if(combiningClass == CombiningClass.NOT_REORDERED || combiningRectMin == combiningRectMax) {
+                combiningWhitespace = UCharacter.isWhitespace(codepoints[index])
                 combiningGap = max(1, font.capHeight / 8)
                 combiningRectMin = Vec2i(
                     cursor + glyph.bearingX, glyph.bearingY
@@ -215,14 +217,35 @@ open class TypesetString(
                 )
                 combiningPosAfter = Vec2i(cursor + advance, 0)
                 list.add(
-                    GlyphRender(codepointIndices[it], it, codepoints[it], line,
+                    GlyphRender(codepointIndices[index], index, codepoints[index], line,
                         font, glyph,
                         Vec2i(cursor, 0), Vec2i(cursor + advance, 0),
-                        attributedString.getAttributes(codepointIndices[it]))
+                        attributedString.getAttributes(codepointIndices[index]))
                 )
                 cursor += advance
             } else {
                 val cls = combiningClass
+                if(cls == CombiningClass.DOUBLE_ABOVE || cls == CombiningClass.DOUBLE_BELOW &&
+                    index + 1 < codepoints.size && !UCharacter.isWhitespace(codepoints[index+1])) {
+                    val nextGlyph = glyphFor(index + 1)
+                    val nextFont = fontFor(index + 1)
+                    combiningGap = max(combiningGap, nextFont.capHeight / 8)
+                    if(combiningWhitespace) {
+                        combiningRectMin = Vec2i(
+                            combiningRectMin.x, nextGlyph.bearingY
+                        )
+                        combiningRectMax = Vec2i(
+                            combiningRectMax.x, nextGlyph.bearingY + nextGlyph.image.height
+                        )
+                    } else {
+                        combiningRectMin = Vec2i(
+                            combiningRectMin.x, min(combiningRectMin.y, nextGlyph.bearingY)
+                        )
+                        combiningRectMax = Vec2i(
+                            combiningRectMax.x, max(combiningRectMax.y, nextGlyph.bearingY + nextGlyph.image.height)
+                        )
+                    }
+                }
                 val rectMin = combiningRectMin
                 val rectMax = combiningRectMax
                 val gapX = if(cls.attached || cls.yAlign != 0) 0 else combiningGap
@@ -268,10 +291,10 @@ open class TypesetString(
                 }
 
                 list.add(
-                    GlyphRender(codepointIndices[it], it, codepoints[it], line,
+                    GlyphRender(codepointIndices[index], index, codepoints[index], line,
                         font, glyph,
                         Vec2i(newX, newY), combiningPosAfter,
-                        attributedString.getAttributes(codepointIndices[it]))
+                        attributedString.getAttributes(codepointIndices[index]))
                 )
             }
         }
