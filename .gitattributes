@@ -1,0 +1,4 @@
+/fonts/*.json linguist-generated
+NamesList.txt linguist-vendored
+LICENSE*.txt linguist-vendored
+/LICENSE.txt -linguist-vendored
