@@ -230,6 +230,9 @@ open class GraphemeCluster(
     }
 
     var attachments: MutableList<TypesetGlyph>? = null
+
+    val isWhitespace: Boolean
+        get() = UCharacter.isWhitespace(codepoint) && attachments.isNullOrEmpty()
 }
 
 open class TypesetGlyph(

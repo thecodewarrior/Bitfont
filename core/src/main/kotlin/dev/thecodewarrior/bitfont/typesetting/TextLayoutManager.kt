@@ -77,7 +77,7 @@ open class TextLayoutManager(val fallbackFonts: List<Bitfont>) {
                 // If the new cursor pos is beyond the end of the line, _and_ we have glyphs we can wrap, try to wrap.
                 // We only wrap if this glyph is not the first in the line, since zero-glyph lines will often lead to
                 // infinite wrapping
-            } else if(glyph.afterX > line.width - container.lineFragmentPadding * 2 && (canBeEmpty || line.glyphs.size > 1)) {
+            } else if(!glyph.isWhitespace && glyph.afterX > line.width - container.lineFragmentPadding * 2 && (canBeEmpty || line.glyphs.size > 1)) {
                 var wrapPoint =
                     if (breakIterator.isBoundary(glyph.characterIndex))
                         glyph.characterIndex
@@ -104,7 +104,7 @@ open class TextLayoutManager(val fallbackFonts: List<Bitfont>) {
                 goToNextFragment = true
             }
 
-            if(goToNextFragment) {
+            if(goToNextFragment || !pushBackTypesetter.hasNext()) {
                 val bufferedGlyphs = pushBackTypesetter.pushBack(pushBack)
                 val xOffset = bufferedGlyphs.firstOrNull()?.posX ?: 0
 
@@ -121,7 +121,8 @@ open class TextLayoutManager(val fallbackFonts: List<Bitfont>) {
                     it.posX += container.lineFragmentPadding
                     it.posY += baselineShift
                 }
-
+            }
+            if(goToNextFragment) {
                 if(nextFragment != null) {
                     consumedGlyphs = consumedGlyphs || line.glyphs.isNotEmpty()
                     line = nextFragment
@@ -134,14 +135,6 @@ open class TextLayoutManager(val fallbackFonts: List<Bitfont>) {
                 container.lines.add(line)
                 pushBack.clear()
             }
-        }
-
-        val baselineShift = max(
-            line.glyphs.map { it.glyph.font?.ascent ?: 0 }.max() ?: 0,
-            continuedBaseline ?: 0
-        )
-        line.glyphs.forEach {
-            it.posY += baselineShift
         }
     }
 
