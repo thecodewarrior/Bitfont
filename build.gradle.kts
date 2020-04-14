@@ -16,7 +16,7 @@ plugins {
 
 allprojects {
     group = "dev.thecodewarrior.bitfont"
-    version = "0.1"
+    version = "0.2"
 
     repositories {
         jcenter()
