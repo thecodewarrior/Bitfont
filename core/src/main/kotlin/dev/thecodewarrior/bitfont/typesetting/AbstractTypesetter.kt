@@ -13,6 +13,8 @@ class Typesetter(val glyphs: BufferedIterator<AttributedGlyph>): BufferedIterato
     class Options {
         var enableKerning: Boolean = false
         var enableCombiningCharacters: Boolean = true
+        // callbacks for more advanced behavior? (e.g. dynamic leading)
+        // maybe a system to transform attributes? (e.g. bold -> leading++)
     }
 
     private var cursorX: Int = 0

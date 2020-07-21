@@ -8,21 +8,16 @@ import dev.thecodewarrior.bitfont.editor.utils.extensions.draw
 import dev.thecodewarrior.bitfont.editor.utils.extensions.u32
 import dev.thecodewarrior.bitfont.editor.utils.math.vec
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
-import dev.thecodewarrior.bitfont.typesetting.GlyphGenerator
-import dev.thecodewarrior.bitfont.typesetting.LineFragment
 import dev.thecodewarrior.bitfont.typesetting.ShapeExclusionTextContainer
-import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
 import dev.thecodewarrior.bitfont.typesetting.Typesetter
 import dev.thecodewarrior.bitfont.utils.Rect2i
 import dev.thecodewarrior.bitfont.utils.Vec2i
 import java.awt.Rectangle
-import java.awt.Shape
 import java.awt.geom.AffineTransform
 import java.awt.geom.Area
 import java.awt.geom.Ellipse2D
 import java.awt.geom.Path2D
-import java.awt.geom.Rectangle2D
 
 class TextLayoutTestWindow(document: BitfontDocument): AbstractTestWindow(document, "Text Layout Test") {
     var text: AttributedString = AttributedString("")

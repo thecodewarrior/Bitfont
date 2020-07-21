@@ -11,10 +11,10 @@ repositories {
 }
 
 dependencies {
-    "compile"(kotlin("stdlib-jdk8", "1.3.0"))
-    "compile"("it.unimi.dsi:fastutil:8.2.2")
-    "compile"("com.ibm.icu:icu4j:63.1")
-    "compile"("org.msgpack:msgpack-core:0.8.16")
+    "api"(kotlin("stdlib-jdk8", "1.3.0"))
+    "api"("com.ibm.icu:icu4j:63.1")
+    "implementation"("it.unimi.dsi:fastutil:8.2.2")
+    "implementation"("org.msgpack:msgpack-core:0.8.16")
 }
 
 tasks.withType<KotlinCompile> {

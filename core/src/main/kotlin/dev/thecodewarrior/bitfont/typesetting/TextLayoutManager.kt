@@ -6,6 +6,7 @@ import dev.thecodewarrior.bitfont.utils.extensions.lineBreakIterator
 import kotlin.math.max
 
 open class TextLayoutManager(val fallbackFonts: List<Bitfont>) {
+    //TODO: multiple text containers
     val textContainers: MutableList<TextContainer> = mutableListOf()
     var typesetterOptions = Typesetter.Options()
 
