@@ -2,14 +2,10 @@ package dev.thecodewarrior.bitfont.data
 
 import dev.thecodewarrior.bitfont.utils.Vec2i
 import dev.thecodewarrior.bitfont.utils.clamp
-import dev.thecodewarrior.bitfont.utils.serialization.MsgPackable
-import dev.thecodewarrior.bitfont.utils.serialization.MsgUnpackable
-import org.msgpack.core.MessagePacker
-import org.msgpack.core.MessageUnpacker
 import kotlin.math.max
 import kotlin.math.min
 
-class Glyph(var font: Bitfont?): MsgPackable {
+class Glyph(var font: Bitfont?) {
     var bearingX: Int = 0
         set(value) {
             field = value.clamp(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
@@ -68,34 +64,5 @@ class Glyph(var font: Bitfont?): MsgPackable {
         image = grid
         bearingX += minX
         bearingY += minY
-    }
-
-    override fun pack(packer: MessagePacker) {
-        crop()
-        packer.apply {
-            packInt(bearingX)
-            packInt(bearingY)
-            advance.also {
-                if(it == null)
-                    packNil()
-                else
-                    packInt(it)
-            }
-            image.pack(packer)
-        }
-    }
-
-    companion object: MsgUnpackable<Glyph> {
-        override fun unpack(unpacker: MessageUnpacker): Glyph {
-            unpacker.apply {
-                val glyph = Glyph(null)
-                glyph.bearingX = unpackInt()
-                glyph.bearingY = unpackInt()
-                glyph.advance = if (tryUnpackNil()) null else unpackInt()
-                glyph.image = BitGrid.unpack(unpacker)
-                glyph.crop()
-                return glyph
-            }
-        }
     }
 }

@@ -1,16 +1,9 @@
 package dev.thecodewarrior.bitfont.data
 
 import dev.thecodewarrior.bitfont.utils.Vec2i
-import dev.thecodewarrior.bitfont.utils.serialization.MsgPackable
-import dev.thecodewarrior.bitfont.utils.serialization.MsgUnpackable
-import org.msgpack.core.MessagePacker
-import org.msgpack.core.MessageUnpacker
-import java.awt.Color
-import java.awt.image.BufferedImage
 import java.util.Arrays
-import kotlin.math.max
 
-class BitGrid(val width: Int, val height: Int): MsgPackable {
+class BitGrid(val width: Int, val height: Int) {
     val size = Vec2i(width, height)
     val data = UByteArray((width*height+7)/8) // (...+7)/8 rounds up
 
@@ -84,25 +77,5 @@ class BitGrid(val width: Int, val height: Int): MsgPackable {
         result = 31 * result + height
         result = 31 * result + Arrays.hashCode(data.toByteArray())
         return result
-    }
-
-    override fun pack(packer: MessagePacker) {
-        packer.apply {
-            packInt(width)
-            packInt(height)
-            writePayload(data.toByteArray())
-        }
-    }
-
-    companion object: MsgUnpackable<BitGrid> {
-        override fun unpack(unpacker: MessageUnpacker): BitGrid {
-            unpacker.apply {
-                val width = unpackInt()
-                val height = unpackInt()
-                val grid = BitGrid(width, height)
-                readPayload(grid.data.size).toUByteArray().copyInto(grid.data)
-                return grid
-            }
-        }
     }
 }

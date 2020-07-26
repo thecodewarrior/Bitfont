@@ -1,14 +1,31 @@
 package dev.thecodewarrior.bitfont.editor
 
-import dev.thecodewarrior.bitfont.editor.utils.set
 import org.lwjgl.BufferUtils
 import org.lwjgl.nuklear.NkColor
 import org.lwjgl.nuklear.NkColorf
 import org.lwjgl.nuklear.NkContext
-import org.lwjgl.nuklear.NkRect
 import org.lwjgl.nuklear.NkVec2
-import org.lwjgl.nuklear.Nuklear.*
+import org.lwjgl.nuklear.Nuklear.NK_EDIT_BOX
+import org.lwjgl.nuklear.Nuklear.NK_EDIT_SIMPLE
+import org.lwjgl.nuklear.Nuklear.NK_RGBA
+import org.lwjgl.nuklear.Nuklear.NK_TEXT_LEFT
+import org.lwjgl.nuklear.Nuklear.nk_button_label
+import org.lwjgl.nuklear.Nuklear.nk_color_picker
+import org.lwjgl.nuklear.Nuklear.nk_combo_begin_color
+import org.lwjgl.nuklear.Nuklear.nk_combo_end
+import org.lwjgl.nuklear.Nuklear.nk_edit_string
+import org.lwjgl.nuklear.Nuklear.nk_label
+import org.lwjgl.nuklear.Nuklear.nk_layout_row_dynamic
+import org.lwjgl.nuklear.Nuklear.nk_layout_row_static
+import org.lwjgl.nuklear.Nuklear.nk_menubar_begin
+import org.lwjgl.nuklear.Nuklear.nk_option_label
+import org.lwjgl.nuklear.Nuklear.nk_property_int
+import org.lwjgl.nuklear.Nuklear.nk_propertyf
+import org.lwjgl.nuklear.Nuklear.nk_rgb_cf
+import org.lwjgl.nuklear.Nuklear.nk_widget_width
 import org.lwjgl.system.MemoryStack
+import org.lwjgl.system.MemoryUtil
+import java.text.ParseException
 
 class FontWindow: Window() {
     private val EASY = 0
@@ -27,39 +44,48 @@ class FontWindow: Window() {
 
     private val compression = BufferUtils.createIntBuffer(1).put(0, 20)
 
+    var fontName = ""
+
     override fun pushContents(ctx: NkContext) {
         MemoryStack.stackPush().use { stack ->
-            nk_layout_row_static(ctx, 30f, 80, 1)
-            if (nk_button_label(ctx, "button")) {
-                println("button pressed")
+            nk_layout_row_dynamic(ctx, 20f, 1)
+            nk_label(ctx, "Font Name:", NK_TEXT_LEFT)
+            nk_layout_row_dynamic(ctx, 25f, 1)
+            run {
+                val buffer = stack.calloc(256)
+                val length = MemoryUtil.memUTF8(fontName, false, buffer)
+                val len = stack.ints(length)
+                nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, len, 255, null)
+                try {
+                    fontName = MemoryUtil.memUTF8(buffer, len[0])
+                } catch (e: ParseException) {
+                    e.printStackTrace()
+                }
+                title = fontName
             }
+
+            nk_layout_row_dynamic(ctx, 25f, 1)
+            nk_property_int(ctx, "Ascent:", 0, compression, 100, 1, 1f)
+            nk_layout_row_dynamic(ctx, 25f, 1)
+            nk_property_int(ctx, "Cap Height:", 0, compression, 100, 1, 1f)
+            nk_layout_row_dynamic(ctx, 25f, 1)
+            nk_property_int(ctx, "X Height:", 0, compression, 100, 1, 1f)
+            nk_layout_row_dynamic(ctx, 25f, 1)
+            nk_property_int(ctx, "Descent:", 0, compression, 100, 1, 1f)
+
             nk_layout_row_dynamic(ctx, 30f, 2)
-            if (nk_option_label(ctx, "easy", op == EASY)) {
-                op = EASY
+            if (nk_button_label(ctx, "Edit")) {
+                println("edit glyphs")
             }
-            if (nk_option_label(ctx, "hard", op == HARD)) {
-                op = HARD
+            if (nk_button_label(ctx, "Browse")) {
+                println("browse glyphs")
             }
-            nk_layout_row_dynamic(ctx, 25f, 1)
-            nk_property_int(ctx, "Compression:", 0, compression, 100, 10, 1f)
-            nk_layout_row_dynamic(ctx, 20f, 1)
-            nk_label(ctx, "background:", NK_TEXT_LEFT)
-            nk_layout_row_dynamic(ctx, 25f, 1)
-            if (nk_combo_begin_color(ctx, nk_rgb_cf(background, NkColor.mallocStack(stack)), NkVec2.mallocStack(stack).set(nk_widget_width(ctx), 400f))) {
-                nk_layout_row_dynamic(ctx, 120f, 1)
-                nk_color_picker(ctx, background, NK_RGBA)
-                nk_layout_row_dynamic(ctx, 25f, 1)
-                background
-                    .r(nk_propertyf(ctx, "#R:", 0f, background.r(), 1.0f, 0.01f, 0.005f))
-                    .g(nk_propertyf(ctx, "#G:", 0f, background.g(), 1.0f, 0.01f, 0.005f))
-                    .b(nk_propertyf(ctx, "#B:", 0f, background.b(), 1.0f, 0.01f, 0.005f))
-                    .a(nk_propertyf(ctx, "#A:", 0f, background.a(), 1.0f, 0.01f, 0.005f))
-                nk_combo_end(ctx)
+            if (nk_button_label(ctx, "Typesetter")) {
+                println("typesetter")
             }
-            nk_layout_row_dynamic(ctx, 20f, 1)
-            nk_label(ctx, "background:", NK_TEXT_LEFT)
-            nk_layout_row_dynamic(ctx, 120f, 1)
-            nk_edit_string(ctx, NK_EDIT_BOX, text, textLen, 1024, null)
+            if (nk_button_label(ctx, "Text Layout")) {
+                println("text layout")
+            }
         }
     }
 

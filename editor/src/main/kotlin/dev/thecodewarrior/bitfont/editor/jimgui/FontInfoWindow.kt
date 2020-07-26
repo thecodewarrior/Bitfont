@@ -1,6 +1,8 @@
 package dev.thecodewarrior.bitfont.editor.jimgui
 
 import dev.thecodewarrior.bitfont.data.Bitfont
+import dev.thecodewarrior.bitfont.data.file.BitfontFile
+import dev.thecodewarrior.bitfont.data.file.BitfontFileFormat
 import dev.thecodewarrior.bitfont.editor.jimgui.data.UnifontImporter
 import dev.thecodewarrior.bitfont.editor.jimgui.imgui.ImGui
 import dev.thecodewarrior.bitfont.editor.jimgui.imgui.withNative
@@ -38,7 +40,8 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
     override fun main(imgui: ImGui) {
         if(System.currentTimeMillis() - lastSave > 60_000) {
             File("autosaves").mkdirs()
-            File("autosaves/font-$fName-${LocalDateTime.now().minute % 10}.bitfont").writeBytes(bitfont.packToBytes())
+            val bitfontFile = BitfontFileFormat.pack(bitfont)
+            File("autosaves/font-$fName-${LocalDateTime.now().minute % 10}.bitfont").writeBytes(bitfontFile.packToBytes())
             lastSave = System.currentTimeMillis()
         }
         imgui.setNextItemWidth(150f)
@@ -138,7 +141,7 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                     val formatter = DateTimeFormatter.ofPattern("uuuuMMdd.kkmmss")
                     File("fonts").mkdirs()
 
-                    val bytes = bitfont.packToBytes()
+                    val bytes = BitfontFileFormat.pack(bitfont).packToBytes()
                     File("fonts/$fName.bitfont").writeBytes(bytes)
 
                     File("autosaves").mkdirs()
@@ -153,8 +156,8 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                         files.forEach { file ->
                             if(imgui.menuItem(file.name) && !opened) {
                                 opened = true
-                                val bytes = file.readBytes()
-                                val newDocument = BitfontDocument(Bitfont.unpack(bytes))
+                                val bitfontFile = BitfontFile.unpack(file.inputStream())
+                                val newDocument = BitfontDocument(BitfontFileFormat.unpack(bitfontFile))
                                 Main.documents.add(newDocument)
                             }
                         }

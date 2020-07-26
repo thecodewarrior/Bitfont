@@ -55,6 +55,7 @@ public class GLFWDemo {
     }
 
     public static void main(String[] args) {
+        System.setProperty("java.awt.headless", "true");
         new GLFWDemo().run();
     }
 
@@ -85,6 +86,7 @@ public class GLFWDemo {
 
     private final Demo demo = new Demo();
     private final Calculator calc = new Calculator();
+    private final MainMenu menu = new MainMenu();
     private final List<Window> windows = new ArrayList<>();
 
     public GLFWDemo() {
@@ -140,8 +142,8 @@ public class GLFWDemo {
 
         NkContext ctx = setupWindow(win);
 
-        int BITMAP_W = 1024;
-        int BITMAP_H = 1024;
+        int BITMAP_W = 8192;
+        int BITMAP_H = 8192;
 
         int FONT_HEIGHT = 18;
         int fontTexID = glGenTextures();
@@ -239,15 +241,23 @@ public class GLFWDemo {
                 .texture(it -> it
                         .id(fontTexID));
 
-        nk_style_set_font(ctx, default_font);
 
         glfwShowWindow(win);
         while (!glfwWindowShouldClose(win)) {
             /* Input */
             newFrame();
 
+            if(nk_input_is_key_down(ctx.input(), NK_KEY_SHIFT)) {
+                nk_style_set_font(ctx, default_font);
+            } else {
+                nk_style_set_font(ctx, NuklearFonts.INSTANCE.getSANS().getUserFont());
+            }
+
             demo.layout(ctx, 50, 50);
             calc.layout(ctx, 300, 50);
+            menu.setFullWidth(width);
+            menu.setFullHeight(height);
+            menu.push(ctx);
             for (Window window : windows) {
                 window.push(ctx);
             }
@@ -513,6 +523,7 @@ public class GLFWDemo {
             width = w.get(0);
             height = h.get(0);
 
+
             glfwGetFramebufferSize(win, w, h);
             display_width = w.get(0);
             display_height = h.get(0);
@@ -654,6 +665,7 @@ public class GLFWDemo {
         Objects.requireNonNull(default_font.width()).free();
 
         calc.numberFilter.free();
+        menu.free();
         for (Window window : windows) {
             window.free();
         }

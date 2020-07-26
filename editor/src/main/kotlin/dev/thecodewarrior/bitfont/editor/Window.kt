@@ -8,10 +8,10 @@ import org.lwjgl.system.MemoryStack
 import java.util.UUID
 
 abstract class Window {
-    private var uuid = UUID.randomUUID().toString()
+    val uuid = UUID.randomUUID().toString()
     var title: String = ""
 
-    fun push(ctx: NkContext) {
+    open fun push(ctx: NkContext) {
         MemoryStack.stackPush().use { stack ->
             val rect = NkRect.mallocStack(stack)
             if (nk_begin_titled(
