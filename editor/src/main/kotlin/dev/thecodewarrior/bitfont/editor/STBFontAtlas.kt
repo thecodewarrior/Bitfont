@@ -21,9 +21,8 @@ import org.lwjgl.system.MemoryUtil
 import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
 
-class LiveFont(val fonts: List<LazyFont>) {
-    var width = 8192
-    var height = 8192
+class LiveFont(val fonts: FontList, val fontHeight: Float) {
+    private var textureSize = generateSequence(64) { it * 2 }.first { it > fontHeight }
 
     private val gpuMaxTexSize = GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE)
 
@@ -31,17 +30,13 @@ class LiveFont(val fonts: List<LazyFont>) {
 
     private val fontTexID = GL11.glGenTextures()
 
-    private val packer = RectanglePacker<GlyphInfo>(width, height, 1)
-    private val cache = Int2ObjectOpenHashMap<GlyphInfo?>()
+    private val packer = RectanglePacker<GlyphInfo>(textureSize, textureSize, 1)
+    private val cache = Int2ObjectOpenHashMap<GlyphInfo>()
 
-    private val debugImage: BufferedImage? = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+    private var debugImage: BufferedImage? = BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB)
 
     init {
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, fontTexID)
-        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, 0)
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR)
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR)
-
+        initTexture()
         userFont
             .width { handle: Long, h: Float, text: Long, len: Int ->
                 var textWidth = 0f
@@ -61,10 +56,10 @@ class LiveFont(val fonts: List<LazyFont>) {
                 }
                 textWidth
             }
-            .height(NuklearFonts.fontHeight.toFloat())
+            .height(fontHeight)
             .query { handle: Long, font_height: Float, glyph: Long, codepoint: Int, next_codepoint: Int ->
                 val ufg = NkUserFontGlyph.create(glyph)
-                this[codepoint]?.configure(ufg)
+                this[codepoint]?.configure(ufg, textureSize)
             }
             .texture { it: NkHandle ->
                 it.id(fontTexID)
@@ -73,8 +68,10 @@ class LiveFont(val fonts: List<LazyFont>) {
 
     operator fun get(codepoint: Int): GlyphInfo? {
         return cache.getOrPut(codepoint) {
+            if(codepoint == '\n'.toInt() || codepoint == '\r'.toInt())
+                return@getOrPut null // otherwise it searches through every font
             for (font in fonts) {
-                val glyph = font.get(codepoint, 4, 4)
+                val glyph = font.get(codepoint, fontHeight, 4, 4)
                 if (glyph != null) {
                     insert(glyph)
                     return@getOrPut glyph
@@ -85,97 +82,49 @@ class LiveFont(val fonts: List<LazyFont>) {
     }
 
     private fun insert(glyph: GlyphInfo) {
-        val newRect = packer.insert(glyph.bitmapWidth, glyph.bitmapHeight, glyph) ?: return
-        draw(glyph, newRect.x, newRect.y)
-
-        glyph.minU = newRect.x / width.toFloat()
-        glyph.minV = newRect.y / height.toFloat()
-        glyph.maxU = (newRect.x + newRect.width) / width.toFloat()
-        glyph.maxV = (newRect.y + newRect.height) / height.toFloat()
+        var newRect = packer.insert(glyph.bitmapWidth, glyph.bitmapHeight, glyph)
+        if (newRect == null) {
+            expand()
+            newRect = packer.insert(glyph.bitmapWidth, glyph.bitmapHeight, glyph) ?: return
+        }
+        glyph.rect = newRect
+        draw(glyph)
     }
 
-    private fun draw(glyph: GlyphInfo, x: Int, y: Int) {
-        val bitmap = glyph.bitmap ?: return
+    private fun draw(glyph: GlyphInfo) {
+        val rect = glyph.rect ?: return
 
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, fontTexID)
-        GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, x, y, glyph.bitmapWidth, glyph.bitmapHeight, GL11.GL_RGBA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, bitmap)
+        GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, rect.x, rect.y, glyph.bitmapWidth, glyph.bitmapHeight, GL11.GL_RGBA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, glyph.bitmap)
 
         debugImage?.also { debugImage ->
-            bitmap.rewind()
-            val pixels = bitmap.asIntBuffer()
+            val pixels = glyph.bitmap.asIntBuffer()
             for (yOffset in 0 until glyph.bitmapHeight) {
                 for (xOffset in 0 until glyph.bitmapWidth) {
                     val color = pixels.get()
-                    debugImage.setRGB(x + xOffset, y + yOffset, color)
+                    debugImage.setRGB(rect.x + xOffset, rect.y + yOffset, color)
                 }
             }
         }
-
-        MemoryUtil.memFree(bitmap)
-        glyph.bitmap = null
     }
-}
 
-object NuklearFonts {
-    val fontHeight: Int = 18
+    private fun initTexture() {
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, fontTexID)
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, textureSize, textureSize, 0, GL11.GL_RGBA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, 0)
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR)
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR)
+        if (debugImage != null)
+            debugImage = BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB)
+    }
 
-    val SERIF_DISPLAY: LiveFont
-    val SERIF_MONO: LiveFont
-    val SERIF: LiveFont
-
-    val SANS_DISPLAY: LiveFont
-    val SANS_MONO: LiveFont
-    val SANS: LiveFont
-
-    val FONTS: Map<String, LiveFont>
-
-    init {
-        val all = mutableListOf<String>()
-        val serifd = mutableListOf<String>()
-        val serifm = mutableListOf<String>()
-        val serif = mutableListOf<String>()
-
-        val sansd = mutableListOf<String>()
-        val sansm = mutableListOf<String>()
-        val sans = mutableListOf<String>()
-
-        val other = mutableListOf<String>()
-
-        Constants.resource("reference/fonts.txt").bufferedReader().lineSequence().drop(1).forEach { line ->
-            val (style, _, _, file) = line.trim().split(":")
-
-            all.add(file)
-            when (style) {
-                "serifd" -> serifd.add(file)
-                "serifm" -> serifm.add(file)
-                "serif" -> serif.add(file)
-
-                "sansd" -> sansd.add(file)
-                "sansm" -> sansm.add(file)
-                "sans" -> sans.add(file)
-
-                "other" -> other.add(file)
-            }
-        }
-
-        val fonts = all.associateWith { LazyFont("reference/$it", fontHeight) }
-
-        SERIF_DISPLAY = LiveFont((serifd + serif + sans + other).map { fonts.getValue(it) })
-        SERIF_MONO = LiveFont((serifm + serif + sans + other).map { fonts.getValue(it) })
-        SERIF = LiveFont((serif + sans + other).map { fonts.getValue(it) })
-
-        SANS_DISPLAY = LiveFont((sansd + sans + other).map { fonts.getValue(it) })
-        SANS_MONO = LiveFont((sansm + sans + other).map { fonts.getValue(it) })
-        SANS = LiveFont((sans + other).map { fonts.getValue(it) })
-
-        FONTS = mapOf(
-            "Serif" to SERIF,
-            "Sans-Serif" to SANS,
-            "Serif Display" to SERIF_DISPLAY,
-            "Sans-Serif Display" to SANS_DISPLAY,
-            "Serif Mono" to SERIF_MONO,
-            "Sans-Serif Mono" to SANS_MONO
-        )
+    private fun expand() {
+        textureSize *= 2
+        if (textureSize > gpuMaxTexSize)
+            throw IllegalStateException("Ran out of atlas space after packing ${cache.size} glyphs. OpenGL max " +
+                "texture size is $gpuMaxTexSize x $gpuMaxTexSize.")
+        packer.expand(textureSize, textureSize)
+        initTexture()
+        cache.values.forEach { draw(it) }
     }
 }
 
@@ -183,43 +132,56 @@ data class GlyphInfo(
     val font: LazyFont, val codepoint: Int,
     val advance: Float,
     val width: Float, val height: Float,
-    val offsetX: Float, val offsetY: Float
+    val offsetX: Float, val offsetY: Float,
+    val bitmapWidth: Int, val bitmapHeight: Int,
+    val bitmap: ByteBuffer
 ) {
     var minU: Float = 0f
     var minV: Float = 0f
     var maxU: Float = 0f
     var maxV: Float = 0f
-    var bitmapWidth: Int = 0
-    var bitmapHeight: Int = 0
-    var bitmap: ByteBuffer? = null
+    var rect: RectanglePacker.Rectangle? = null
 
-    fun configure(ufg: NkUserFontGlyph) {
+    fun configure(ufg: NkUserFontGlyph, textureSize: Int) {
         ufg.width(width)
         ufg.height(height)
         ufg.offset().set(offsetX, offsetY)
         ufg.xadvance(advance)
-        ufg.uv(0).set(minU, minV)
-        ufg.uv(1).set(maxU, maxV)
+//        ufg.uv(0).set(minU, minV)
+//        ufg.uv(1).set(maxU, maxV)
+        rect?.also { rect ->
+            ufg.uv(0).set(
+                rect.x / textureSize.toFloat(),
+                rect.y / textureSize.toFloat()
+            )
+            ufg.uv(1).set(
+                (rect.x + rect.width) / textureSize.toFloat(),
+                (rect.y + rect.height) / textureSize.toFloat()
+            )
+        }
     }
 }
 
-class LazyFont(val name: String, val height: Int) {
+class LazyFont(val style: String, val weight: String, val file: String) {
     private var loaded = false
 
-    val fontInfo: STBTTFontinfo = STBTTFontinfo.create()
-    var scale: Float = 0f
-    var descent: Float = 0f
+    private val fontInfo: STBTTFontinfo = STBTTFontinfo.create()
+    private var ttf: ByteBuffer? = null
 
     /**
      * Gets the glyph info, including the bitmap. Returns null if the specified codepoint isn't present in this font.
-     * This object is not cached in order to allow multiple users for a single [LazyFont] without them clobbering each
-     * other's data
      */
-    fun get(codepoint: Int, oversamplingX: Int, oversamplingY: Int): GlyphInfo? {
+    fun get(codepoint: Int, height: Float, oversamplingX: Int, oversamplingY: Int): GlyphInfo? {
         load()
         if (stbtt_FindGlyphIndex(fontInfo, codepoint) == 0)
             return null
+
         MemoryStack.stackPush().use { stack ->
+            val scale = stbtt_ScaleForPixelHeight(fontInfo, height)
+            val d = stack.mallocInt(1)
+            stbtt_GetFontVMetrics(fontInfo, null, d, null)
+            val descent = d[0] * scale
+
             val advance = stack.mallocInt(1)
             stbtt_GetCodepointHMetrics(fontInfo, codepoint, advance, null)
 
@@ -258,11 +220,10 @@ class LazyFont(val name: String, val height: Int) {
                 bitmapWidth.toFloat() / oversamplingX,
                 bitmapHeight.toFloat() / oversamplingY,
                 x0[0].toFloat() / oversamplingX + subX[0],
-                y0[0].toFloat() / oversamplingY + subY[0] + height + descent
+                y0[0].toFloat() / oversamplingY + subY[0] + height + descent,
+                bitmapWidth, bitmapHeight,
+                texture
             )
-            glyph.bitmap = texture
-            glyph.bitmapWidth = bitmapWidth
-            glyph.bitmapHeight = bitmapHeight
 
             return glyph
         }
@@ -271,15 +232,10 @@ class LazyFont(val name: String, val height: Int) {
     fun load() {
         if (loaded)
             return
-        val ttf = Constants.readResourceBuffer(name)
-
-        MemoryStack.stackPush().use { stack ->
-            stbtt_InitFont(fontInfo, ttf)
-            scale = stbtt_ScaleForPixelHeight(fontInfo, height.toFloat())
-            val d = stack.mallocInt(1)
-            stbtt_GetFontVMetrics(fontInfo, null, d, null)
-            descent = d[0] * scale
-        }
+        loaded = true
+        val ttf = Constants.readResourceBuffer(file)
+        stbtt_InitFont(fontInfo, ttf)
+        this.ttf = ttf
     }
 }
 

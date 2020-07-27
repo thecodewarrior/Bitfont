@@ -181,6 +181,10 @@ public class RectanglePacker<P>
 
     public void expand(int newWidth, int newHeight) {
         if(newWidth == getWidth() && newHeight == getHeight()) return;
+        if(newWidth < getWidth() || newHeight < getHeight()) {
+            throw new IllegalArgumentException(String.format("New size (%d, %d) is smaller than old size (%d, %d)",
+                    newWidth, newHeight, getWidth(), getHeight()));
+        }
 
         Node newRoot = new Node(new Rectangle(0, 0, newWidth, newHeight));
         newRoot.split(getWidth(), getHeight());

@@ -7,20 +7,16 @@ package dev.thecodewarrior.bitfont.editor;
 import org.lwjgl.glfw.*;
 import org.lwjgl.nuklear.*;
 import org.lwjgl.opengl.*;
-import org.lwjgl.stb.*;
 import org.lwjgl.system.*;
 
-import java.io.*;
 import java.nio.*;
 import java.util.*;
 
-import static dev.thecodewarrior.bitfont.editor.IOUtil.ioResourceToByteBuffer;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.nuklear.Nuklear.*;
 import static org.lwjgl.opengl.ARBDebugOutput.*;
 import static org.lwjgl.opengl.GL30C.*;
-import static org.lwjgl.stb.STBTruetype.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -56,6 +52,7 @@ public class GLFWDemo {
 
     public static void main(String[] args) {
         System.setProperty("java.awt.headless", "true");
+        Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
         new GLFWDemo().run();
     }
 
@@ -135,7 +132,24 @@ public class GLFWDemo {
 
         NkContext ctx = setupWindow(win);
 
-        nk_style_set_font(ctx, NuklearFonts.INSTANCE.getSANS().getUserFont());
+        nk_style_set_font(ctx, NuklearFonts.getSans("Medium", 18).getUserFont());
+//
+//        try (MemoryStack stack = stackPush()) {
+//            NkHandle userdata = NkHandle.callocStack(stack);
+//            userdata.ptr(0);
+//            ctx.clip().set(userdata,
+//                    (handle, edit) -> {
+//                        String text = glfwGetClipboardString(win);
+//                        if(text != null) {
+//                            nk_textedit_paste(NkTextEdit.create(edit), text);
+//                        }
+//                    },
+//                    (handle, text, len) -> {
+//                        ByteBuffer buf = MemoryUtil.memByteBuffer(text, len);
+//                        glfwSetClipboardString(win, buf);
+//                    }
+//            );
+//        }
 
         glfwShowWindow(win);
         while (!glfwWindowShouldClose(win)) {
@@ -287,71 +301,7 @@ public class GLFWDemo {
             }
         });
         glfwSetCharCallback(win, (window, codepoint) -> nk_input_unicode(ctx, codepoint));
-        glfwSetKeyCallback(win, (window, key, scancode, action, mods) -> {
-            boolean press = action == GLFW_PRESS;
-            switch (key) {
-                case GLFW_KEY_ESCAPE:
-                    glfwSetWindowShouldClose(window, true);
-                    break;
-                case GLFW_KEY_DELETE:
-                    nk_input_key(ctx, NK_KEY_DEL, press);
-                    break;
-                case GLFW_KEY_ENTER:
-                    nk_input_key(ctx, NK_KEY_ENTER, press);
-                    break;
-                case GLFW_KEY_TAB:
-                    nk_input_key(ctx, NK_KEY_TAB, press);
-                    break;
-                case GLFW_KEY_BACKSPACE:
-                    nk_input_key(ctx, NK_KEY_BACKSPACE, press);
-                    break;
-                case GLFW_KEY_UP:
-                    nk_input_key(ctx, NK_KEY_UP, press);
-                    break;
-                case GLFW_KEY_DOWN:
-                    nk_input_key(ctx, NK_KEY_DOWN, press);
-                    break;
-                case GLFW_KEY_HOME:
-                    nk_input_key(ctx, NK_KEY_TEXT_START, press);
-                    nk_input_key(ctx, NK_KEY_SCROLL_START, press);
-                    break;
-                case GLFW_KEY_END:
-                    nk_input_key(ctx, NK_KEY_TEXT_END, press);
-                    nk_input_key(ctx, NK_KEY_SCROLL_END, press);
-                    break;
-                case GLFW_KEY_PAGE_DOWN:
-                    nk_input_key(ctx, NK_KEY_SCROLL_DOWN, press);
-                    break;
-                case GLFW_KEY_PAGE_UP:
-                    nk_input_key(ctx, NK_KEY_SCROLL_UP, press);
-                    break;
-                case GLFW_KEY_LEFT_SHIFT:
-                case GLFW_KEY_RIGHT_SHIFT:
-                    nk_input_key(ctx, NK_KEY_SHIFT, press);
-                    break;
-                case GLFW_KEY_LEFT_CONTROL:
-                case GLFW_KEY_RIGHT_CONTROL:
-                    if (press) {
-                        nk_input_key(ctx, NK_KEY_COPY, glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS);
-                        nk_input_key(ctx, NK_KEY_PASTE, glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS);
-                        nk_input_key(ctx, NK_KEY_CUT, glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS);
-                        nk_input_key(ctx, NK_KEY_TEXT_UNDO, glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS);
-                        nk_input_key(ctx, NK_KEY_TEXT_REDO, glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS);
-                        nk_input_key(ctx, NK_KEY_TEXT_WORD_LEFT, glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS);
-                        nk_input_key(ctx, NK_KEY_TEXT_WORD_RIGHT, glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS);
-                        nk_input_key(ctx, NK_KEY_TEXT_LINE_START, glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS);
-                        nk_input_key(ctx, NK_KEY_TEXT_LINE_END, glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS);
-                    } else {
-                        nk_input_key(ctx, NK_KEY_LEFT, glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS);
-                        nk_input_key(ctx, NK_KEY_RIGHT, glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS);
-                        nk_input_key(ctx, NK_KEY_COPY, false);
-                        nk_input_key(ctx, NK_KEY_PASTE, false);
-                        nk_input_key(ctx, NK_KEY_CUT, false);
-                        nk_input_key(ctx, NK_KEY_SHIFT, false);
-                    }
-                    break;
-            }
-        });
+        glfwSetKeyCallback(win, this::process_key);
         glfwSetCursorPosCallback(win, (window, xpos, ypos) -> nk_input_motion(ctx, (int) xpos, (int) ypos));
         glfwSetMouseButtonCallback(win, (window, button, action, mods) -> {
             try (MemoryStack stack = stackPush()) {
@@ -402,6 +352,127 @@ public class GLFWDemo {
 
         setupContext();
         return ctx;
+    }
+
+    private void process_key(long window, int key, int scancode, int action, int mods) {
+        boolean press = action == GLFW_PRESS;
+        switch (key) {
+            case GLFW_KEY_LEFT_SHIFT:
+            case GLFW_KEY_RIGHT_SHIFT:
+                nk_input_key(ctx, NK_KEY_SHIFT, press);
+                break;
+            case GLFW_KEY_LEFT_CONTROL:
+            case GLFW_KEY_RIGHT_CONTROL:
+                nk_input_key(ctx, NK_KEY_CTRL, press);
+                break;
+            case GLFW_KEY_DELETE:
+                nk_input_key(ctx, NK_KEY_DEL, press);
+                break;
+            case GLFW_KEY_ENTER:
+                nk_input_key(ctx, NK_KEY_ENTER, press);
+                break;
+            case GLFW_KEY_TAB:
+                nk_input_key(ctx, NK_KEY_TAB, press);
+                break;
+            case GLFW_KEY_BACKSPACE:
+                nk_input_key(ctx, NK_KEY_BACKSPACE, press);
+                break;
+            case GLFW_KEY_UP:
+                nk_input_key(ctx, NK_KEY_UP, press);
+                break;
+            case GLFW_KEY_DOWN:
+                nk_input_key(ctx, NK_KEY_DOWN, press);
+                break;
+            case GLFW_KEY_LEFT:
+                nk_input_key(ctx, NK_KEY_LEFT, press);
+                break;
+            case GLFW_KEY_RIGHT:
+                nk_input_key(ctx, NK_KEY_RIGHT, press);
+                break;
+        }
+
+        boolean alt = (mods & GLFW_MOD_ALT) != 0;
+        boolean ctrl = (mods & GLFW_MOD_CONTROL) != 0;
+        boolean shift = (mods & GLFW_MOD_SHIFT) != 0;
+        boolean sup = (mods & GLFW_MOD_SUPER) != 0;
+        boolean capsLock = (mods & GLFW_MOD_CAPS_LOCK) != 0;
+        boolean numLock = (mods & GLFW_MOD_NUM_LOCK) != 0;
+
+        int modifiers = mods & ~GLFW_MOD_CAPS_LOCK & ~GLFW_MOD_NUM_LOCK;
+
+        switch (key) {
+            case GLFW_KEY_C:
+                keyShortcut(press, modifiers, GLFW_MOD_CONTROL, GLFW_MOD_SUPER, NK_KEY_COPY);
+                break;
+            case GLFW_KEY_X:
+                keyShortcut(press, modifiers, GLFW_MOD_CONTROL, GLFW_MOD_SUPER, NK_KEY_CUT);
+                break;
+            case GLFW_KEY_V:
+                keyShortcut(press, modifiers, GLFW_MOD_CONTROL, GLFW_MOD_SUPER, NK_KEY_PASTE);
+                break;
+            case GLFW_KEY_Z:
+                keyShortcut(press, modifiers, GLFW_MOD_CONTROL, GLFW_MOD_SUPER, NK_KEY_TEXT_UNDO);
+                keyShortcut(press, modifiers, -1, GLFW_MOD_SHIFT | GLFW_MOD_SUPER, NK_KEY_TEXT_REDO);
+                break;
+            case GLFW_KEY_Y:
+                keyShortcut(press, modifiers, GLFW_MOD_CONTROL, -1, NK_KEY_TEXT_REDO);
+                break;
+            case GLFW_KEY_A:
+                keyShortcut(press, modifiers, GLFW_MOD_CONTROL, GLFW_MOD_SUPER, NK_KEY_TEXT_SELECT_ALL);
+                break;
+//            case GLFW_KEY_:
+//                nk_input_key(ctx, NK_KEY_TEXT_INSERT_MODE, press);
+//                break;
+//            case GLFW_KEY_:
+//                nk_input_key(ctx, NK_KEY_TEXT_REPLACE_MODE, press);
+//                break;
+//            case GLFW_KEY_:
+//                nk_input_key(ctx, NK_KEY_TEXT_RESET_MODE, press);
+//                break;
+            case GLFW_KEY_LEFT:
+                keyShortcut(press, modifiers & ~GLFW_MOD_SHIFT, -1, GLFW_MOD_SUPER, NK_KEY_TEXT_LINE_START);
+                keyShortcut(press, modifiers & ~GLFW_MOD_SHIFT, -1, GLFW_MOD_ALT, NK_KEY_TEXT_WORD_LEFT);
+                keyShortcut(press, modifiers & ~GLFW_MOD_SHIFT, GLFW_MOD_CONTROL, -1, NK_KEY_TEXT_WORD_LEFT);
+                break;
+            case GLFW_KEY_RIGHT:
+                keyShortcut(press, modifiers & ~GLFW_MOD_SHIFT, -1, GLFW_MOD_SUPER, NK_KEY_TEXT_LINE_END);
+                keyShortcut(press, modifiers & ~GLFW_MOD_SHIFT, -1, GLFW_MOD_ALT, NK_KEY_TEXT_WORD_RIGHT);
+                keyShortcut(press, modifiers & ~GLFW_MOD_SHIFT, GLFW_MOD_CONTROL, -1, NK_KEY_TEXT_WORD_RIGHT);
+                break;
+            case GLFW_KEY_HOME:
+                keyShortcut(press, modifiers & ~GLFW_MOD_SHIFT, 0, 0, NK_KEY_TEXT_LINE_START);
+                break;
+            case GLFW_KEY_END:
+                keyShortcut(press, modifiers & ~GLFW_MOD_SHIFT, 0, 0, NK_KEY_TEXT_LINE_END);
+                break;
+            case GLFW_KEY_UP:
+                keyShortcut(press, modifiers & ~GLFW_MOD_SHIFT, -1, GLFW_MOD_SUPER, NK_KEY_TEXT_START);
+                break;
+            case GLFW_KEY_DOWN:
+                keyShortcut(press, modifiers & ~GLFW_MOD_SHIFT, -1, GLFW_MOD_SUPER, NK_KEY_TEXT_END);
+                break;
+//            case GLFW_KEY_:
+//                nk_input_key(ctx, NK_KEY_SCROLL_START, press);
+//                break;
+//            case GLFW_KEY_:
+//                nk_input_key(ctx, NK_KEY_SCROLL_END, press);
+//                break;
+//            case GLFW_KEY_:
+//                nk_input_key(ctx, NK_KEY_SCROLL_DOWN, press);
+//                break;
+//            case GLFW_KEY_:
+//                nk_input_key(ctx, NK_KEY_SCROLL_UP, press);
+//                break;
+        }
+    }
+
+    private void keyShortcut(boolean press, int modifiers, int targetMods, int macTargetMods, int key) {
+        int target = Platform.get() == Platform.MACOSX ? macTargetMods : targetMods;
+        if(target == -1) return;
+        if (press && modifiers == target)
+            nk_input_key(ctx, key, true);
+        else if (nk_input_is_key_down(ctx.input(), key))
+            nk_input_key(ctx, key, false);
     }
 
     private void newFrame() {

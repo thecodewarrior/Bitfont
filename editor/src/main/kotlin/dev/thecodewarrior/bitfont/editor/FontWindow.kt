@@ -6,6 +6,8 @@ import org.lwjgl.nuklear.NkColorf
 import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.NkVec2
 import org.lwjgl.nuklear.Nuklear.NK_EDIT_BOX
+import org.lwjgl.nuklear.Nuklear.NK_EDIT_CLIPBOARD
+import org.lwjgl.nuklear.Nuklear.NK_EDIT_FIELD
 import org.lwjgl.nuklear.Nuklear.NK_EDIT_SIMPLE
 import org.lwjgl.nuklear.Nuklear.NK_RGBA
 import org.lwjgl.nuklear.Nuklear.NK_TEXT_LEFT
@@ -55,7 +57,7 @@ class FontWindow: Window() {
                 val buffer = stack.calloc(256)
                 val length = MemoryUtil.memUTF8(fontName, false, buffer)
                 val len = stack.ints(length)
-                nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, len, 255, null)
+                nk_edit_string(ctx, NK_EDIT_FIELD, buffer, len, 255, null)
                 try {
                     fontName = MemoryUtil.memUTF8(buffer, len[0])
                 } catch (e: ParseException) {
