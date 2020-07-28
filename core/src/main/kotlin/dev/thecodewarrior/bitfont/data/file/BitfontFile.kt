@@ -10,7 +10,7 @@ import java.io.InputStream
 import java.lang.IllegalArgumentException
 
 class BitfontFile(val version: Int) {
-    val tables: MutableMap<String, MessageBuffer> = mutableMapOf()
+    val tables: MutableMap<String, ByteArray> = mutableMapOf()
 
     /**
      * Creates a new table with the specified name using the passed block or throws if a table with the same name
@@ -19,7 +19,7 @@ class BitfontFile(val version: Int) {
     inline fun createTable(name: String, block: MessagePacker.() -> Unit) {
         MessagePack.newDefaultBufferPacker().use {
             it.block()
-            tables[name] = it.toMessageBuffer()
+            tables[name] = it.toByteArray()
         }
     }
 
@@ -27,7 +27,7 @@ class BitfontFile(val version: Int) {
      * Gets an unpacker for the specified table, or null if no such table exists
      */
     fun getTable(name: String): MessageUnpacker? {
-        return tables[name]?.let { MessagePack.newDefaultUnpacker(SingleMessageBufferInput(it)) }
+        return tables[name]?.let { MessagePack.newDefaultUnpacker(it) }
     }
 
     /**
@@ -48,9 +48,8 @@ class BitfontFile(val version: Int) {
             packArrayHeader(tables.size)
             sorted.forEach { (name, buffer) ->
                 packString(name)
-                val data = buffer.toByteArray()
-                packInt(data.size)
-                writePayload(data)
+                packInt(buffer.size)
+                writePayload(buffer)
             }
         }
     }
@@ -86,7 +85,7 @@ class BitfontFile(val version: Int) {
 
             val tableCount = unpacker.unpackArrayHeader()
             repeat(tableCount) {
-                file.tables[unpacker.unpackString()] = unpacker.readPayloadAsReference(unpacker.unpackInt())
+                file.tables[unpacker.unpackString()] = unpacker.readPayload(unpacker.unpackInt())
             }
 
             return file
@@ -96,17 +95,5 @@ class BitfontFile(val version: Int) {
         fun unpack(bytes: ByteArray) = MessagePack.newDefaultUnpacker(bytes).use { unpack(it) }
         @JvmStatic
         fun unpack(inputStream: InputStream) = MessagePack.newDefaultUnpacker(inputStream).use { unpack(it) }
-    }
-
-    private class SingleMessageBufferInput(buffer: MessageBuffer): MessageBufferInput {
-        var buffer: MessageBuffer? = buffer
-
-        override fun next(): MessageBuffer? {
-            return buffer.also { buffer = null }
-        }
-
-        override fun close() {
-            // nop
-        }
     }
 }

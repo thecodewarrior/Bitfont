@@ -35,8 +35,9 @@ public class GLFWDemo {
     private static final int MAX_ELEMENT_BUFFER = 128 * 1024;
 
     private static final NkAllocator ALLOCATOR;
-
     private static final NkDrawVertexLayoutElement.Buffer VERTEX_LAYOUT;
+
+    private static GLFWDemo instance;
 
     static {
         ALLOCATOR = NkAllocator.create()
@@ -53,7 +54,12 @@ public class GLFWDemo {
 
     public static void main(String[] args) {
         System.setProperty("java.awt.headless", "true");
-        new GLFWDemo().run();
+        instance = new GLFWDemo();
+        instance.run();
+    }
+
+    public static GLFWDemo getInstance() {
+        return instance;
     }
 
     private long win;
@@ -78,13 +84,15 @@ public class GLFWDemo {
     private int uniform_tex;
     private int uniform_proj;
 
-    private final Demo demo = new Demo();
-    private final Calculator calc = new Calculator();
+    private NkColorf background = NkColorf.create()
+            .r(0.10f)
+            .g(0.18f)
+            .b(0.24f)
+            .a(1.0f);
     private final MainMenu menu = new MainMenu();
-    private final List<Window> windows = new ArrayList<>();
+    public final List<Window> windows = new ArrayList<>();
 
     public GLFWDemo() {
-        windows.add(new FontWindow());
         windows.add(new NuklearFontWindow());
     }
 
@@ -139,8 +147,6 @@ public class GLFWDemo {
             /* Input */
             newFrame();
 
-            demo.layout(ctx, 50, 50);
-            calc.layout(ctx, 300, 50);
             menu.setFullWidth(width);
             menu.setFullHeight(height);
             menu.push(ctx);
@@ -451,7 +457,7 @@ public class GLFWDemo {
 
     private void keyShortcut(boolean press, int modifiers, int targetMods, int macTargetMods, int key) {
         int target = Platform.get() == Platform.MACOSX ? macTargetMods : targetMods;
-        if(target == -1) return;
+        if (target == -1) return;
         if (press && modifiers == target)
             nk_input_key(ctx, key, true);
         else if (nk_input_is_key_down(ctx.input(), key))

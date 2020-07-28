@@ -1,21 +1,26 @@
 package dev.thecodewarrior.bitfont.editor
 
+import dev.thecodewarrior.bitfont.editor.data.BitfontEditorData
 import dev.thecodewarrior.bitfont.editor.utils.nkutil_max_text_width
 import dev.thecodewarrior.bitfont.editor.utils.nkutil_menu
 import dev.thecodewarrior.bitfont.editor.utils.nkutil_menu_bar
-import dev.thecodewarrior.bitfont.editor.utils.nkutil_menu_bar_item
 import dev.thecodewarrior.bitfont.editor.utils.nkutil_menu_item
 import dev.thecodewarrior.bitfont.editor.utils.nkutil_text_width
 import dev.thecodewarrior.bitfont.editor.utils.stackPush
 import dev.thecodewarrior.bitfont.editor.utils.set
 import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.NkRect
-import org.lwjgl.nuklear.NkVec2
 import org.lwjgl.nuklear.Nuklear.*
 import org.lwjgl.system.MemoryUtil
+import org.lwjgl.util.nfd.NativeFileDialog
+import org.lwjgl.util.nfd.NativeFileDialog.NFD_CANCEL
+import org.lwjgl.util.nfd.NativeFileDialog.NFD_OKAY
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 import java.text.NumberFormat
 
-class MainMenu: Window() {
+class MainMenu: Window(0f, 0f) {
     var fullWidth = 0
     var fullHeight = 0
 
@@ -41,6 +46,22 @@ class MainMenu: Window() {
             nkutil_menu(ctx, "File", nkutil_text_width(ctx, "File"), nkutil_max_text_width(ctx, "Open", "Save"), 2) {
                 nkutil_menu_item(ctx, "Open") {
                     println("Open")
+                    stackPush { stack ->
+                        val pathOut = stack.mallocPointer(1)
+                        val result = NativeFileDialog.NFD_OpenDialog("bitfont", null, pathOut)
+                        when(result) {
+                            NFD_OKAY -> {
+                                val path = pathOut.getStringUTF8(0)
+                                println("Selected: $path")
+                                val data = BitfontEditorData.open(Files.newInputStream(Paths.get(path)))
+                                GLFWDemo.getInstance().windows.add(FontWindow(data))
+                            }
+                            NFD_CANCEL -> {
+                                println("Canceled")
+                            }
+                            else -> {}
+                        }
+                    }
                 }
                 nkutil_menu_item(ctx, "Save") {
                     println("Save")
