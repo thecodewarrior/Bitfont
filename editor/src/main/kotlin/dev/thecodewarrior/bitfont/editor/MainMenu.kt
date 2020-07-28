@@ -1,12 +1,17 @@
 package dev.thecodewarrior.bitfont.editor
 
+import dev.thecodewarrior.bitfont.editor.utils.nkutil_max_text_width
+import dev.thecodewarrior.bitfont.editor.utils.nkutil_menu
+import dev.thecodewarrior.bitfont.editor.utils.nkutil_menu_bar
+import dev.thecodewarrior.bitfont.editor.utils.nkutil_menu_bar_item
+import dev.thecodewarrior.bitfont.editor.utils.nkutil_menu_item
+import dev.thecodewarrior.bitfont.editor.utils.nkutil_text_width
 import dev.thecodewarrior.bitfont.editor.utils.stackPush
 import dev.thecodewarrior.bitfont.editor.utils.set
 import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.NkRect
 import org.lwjgl.nuklear.NkVec2
 import org.lwjgl.nuklear.Nuklear.*
-import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.text.NumberFormat
 
@@ -17,7 +22,7 @@ class MainMenu: Window() {
     override fun push(ctx: NkContext) {
         stackPush { stack ->
             val rect = NkRect.mallocStack(stack)
-            rect.set(0, 0, fullWidth, 35)
+            rect.set(0, 0, fullWidth, 25 + ctx.style().window().menu_padding().y()*2)
             if (nk_begin(
                     ctx,
                     uuid,
@@ -31,48 +36,25 @@ class MainMenu: Window() {
         }
     }
 
-    var opened = false
     override fun pushContents(ctx: NkContext) {
-        stackPush { stack ->
-            val size = NkVec2.mallocStack(stack)
-
-            nk_menubar_begin(ctx)
-            nk_layout_row_static(ctx, 25f, 80, 2)
-            if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, size.set(150f, 200f))) {
-                nk_layout_row_dynamic(ctx, 25f, 1)
-                val state = stack.ints(if (opened) NK_MAXIMIZED else NK_MINIMIZED)
-                if (nk_menu_begin_label(ctx, "FILE", NK_TEXT_LEFT, size.set(150f, 200f))) {
-                    opened = true
-                    nk_layout_row_dynamic(ctx, 25f, 1)
-                    if (nk_menu_item_label(ctx, "Open", NK_TEXT_LEFT)) {
-                        println("Open")
-                    }
-                    nk_layout_row_dynamic(ctx, 25f, 1)
-                    if (nk_menu_item_label(ctx, "Close", NK_TEXT_LEFT)) {
-                        println("Close")
-                    }
-                    nk_menu_end(ctx)
-                } else if (opened) { // placeholder for "is this menu open" check, since we only have one right now
-                    opened = false
+        nkutil_menu_bar(ctx, 2) {
+            nkutil_menu(ctx, "File", nkutil_text_width(ctx, "File"), nkutil_max_text_width(ctx, "Open", "Save"), 2) {
+                nkutil_menu_item(ctx, "Open") {
+                    println("Open")
                 }
-                nk_layout_row_dynamic(ctx, 25f, 1)
-                if (nk_menu_item_label(ctx, "Thing", NK_TEXT_LEFT)) {
-                    println("Thing")
+                nkutil_menu_item(ctx, "Save") {
+                    println("Save")
                 }
-                nk_layout_row_dynamic(ctx, 25f, 1)
-                if (nk_menu_item_label(ctx, "Other", NK_TEXT_LEFT)) {
-                    println("Other")
-                }
-                nk_menu_end(ctx)
             }
-            if (nk_menu_item_label(ctx, "Memory Report", NK_TEXT_LEFT)) {
-                report()
+            nkutil_menu(ctx, "Tools", nkutil_text_width(ctx, "Tools"), nkutil_max_text_width(ctx, "Memory Report"), 1) {
+                nkutil_menu_item(ctx, "Memory Report") {
+                    printMemoryReport()
+                }
             }
-            nk_menubar_end(ctx)
         }
     }
 
-    private fun report() {
+    private fun printMemoryReport() {
         val threadReport = MemoryReport<String>()
         val stackDepth = 5
         val stackReport = MemoryReport<List<StackTraceElement>>()

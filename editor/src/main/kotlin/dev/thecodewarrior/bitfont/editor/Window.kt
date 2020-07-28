@@ -1,13 +1,13 @@
 package dev.thecodewarrior.bitfont.editor
 
-import dev.thecodewarrior.bitfont.editor.utils.set
+import dev.thecodewarrior.bitfont.editor.utils.Freeable
 import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.NkRect
 import org.lwjgl.nuklear.Nuklear.*
 import org.lwjgl.system.MemoryStack
 import java.util.UUID
 
-abstract class Window {
+abstract class Window: Freeable {
     val uuid = UUID.randomUUID().toString()
     var title: String = ""
 
@@ -28,5 +28,4 @@ abstract class Window {
     }
 
     abstract fun pushContents(ctx: NkContext)
-    abstract fun free()
 }

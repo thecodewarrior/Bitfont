@@ -45,12 +45,14 @@ dependencies {
     implementation "org.lwjgl:lwjgl-glfw:$lwjglVersion"
     implementation "org.lwjgl:lwjgl-opengl:$lwjglVersion"
     implementation "org.lwjgl:lwjgl-stb:$lwjglVersion"
+    implementation "org.lwjgl:lwjgl-nfd:$lwjglVersion"
 
     runtimeClasspath "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
     runtimeClasspath "org.lwjgl:lwjgl-nuklear:$lwjglVersion:$lwjglNatives"
     runtimeClasspath "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
     runtimeClasspath "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
     runtimeClasspath "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
+    runtimeClasspath "org.lwjgl:lwjgl-nfd:$lwjglVersion:$lwjglNatives"
 }
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'

@@ -10,8 +10,6 @@ import org.lwjgl.nuklear.Nuklear.nk_edit_string
 import org.lwjgl.nuklear.Nuklear.nk_label
 import org.lwjgl.nuklear.Nuklear.nk_layout_row_dynamic
 import org.lwjgl.nuklear.Nuklear.nk_property_int
-import org.lwjgl.nuklear.Nuklear.nk_style_pop_font
-import org.lwjgl.nuklear.Nuklear.nk_style_push_font
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.text.ParseException
@@ -41,8 +39,9 @@ class FontWindow: Window() {
             nk_label(ctx, "Font Name:", NK_TEXT_LEFT)
             nk_layout_row_dynamic(ctx, 25f, 1)
             run {
-                val buffer = stack.UTF8(fontName, false)
-                val len = stack.ints(buffer.remaining())
+                val buffer = stack.calloc(256)
+                val length = MemoryUtil.memUTF8(fontName, false, buffer)
+                val len = stack.ints(length)
                 nk_edit_string(ctx, NK_EDIT_FIELD, buffer, len, 255, null)
                 try {
                     fontName = MemoryUtil.memUTF8(buffer, len[0])

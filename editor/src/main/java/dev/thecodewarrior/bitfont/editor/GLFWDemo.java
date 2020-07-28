@@ -4,6 +4,7 @@
  */
 package dev.thecodewarrior.bitfont.editor;
 
+import dev.thecodewarrior.bitfont.editor.utils.GlobalAllocations;
 import org.lwjgl.glfw.*;
 import org.lwjgl.nuklear.*;
 import org.lwjgl.opengl.*;
@@ -66,7 +67,6 @@ public class GLFWDemo {
             display_height;
 
     private NkContext ctx = NkContext.create();
-    private NkUserFont default_font = NkUserFont.create();
 
     private NkBuffer cmds = NkBuffer.create();
     private NkDrawNullTexture null_texture = NkDrawNullTexture.create();
@@ -294,6 +294,7 @@ public class GLFWDemo {
 
                 int x = (int) cx.get(0);
                 int y = (int) cy.get(0);
+                nk_input_motion(ctx, x, y);
 
                 int nkButton;
                 switch (button) {
@@ -591,8 +592,9 @@ public class GLFWDemo {
         glDeleteShader(vert_shdr);
         glDeleteShader(frag_shdr);
         glDeleteProgram(prog);
-        glDeleteTextures(default_font.texture().id());
         glDeleteTextures(null_texture.texture().id());
+        // I would jump through hoops to delete all the font atlas textures, but the process is already ending, there's
+        // no point adding that complexity
         glDeleteBuffers(vbo);
         glDeleteBuffers(ebo);
         nk_buffer_free(cmds);
@@ -605,9 +607,8 @@ public class GLFWDemo {
         Objects.requireNonNull(ctx.clip().paste()).free();
         nk_free(ctx);
         destroy();
-        Objects.requireNonNull(default_font.query()).free();
-        Objects.requireNonNull(default_font.width()).free();
 
+        GlobalAllocations.free();
         calc.numberFilter.free();
         menu.free();
         for (Window window : windows) {

@@ -1,5 +1,6 @@
 package dev.thecodewarrior.bitfont.editor
 
+import dev.thecodewarrior.bitfont.editor.utils.Freeable
 import dev.thecodewarrior.bitfont.utils.RectanglePacker
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import org.lwjgl.nuklear.NkHandle
@@ -21,7 +22,7 @@ import org.lwjgl.system.MemoryUtil
 import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
 
-class LiveFont(val fonts: FontList, val fontHeight: Float) {
+class FontAtlas(val fonts: FontList, val fontHeight: Float) {
     private var textureSize = generateSequence(64) { it * 2 }.first { it > fontHeight }
 
     private val gpuMaxTexSize = GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE)
@@ -64,6 +65,7 @@ class LiveFont(val fonts: FontList, val fontHeight: Float) {
             .texture { it: NkHandle ->
                 it.id(fontTexID)
             }
+        reverseMap[userFont] = this
     }
 
     operator fun get(codepoint: Int): GlyphInfo? {
@@ -126,10 +128,18 @@ class LiveFont(val fonts: FontList, val fontHeight: Float) {
         initTexture()
         cache.values.forEach { draw(it) }
     }
+
+    companion object {
+        private val reverseMap = mutableMapOf<NkUserFont, FontAtlas>()
+
+        fun find(userFont: NkUserFont): FontAtlas? {
+            return reverseMap[userFont]
+        }
+    }
 }
 
 data class GlyphInfo(
-    val font: LazyFont, val codepoint: Int,
+    val font: TTFFont, val codepoint: Int,
     val advance: Float,
     val width: Float, val height: Float,
     val offsetX: Float, val offsetY: Float,
@@ -162,7 +172,7 @@ data class GlyphInfo(
     }
 }
 
-class LazyFont(val style: String, val weight: String, val file: String) {
+class TTFFont(val style: String, val weight: String, val file: String) {
     private var loaded = false
 
     private val fontInfo: STBTTFontinfo = STBTTFontinfo.create()
@@ -214,7 +224,7 @@ class LazyFont(val style: String, val weight: String, val file: String) {
             texture.flip()
             MemoryUtil.memFree(stbBitmap)
 
-            val glyph = GlyphInfo(
+            return GlyphInfo(
                 this, codepoint,
                 advance[0] * scale,
                 bitmapWidth.toFloat() / oversamplingX,
@@ -224,8 +234,6 @@ class LazyFont(val style: String, val weight: String, val file: String) {
                 bitmapWidth, bitmapHeight,
                 texture
             )
-
-            return glyph
         }
     }
 
