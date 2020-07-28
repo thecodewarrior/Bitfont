@@ -1,30 +1,17 @@
 package dev.thecodewarrior.bitfont.editor
 
 import org.lwjgl.BufferUtils
-import org.lwjgl.nuklear.NkColor
 import org.lwjgl.nuklear.NkColorf
 import org.lwjgl.nuklear.NkContext
-import org.lwjgl.nuklear.NkVec2
-import org.lwjgl.nuklear.Nuklear.NK_EDIT_BOX
-import org.lwjgl.nuklear.Nuklear.NK_EDIT_CLIPBOARD
 import org.lwjgl.nuklear.Nuklear.NK_EDIT_FIELD
-import org.lwjgl.nuklear.Nuklear.NK_EDIT_SIMPLE
-import org.lwjgl.nuklear.Nuklear.NK_RGBA
 import org.lwjgl.nuklear.Nuklear.NK_TEXT_LEFT
 import org.lwjgl.nuklear.Nuklear.nk_button_label
-import org.lwjgl.nuklear.Nuklear.nk_color_picker
-import org.lwjgl.nuklear.Nuklear.nk_combo_begin_color
-import org.lwjgl.nuklear.Nuklear.nk_combo_end
 import org.lwjgl.nuklear.Nuklear.nk_edit_string
 import org.lwjgl.nuklear.Nuklear.nk_label
 import org.lwjgl.nuklear.Nuklear.nk_layout_row_dynamic
-import org.lwjgl.nuklear.Nuklear.nk_layout_row_static
-import org.lwjgl.nuklear.Nuklear.nk_menubar_begin
-import org.lwjgl.nuklear.Nuklear.nk_option_label
 import org.lwjgl.nuklear.Nuklear.nk_property_int
-import org.lwjgl.nuklear.Nuklear.nk_propertyf
-import org.lwjgl.nuklear.Nuklear.nk_rgb_cf
-import org.lwjgl.nuklear.Nuklear.nk_widget_width
+import org.lwjgl.nuklear.Nuklear.nk_style_pop_font
+import org.lwjgl.nuklear.Nuklear.nk_style_push_font
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.text.ParseException
@@ -54,9 +41,8 @@ class FontWindow: Window() {
             nk_label(ctx, "Font Name:", NK_TEXT_LEFT)
             nk_layout_row_dynamic(ctx, 25f, 1)
             run {
-                val buffer = stack.calloc(256)
-                val length = MemoryUtil.memUTF8(fontName, false, buffer)
-                val len = stack.ints(length)
+                val buffer = stack.UTF8(fontName, false)
+                val len = stack.ints(buffer.remaining())
                 nk_edit_string(ctx, NK_EDIT_FIELD, buffer, len, 255, null)
                 try {
                     fontName = MemoryUtil.memUTF8(buffer, len[0])

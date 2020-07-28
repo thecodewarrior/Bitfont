@@ -18,7 +18,7 @@ abstract class Window {
                     ctx,
                     uuid,
                     title,
-                    rect.set(0, 0, 230f, 250f),
+                    rect.set(100f, 100f, 230f, 250f),
                     NK_WINDOW_BORDER or NK_WINDOW_MOVABLE or NK_WINDOW_SCALABLE or NK_WINDOW_MINIMIZABLE or NK_WINDOW_TITLE
                 )) {
                 pushContents(ctx)

@@ -52,7 +52,6 @@ public class GLFWDemo {
 
     public static void main(String[] args) {
         System.setProperty("java.awt.headless", "true");
-        Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
         new GLFWDemo().run();
     }
 
@@ -86,6 +85,7 @@ public class GLFWDemo {
 
     public GLFWDemo() {
         windows.add(new FontWindow());
+        windows.add(new NuklearFontWindow());
     }
 
     private void run() {
@@ -133,29 +133,11 @@ public class GLFWDemo {
         NkContext ctx = setupWindow(win);
 
         nk_style_set_font(ctx, NuklearFonts.getSans("Medium", 18).getUserFont());
-//
-//        try (MemoryStack stack = stackPush()) {
-//            NkHandle userdata = NkHandle.callocStack(stack);
-//            userdata.ptr(0);
-//            ctx.clip().set(userdata,
-//                    (handle, edit) -> {
-//                        String text = glfwGetClipboardString(win);
-//                        if(text != null) {
-//                            nk_textedit_paste(NkTextEdit.create(edit), text);
-//                        }
-//                    },
-//                    (handle, text, len) -> {
-//                        ByteBuffer buf = MemoryUtil.memByteBuffer(text, len);
-//                        glfwSetClipboardString(win, buf);
-//                    }
-//            );
-//        }
 
         glfwShowWindow(win);
         while (!glfwWindowShouldClose(win)) {
             /* Input */
             newFrame();
-
 
             demo.layout(ctx, 50, 50);
             calc.layout(ctx, 300, 50);
