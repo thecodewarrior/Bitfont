@@ -1,6 +1,7 @@
 package dev.thecodewarrior.bitfont.editor
 
 import dev.thecodewarrior.bitfont.editor.utils.Freeable
+import dev.thecodewarrior.bitfont.editor.utils.GlobalAllocations
 import dev.thecodewarrior.bitfont.utils.RectanglePacker
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import org.lwjgl.nuklear.NkHandle
@@ -22,12 +23,12 @@ import org.lwjgl.system.MemoryUtil
 import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
 
-class FontAtlas(val fonts: FontList, val fontHeight: Float) {
+class FontAtlas(val fonts: FontList, val fontHeight: Float) : Freeable {
     private var textureSize = generateSequence(64) { it * 2 }.first { it > fontHeight }
 
     private val gpuMaxTexSize = GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE)
 
-    val userFont = NkUserFont.create()
+    val userFont = NkUserFont.malloc()
 
     private val fontTexID = GL11.glGenTextures()
 
@@ -37,8 +38,9 @@ class FontAtlas(val fonts: FontList, val fontHeight: Float) {
     private var debugImage: BufferedImage? = BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB)
 
     init {
+        GlobalAllocations.add(this)
         initTexture()
-        userFont
+        GlobalAllocations.add(userFont)
             .width { handle: Long, h: Float, text: Long, len: Int ->
                 var textWidth = 0f
                 MemoryStack.stackPush().use { stack ->
@@ -127,6 +129,12 @@ class FontAtlas(val fonts: FontList, val fontHeight: Float) {
         packer.expand(textureSize, textureSize)
         initTexture()
         cache.values.forEach { draw(it) }
+    }
+
+    override fun free() {
+        cache.values.forEach {
+            MemoryUtil.memFree(it.bitmap)
+        }
     }
 
     companion object {

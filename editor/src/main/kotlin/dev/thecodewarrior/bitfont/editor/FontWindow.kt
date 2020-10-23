@@ -8,6 +8,7 @@ import org.lwjgl.nuklear.NkColorf
 import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.Nuklear.NK_EDIT_FIELD
 import org.lwjgl.nuklear.Nuklear.NK_TEXT_LEFT
+import org.lwjgl.nuklear.Nuklear.NK_WINDOW_CLOSABLE
 import org.lwjgl.nuklear.Nuklear.NK_WINDOW_NO_SCROLLBAR
 import org.lwjgl.nuklear.Nuklear.nk_button_label
 import org.lwjgl.nuklear.Nuklear.nk_edit_string
@@ -20,8 +21,12 @@ import java.io.InputStream
 import java.text.ParseException
 
 class FontWindow(val data: BitfontEditorData): Window(250f, 300f) {
+    private val childWindows = mutableListOf<Window>()
+    private val typesetterWindow = TypesetterWindow(data)
+
     init {
-        flags = flags or NK_WINDOW_NO_SCROLLBAR
+        flags = flags or NK_WINDOW_NO_SCROLLBAR or NK_WINDOW_CLOSABLE
+        closeOnHide = true
     }
 
     override fun pushContents(ctx: NkContext) {
@@ -72,7 +77,7 @@ class FontWindow(val data: BitfontEditorData): Window(250f, 300f) {
                 println("browse glyphs")
             }
             if (nk_button_label(ctx, "Typesetter")) {
-                println("typesetter")
+                typesetterWindow.open(ctx)
             }
             if (nk_button_label(ctx, "Text Layout")) {
                 println("text layout")
@@ -80,7 +85,11 @@ class FontWindow(val data: BitfontEditorData): Window(250f, 300f) {
         }
     }
 
-    override fun free() {
+    override fun onClose(ctx: NkContext) {
+        typesetterWindow.close(ctx)
     }
 
+    override fun free() {
+        typesetterWindow.free()
+    }
 }

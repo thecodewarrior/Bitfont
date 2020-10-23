@@ -16,7 +16,6 @@ import org.lwjgl.util.nfd.NativeFileDialog
 import org.lwjgl.util.nfd.NativeFileDialog.NFD_CANCEL
 import org.lwjgl.util.nfd.NativeFileDialog.NFD_OKAY
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.text.NumberFormat
 
@@ -52,9 +51,10 @@ class MainMenu: Window(0f, 0f) {
                         when(result) {
                             NFD_OKAY -> {
                                 val path = pathOut.getStringUTF8(0)
+                                NativeFileDialog.nNFD_Free(pathOut.get(0))
                                 println("Selected: $path")
                                 val data = BitfontEditorData.open(Files.newInputStream(Paths.get(path)))
-                                GLFWDemo.getInstance().windows.add(FontWindow(data))
+                                BitfontEditorApp.getInstance().windows.add(FontWindow(data))
                             }
                             NFD_CANCEL -> {
                                 println("Canceled")

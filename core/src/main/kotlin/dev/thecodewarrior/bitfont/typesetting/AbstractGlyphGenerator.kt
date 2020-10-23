@@ -11,8 +11,8 @@ abstract class AbstractGlyphGenerator(val string: AttributedString): BufferedIte
     /**
      * True if the entire string has been consumed
      */
-    protected var isEnd: Boolean = string.isEmpty()
-        private set
+    protected val isEnd: Boolean
+        get() = string.isEmpty() || offset >= string.plaintext.length
 
     /**
      * The index of the current codepoint
@@ -46,7 +46,6 @@ abstract class AbstractGlyphGenerator(val string: AttributedString): BufferedIte
         val old = codepoint
         offset += Character.charCount(old)
         index++
-        isEnd = index == string.plaintext.length
         return old
     }
 

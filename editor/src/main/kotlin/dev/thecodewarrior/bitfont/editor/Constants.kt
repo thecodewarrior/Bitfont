@@ -10,7 +10,7 @@ object Constants {
     val namesList = NamesList()
 
     fun resourceOrNull(name: String): InputStream? {
-        return GLFWDemo::class.java.getResourceAsStream(name)
+        return BitfontEditorApp::class.java.getResourceAsStream(name)
     }
 
     fun resource(name: String): InputStream {
