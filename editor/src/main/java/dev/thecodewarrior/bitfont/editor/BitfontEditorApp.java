@@ -27,7 +27,7 @@ import static org.lwjgl.system.MemoryUtil.*;
  * <p>This demo is a Java port of
  * <a href="https://github.com/vurtun/nuklear/tree/master/demo/glfw_opengl3">https://github.com/vurtun/nuklear/tree/master/demo/glfw_opengl3</a>.</p>
  */
-public class GLFWDemo {
+public class BitfontEditorApp {
 
     private static final int BUFFER_INITIAL_SIZE = 4 * 1024;
 
@@ -37,7 +37,7 @@ public class GLFWDemo {
     private static final NkAllocator ALLOCATOR;
     private static final NkDrawVertexLayoutElement.Buffer VERTEX_LAYOUT;
 
-    private static GLFWDemo instance;
+    private static BitfontEditorApp instance;
 
     static {
         ALLOCATOR = NkAllocator.create()
@@ -54,11 +54,11 @@ public class GLFWDemo {
 
     public static void main(String[] args) {
         System.setProperty("java.awt.headless", "true");
-        instance = new GLFWDemo();
+        instance = new BitfontEditorApp();
         instance.run();
     }
 
-    public static GLFWDemo getInstance() {
+    public static BitfontEditorApp getInstance() {
         return instance;
     }
 
@@ -67,6 +67,12 @@ public class GLFWDemo {
     private int
             width,
             height;
+
+    /**
+     * How many consecutive frames the app has been focused for (caps at 100). This is used to prevent the issue where
+     * clicking to focus the window will create a massive delta.
+     */
+    private int focusedFrames;
 
     private int
             display_width,
@@ -92,7 +98,7 @@ public class GLFWDemo {
     private final MainMenu menu = new MainMenu();
     public final List<Window> windows = new ArrayList<>();
 
-    public GLFWDemo() {
+    public BitfontEditorApp() {
         windows.add(new NuklearFontWindow());
     }
 
@@ -150,7 +156,7 @@ public class GLFWDemo {
             menu.setFullWidth(width);
             menu.setFullHeight(height);
             menu.push(ctx);
-            for (Window window : windows) {
+            for (Window window : windows.toArray(new Window[0])) {
                 window.push(ctx);
             }
 
@@ -161,8 +167,7 @@ public class GLFWDemo {
                 glfwGetWindowSize(win, width, height);
                 glViewport(0, 0, width.get(0), height.get(0));
 
-                NkColorf bg = demo.background;
-                glClearColor(bg.r(), bg.g(), bg.b(), bg.a());
+                glClearColor(background.r(), background.g(), background.b(), background.a());
             }
             glClear(GL_COLOR_BUFFER_BIT);
             /*
@@ -300,6 +305,9 @@ public class GLFWDemo {
 
                 int x = (int) cx.get(0);
                 int y = (int) cy.get(0);
+
+                if(focusedFrames == 0) // if we just got focus, set the previous position to prevent any delta
+                    ctx.input().mouse().prev().set(x, y);
                 nk_input_motion(ctx, x, y);
 
                 int nkButton;
@@ -496,6 +504,12 @@ public class GLFWDemo {
         }
 
         nk_input_end(ctx);
+
+        if(glfwGetWindowAttrib(win, GLFW_FOCUSED) == GLFW_FALSE) {
+            focusedFrames = 0;
+        } else if(focusedFrames < 100) {
+            focusedFrames++;
+        }
     }
 
     private void render(int AA, int max_vertex_buffer, int max_element_buffer) {
@@ -609,18 +623,16 @@ public class GLFWDemo {
     }
 
     private void shutdown() {
-        Objects.requireNonNull(ctx.clip().copy()).free();
-        Objects.requireNonNull(ctx.clip().paste()).free();
-        nk_free(ctx);
-        destroy();
-
         GlobalAllocations.free();
-        calc.numberFilter.free();
         menu.free();
         for (Window window : windows) {
             window.free();
         }
 
+        Objects.requireNonNull(ctx.clip().copy()).free();
+        Objects.requireNonNull(ctx.clip().paste()).free();
+        nk_free(ctx);
+        destroy();
         Objects.requireNonNull(ALLOCATOR.alloc()).free();
         Objects.requireNonNull(ALLOCATOR.mfree()).free();
     }
