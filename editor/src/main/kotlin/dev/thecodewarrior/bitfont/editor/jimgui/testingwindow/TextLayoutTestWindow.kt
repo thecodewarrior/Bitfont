@@ -7,13 +7,11 @@ import dev.thecodewarrior.bitfont.editor.jimgui.utils.Colors
 import dev.thecodewarrior.bitfont.editor.jimgui.utils.extensions.draw
 import dev.thecodewarrior.bitfont.editor.jimgui.utils.extensions.u32
 import dev.thecodewarrior.bitfont.editor.jimgui.utils.math.vec
-import dev.thecodewarrior.bitfont.editor.jimgui.testingwindow.AbstractTestWindow
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.ShapeExclusionTextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
 import dev.thecodewarrior.bitfont.typesetting.Typesetter
 import dev.thecodewarrior.bitfont.utils.Rect2i
-import dev.thecodewarrior.bitfont.utils.Vec2i
 import java.awt.Rectangle
 import java.awt.geom.AffineTransform
 import java.awt.geom.Area
@@ -61,10 +59,9 @@ class TextLayoutTestWindow(document: BitfontDocument): AbstractTestWindow(docume
             area.width / scale, area.height / scale
         )
 
-        val container = ShapeExclusionTextContainer()
+        val container = ShapeExclusionTextContainer(canvas.widthi / scale - height * 2)
         if(exclusion) configureExclusion(imgui, container, area, bounds)
 
-        container.size = Vec2i(canvas.widthi / scale - height * 2, canvas.heighti / scale - height * 4)
         val layoutManager = TextLayoutManager(listOf(document.bitfont))
         layoutManager.textContainers.add(container)
         layoutManager.typesetterOptions = options
@@ -99,7 +96,7 @@ class TextLayoutTestWindow(document: BitfontDocument): AbstractTestWindow(docume
 
     fun configureExclusion(imgui: ImGui, container: ShapeExclusionTextContainer, area: Rect2i, bounds: Rect2i) {
         container.verticalPadding = 3
-        container.lineFragmentPadding = 3
+//        container.linePadding = 3
         run {
             val radius = 100
             val innerRadius = 80

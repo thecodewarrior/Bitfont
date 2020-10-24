@@ -11,11 +11,11 @@ import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 
-open class ShapeExclusionTextContainer: TextContainer() {
+open class ShapeExclusionTextContainer(width: Int, height: Int = Int.MAX_VALUE): TextContainer(width, height) {
     var verticalPadding: Int = 1
     val exclusionPaths: MutableList<Shape> = mutableListOf()
 
-    override fun fixLineFragment(line: LineFragment): LineFragment? {
+    override fun fixLineFragment(line: LineFragment) {
         val rect = Rectangle2D.Float(
             line.posX.toFloat(),
             line.posY.toFloat() - verticalPadding,
@@ -23,7 +23,7 @@ open class ShapeExclusionTextContainer: TextContainer() {
             line.height.toFloat() + verticalPadding * 2
         )
         if(exclusionPaths.none { it.intersects(rect) })
-            return super.fixLineFragment(line)
+            return // super.fixLineFragment(line)
 
         val exclusion = Area()
         exclusionPaths.forEach {
@@ -57,12 +57,12 @@ open class ShapeExclusionTextContainer: TextContainer() {
         var range = merged.first()
 
         if(range.first <= line.posX) {
-            line.width = line.maxX - range.last
+            line.width = line.posX + line.width - range.last
             line.posX = range.last
             if(merged.size > 1)
                 range = merged[1]
             else
-                return null
+                return // null
         }
 
         when {
@@ -72,16 +72,16 @@ open class ShapeExclusionTextContainer: TextContainer() {
                 // second range's start would by necessity be greater than the first range's end, or they would have
                 // merged, and thus the line's posX is by necessity greater than the second range's start, so this is
                 // always false
-                return null
+                return // null
             }
-            line.maxX <= range.last -> {
+            line.posX + line.width <= range.last -> {
                 line.width = range.first - line.posX
-                return null
+                return // null
             }
             else -> {
-                val next = LineFragment(range.last, line.posY, line.maxX - range.last, line.height)
+                val next = LineFragment(range.last, line.posY, line.posX + line.width - range.last, line.height)
                 line.width = range.first - line.posX
-                return next
+                return // next
             }
         }
     }

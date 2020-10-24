@@ -33,7 +33,7 @@ class FontAtlas(val fonts: FontList, val fontHeight: Float) : Freeable {
     private val fontTexID = GL11.glGenTextures()
 
     private val packer = RectanglePacker<GlyphInfo>(textureSize, textureSize, 1)
-    private val cache = Int2ObjectOpenHashMap<GlyphInfo>()
+    private val cache = Int2ObjectOpenHashMap<GlyphInfo?>()
 
     private var debugImage: BufferedImage? = BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB)
 
@@ -128,12 +128,13 @@ class FontAtlas(val fonts: FontList, val fontHeight: Float) : Freeable {
                 "texture size is $gpuMaxTexSize x $gpuMaxTexSize.")
         packer.expand(textureSize, textureSize)
         initTexture()
-        cache.values.forEach { draw(it) }
+        cache.values.forEach { if(it != null) draw(it) }
     }
 
     override fun free() {
         cache.values.forEach {
-            MemoryUtil.memFree(it.bitmap)
+            if(it != null)
+                MemoryUtil.memFree(it.bitmap)
         }
     }
 

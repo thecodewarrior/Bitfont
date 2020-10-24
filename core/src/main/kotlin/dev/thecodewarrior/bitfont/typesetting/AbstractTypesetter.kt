@@ -7,29 +7,24 @@ import dev.thecodewarrior.bitfont.utils.CombiningClass
 import kotlin.math.max
 import kotlin.math.min
 
-class Typesetter(val glyphs: BufferedIterator<AttributedGlyph>): BufferedIterator<GraphemeCluster>() {
-    var options: Options = Options()
+public class Typesetter(private val glyphs: BufferedIterator<AttributedGlyph>): BufferedIterator<GraphemeCluster>() {
+    public var options: Options = Options()
 
-    class Options {
-        var enableKerning: Boolean = false
-        var enableCombiningCharacters: Boolean = true
+    public class Options {
+        public var enableKerning: Boolean = false
+        public var enableCombiningCharacters: Boolean = true
         // callbacks for more advanced behavior? (e.g. dynamic leading)
         // maybe a system to transform attributes? (e.g. bold -> leading++)
     }
 
     private var cursorX: Int = 0
-    private var cursorY: Int = 0
     private var previousGlyph: GraphemeCluster? = null
-
-    fun resetCursor(cursor: Int) {
-        cursorX = cursor
-    }
 
     override fun refillBuffer() {
         if(!glyphs.hasNext())
             return
 
-        var typesetGlyph = TypesetGlyph(cursorX, cursorY, glyphs.next())
+        var typesetGlyph = TypesetGlyph(cursorX, 0, glyphs.next())
         val previous = previousGlyph
         // only kern if neither glyph has an explicit advance width.
         if(options.enableKerning && previous != null &&
@@ -37,7 +32,7 @@ class Typesetter(val glyphs: BufferedIterator<AttributedGlyph>): BufferedIterato
             val gap = getKernGap(previous, typesetGlyph) - TARGET_GAP
             if(gap > 0) {
                 cursorX -= gap
-                typesetGlyph = TypesetGlyph(cursorX, cursorY, typesetGlyph)
+                typesetGlyph = TypesetGlyph(cursorX, 0, typesetGlyph)
             }
         }
 
@@ -57,14 +52,19 @@ class Typesetter(val glyphs: BufferedIterator<AttributedGlyph>): BufferedIterato
      * is found, this method returns without consuming it
      */
     fun addAttachments(cluster: GraphemeCluster) {
-        // how far to space combining characters apart
+        // how far to space combining characters apart for this font
         val combiningGap = max(1, (cluster.glyph.font?.capHeight ?: 0) / 8)
 
+        // the bounding box of the parent
+        val parentTop = cluster.glyph.bearingY
+        val parentHeight = cluster.glyph.image.height
+        val parentLeft = cluster.glyph.bearingX
+        val parentRight = cluster.glyph.bearingX + cluster.glyph.image.width
+
         // the attachment points, relative to the glyph origin
-        var top = cluster.glyph.bearingY
-        var bottom = cluster.glyph.bearingY + cluster.glyph.image.height
-        val left = cluster.glyph.bearingX
-        val right = cluster.glyph.bearingX + cluster.glyph.image.width
+        // these will be updated as more characters are attached
+        var aboveY = parentTop
+        var belowY = parentTop + parentHeight
 
         while(glyphs.hasNext()) {
             val next = glyphs.peekNext()
@@ -76,57 +76,49 @@ class Typesetter(val glyphs: BufferedIterator<AttributedGlyph>): BufferedIterato
             cluster.attachments = attachments
 
             val attachment = glyphs.next()
-            val width = attachment.glyph.image.width
-            val height = attachment.glyph.image.height
-
-            // "attached" glyphs have no space, so they merge with the glyph they're attached to.
-            val gapX =
-                if(combiningClass.attached || combiningClass.yAlign != CombiningClass.YAlignment.CENTER)
-                    0
-                else
-                    combiningGap
-            val gapY =
-                if(combiningClass.attached && combiningClass.yAlign != CombiningClass.YAlignment.CENTER)
-                    0
-                else
-                    combiningGap
+            val attachmentWidth = attachment.glyph.image.width
+            val attachmentHeight = attachment.glyph.image.height
 
             val attachmentX = when(combiningClass.xAlign) {
                 CombiningClass.XAlignment.LEFT -> {
-                    left - width - gapX
+                    parentLeft - attachmentWidth - combiningGap
                 }
                 CombiningClass.XAlignment.LEFT_CORNER -> {
-                    left
+                    parentLeft
                 }
                 CombiningClass.XAlignment.CENTER -> {
-                    left + (right - left - width)/2
+                    parentLeft + (parentRight - parentLeft - attachmentWidth)/2
                 }
                 CombiningClass.XAlignment.RIGHT_CORNER -> {
-                    right - width
+                    parentRight - attachmentWidth
                 }
                 CombiningClass.XAlignment.RIGHT -> {
-                    right + gapX
+                    parentRight + combiningGap
                 }
                 CombiningClass.XAlignment.DOUBLE -> {
-                    right - (width)/2
+                    parentRight - (attachmentWidth)/2
                 }
-            } - attachment.glyph.bearingX
+            }
 
             val attachmentY = when(combiningClass.yAlign) {
                 CombiningClass.YAlignment.ABOVE -> {
-                    top -= height + gapY
-                    top
+                    aboveY -= attachmentHeight + combiningGap
+                    aboveY
                 }
                 CombiningClass.YAlignment.CENTER -> {
-                    top + (bottom - top - height)/2
+                    parentTop + (parentHeight - attachmentHeight)/2
                 }
                 CombiningClass.YAlignment.BELOW -> {
-                    bottom += height + gapY
-                    bottom - height
+                    belowY += attachmentHeight + combiningGap
+                    belowY - attachmentHeight
                 }
-            } - attachment.glyph.bearingY
+            }
 
-            attachments.add(TypesetGlyph(attachmentX, attachmentY, attachment))
+            attachments.add(TypesetGlyph(
+                attachmentX - attachment.glyph.bearingX,
+                attachmentY - attachment.glyph.bearingY,
+                attachment
+            ))
         }
     }
 
@@ -233,19 +225,23 @@ open class GraphemeCluster(
 
     var attachments: MutableList<TypesetGlyph>? = null
 
-    val isWhitespace: Boolean
+    /**
+     * Whether this glyph has any visible display. This returns true if the represented codepoint is whitespace and this
+     * glyph has no [attachments]
+     */
+    val isInvisible: Boolean
         get() = UCharacter.isWhitespace(codepoint) && attachments.isNullOrEmpty()
 }
 
-open class TypesetGlyph(
-    var posX: Int, var posY: Int,
+public open class TypesetGlyph(
+    public var posX: Int, public var posY: Int,
     codepoint: Int,
     glyph: Glyph,
     source: AttributedString,
     codepointIndex: Int,
     characterIndex: Int
 ): AttributedGlyph(codepoint, glyph, source, codepointIndex, characterIndex) {
-    constructor(posX: Int, posY: Int, attributedGlyph: AttributedGlyph): this(
+    public constructor(posX: Int, posY: Int, attributedGlyph: AttributedGlyph): this(
         posX, posY,
         attributedGlyph.codepoint,
         attributedGlyph.glyph,
@@ -253,4 +249,7 @@ open class TypesetGlyph(
         attributedGlyph.codepointIndex,
         attributedGlyph.characterIndex
     )
+
+    public val afterX: Int
+        get() = posX + glyph.calcAdvance()
 }

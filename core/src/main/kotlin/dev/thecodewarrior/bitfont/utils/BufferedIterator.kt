@@ -1,12 +1,12 @@
 package dev.thecodewarrior.bitfont.utils
 
-abstract class BufferedIterator<T>: Iterator<T> {
+public abstract class BufferedIterator<T>: Iterator<T> {
     private val buffer = ArrayQueue<T>()
-    val size: Int get() = buffer.size()
+    protected val size: Int get() = buffer.size()
 
-    abstract fun refillBuffer()
+    protected abstract fun refillBuffer()
 
-    open fun refillBufferIfNeeded() {
+    protected open fun refillBufferIfNeeded() {
         if(buffer.isEmpty)
             refillBuffer()
     }
@@ -20,7 +20,7 @@ abstract class BufferedIterator<T>: Iterator<T> {
         return !buffer.isEmpty
     }
 
-    fun peekNext(): T {
+    public fun peekNext(): T {
         refillBufferIfNeeded()
         if(buffer.isEmpty)
             throw NoSuchElementException()

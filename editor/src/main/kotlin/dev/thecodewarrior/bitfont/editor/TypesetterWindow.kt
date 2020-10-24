@@ -1,32 +1,23 @@
 package dev.thecodewarrior.bitfont.editor
 
-import dev.thecodewarrior.bitfont.data.file.BitfontFile
-import dev.thecodewarrior.bitfont.data.file.BitfontFileFormat
 import dev.thecodewarrior.bitfont.editor.data.BitfontEditorData
 import dev.thecodewarrior.bitfont.editor.utils.DistinctColors
 import dev.thecodewarrior.bitfont.editor.utils.DrawList
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.GlyphGenerator
 import dev.thecodewarrior.bitfont.typesetting.Typesetter
-import dev.thecodewarrior.bitfont.utils.Vec2i
-import org.lwjgl.BufferUtils
-import org.lwjgl.nuklear.NkColor
-import org.lwjgl.nuklear.NkColorf
 import org.lwjgl.nuklear.NkContext
-import org.lwjgl.nuklear.NkRect
 import org.lwjgl.nuklear.NkVec2
-import org.lwjgl.nuklear.Nuklear.*
-import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL12
+import org.lwjgl.nuklear.Nuklear.NK_EDIT_FIELD
+import org.lwjgl.nuklear.Nuklear.nk_edit_string_zero_terminated
+import org.lwjgl.nuklear.Nuklear.nk_layout_row_dynamic
+import org.lwjgl.nuklear.Nuklear.nk_strlen
+import org.lwjgl.nuklear.Nuklear.nk_widget_position
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.awt.Color
 import java.awt.image.BufferedImage
-import java.io.InputStream
-import java.lang.RuntimeException
 import java.text.ParseException
-import java.util.UUID
-import kotlin.math.min
 
 class TypesetterWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f, 200f) {
     private var testText: String = ""

@@ -23,6 +23,7 @@ import java.text.ParseException
 class FontWindow(val data: BitfontEditorData): Window(250f, 300f) {
     private val childWindows = mutableListOf<Window>()
     private val typesetterWindow = TypesetterWindow(data)
+    private val textLayoutWindow = TextLayoutWindow(data)
 
     init {
         flags = flags or NK_WINDOW_NO_SCROLLBAR or NK_WINDOW_CLOSABLE
@@ -80,16 +81,18 @@ class FontWindow(val data: BitfontEditorData): Window(250f, 300f) {
                 typesetterWindow.open(ctx)
             }
             if (nk_button_label(ctx, "Text Layout")) {
-                println("text layout")
+                textLayoutWindow.open(ctx)
             }
         }
     }
 
     override fun onClose(ctx: NkContext) {
         typesetterWindow.close(ctx)
+        textLayoutWindow.close(ctx)
     }
 
     override fun free() {
         typesetterWindow.free()
+        textLayoutWindow.free()
     }
 }

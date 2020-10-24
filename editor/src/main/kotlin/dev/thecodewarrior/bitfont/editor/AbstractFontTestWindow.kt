@@ -93,19 +93,18 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
             if(isDirty)
                 doRedraw(remainingBounds)
 
-            remainingBounds.w((testTextureWidth * testAreaScale).toFloat())
-            remainingBounds.h((testTextureHeight * testAreaScale).toFloat())
-
-            testTextureImage.w(0.toShort())
-            testTextureImage.h(0.toShort())
-            val canvas = nk_window_get_canvas(ctx)!!
-            val white = NkColor.mallocStack(stack)
-            white.set(255.toByte(), 255.toByte(), 255.toByte(), 255.toByte())
-            nk_draw_image(canvas, remainingBounds, testTextureImage, white)
             testAreaDrawList.transformX = remainingBounds.x()
             testAreaDrawList.transformY = remainingBounds.y()
             testAreaDrawList.transformScale = testAreaScale.toFloat()
             testAreaDrawList.push(ctx)
+
+            remainingBounds.w((testTextureWidth * testAreaScale).toFloat())
+            remainingBounds.h((testTextureHeight * testAreaScale).toFloat())
+
+            val canvas = nk_window_get_canvas(ctx)!!
+            val white = NkColor.mallocStack(stack)
+            white.set(255.toByte(), 255.toByte(), 255.toByte(), 255.toByte())
+            nk_draw_image(canvas, remainingBounds, testTextureImage, white)
 
             nk_layout_space_end(ctx)
         }
@@ -160,8 +159,8 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, testTextureID)
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, testTextureWidth, testTextureHeight, 0, GL11.GL_RGBA,
             GL12.GL_UNSIGNED_INT_8_8_8_8_REV, 0)
-//        testTextureImage.w(testTextureWidth.toShort())
-//        testTextureImage.h(testTextureHeight.toShort())
+        testTextureImage.w(0.toShort())
+        testTextureImage.h(0.toShort())
         testTextureBufferedImage = BufferedImage(testTextureWidth, testTextureHeight, BufferedImage.TYPE_INT_ARGB)
         MemoryUtil.memFree(testTextureBuffer)
         testTextureBuffer = MemoryUtil.memAlloc(testTextureWidth * testTextureHeight * 4)

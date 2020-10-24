@@ -3,19 +3,17 @@ package dev.thecodewarrior.bitfont.typesetting
 import dev.thecodewarrior.bitfont.utils.Rect2i
 import dev.thecodewarrior.bitfont.utils.Vec2i
 
-open class TextContainer {
+public open class TextContainer @JvmOverloads constructor(public var width: Int, public var height: Int = Int.MAX_VALUE) {
 
-    var size: Vec2i = Vec2i(0, 0)
 //    val exclusionPaths: MutableList<Any /*BezierPath*/> get() = TODO("not implemented")
 //    var lineBreakMode: LineBreakMode = LineBreakMode.WRAP_WORDS
 //    var maxLineCount: Int = Int.MAX_VALUE
-    var lineFragmentPadding: Int = 1
 //    /**
 //     * True if this is a simple rectangle. This is to optimize calls to [createLineFragment]
 //     */
 //    var isSimpleRectangle: Boolean = true
 
-    val lines: MutableList<LineFragment> = mutableListOf()
+    public val lines: MutableList<LineFragment> = mutableListOf()
 
 //    /**
 //     * https://developer.apple.com/documentation/uikit/nstextcontainer/1444555-linefragmentrect
@@ -24,7 +22,16 @@ open class TextContainer {
 //        TODO("not implemented")
 //    }
 
-    open fun fixLineFragment(line: LineFragment): LineFragment? {
-        return null
+    /**
+     * "fixes" the passed line fragment to allow text to wrap around exclusion areas. The same fragment may be sent
+     * multiple times as taller characters are laid out.
+     *
+     * ```
+     *          input: |---------------|
+     *      exclusion: ###            ##
+     * modified input:   >|----------|<
+     * ```
+     */
+    public open fun fixLineFragment(line: LineFragment) {
     }
 }
