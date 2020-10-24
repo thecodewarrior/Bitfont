@@ -36,22 +36,9 @@ public open class TextLayoutManager(public val fallbackFonts: List<Bitfont>) {
 
         var line = LineFragment(0, lineY, container.width, 0)
 
-        /** The number of consecutive line wraps that have resulted in empty lines */
-        var emptyWrapCount = 0
-
         fun newLine(wrapped: Boolean) {
             val isBlank = line.glyphs.all { it.isInvisible }
-            if (isBlank) { // skip blank lines
-                if (wrapped) {
-                    emptyWrapCount++
-                    if (emptyWrapCount > 100) {
-                        throw TypesetterException("Runaway line wrapping. Wrapped 100 consecutive lines with " +
-                            "no content.")
-                    }
-                } else {
-                    emptyWrapCount = 0
-                }
-            } else { // the line has some content, so add it to the container
+            if (!isBlank) { // skip blank lines
                 val originX = line.glyphs.first().posX
                 line.baseline = line.glyphs.map { it.glyph.font?.ascent ?: 0 }.maxOrNull() ?: 0
                 line.glyphs.forEach {
@@ -61,7 +48,7 @@ public open class TextLayoutManager(public val fallbackFonts: List<Bitfont>) {
                 container.lines.add(line)
             }
             // create the next line
-            if(!(isBlank && container.lines.isEmpty())) // ignore blank lines at the start of containers
+            if (!(isBlank && container.lines.isEmpty())) // ignore blank lines at the start of containers
                 lineY = line.posY + line.height + lineSpacing
             line = LineFragment(0, lineY, container.width, 0)
         }
@@ -79,7 +66,7 @@ public open class TextLayoutManager(public val fallbackFonts: List<Bitfont>) {
             if (line.posY + line.height > container.height) {
                 // grab the next container
                 containerIndex++
-                if(containerIndex >= textContainers.size) {
+                if (containerIndex >= textContainers.size) {
                     break // abort if we run out of space
                 }
                 container = textContainers[containerIndex]
@@ -107,26 +94,28 @@ public open class TextLayoutManager(public val fallbackFonts: List<Bitfont>) {
                 !glyph.isInvisible && // don't perform line breaks in the middle of trailing whitespace
                 line.contentWidth > line.width - linePadding * 2
             ) {
-                var wrapPoint =
-                    if (breakIterator.isBoundary(glyph.characterIndex))
-                        glyph.characterIndex
-                    else
-                        breakIterator.preceding(glyph.characterIndex)
-                // if we couldn't find a suitable wrap point inside the line, wrap on the character instead.
-                if (wrapPoint <= line.characterRange.first) {
-                    wrapPoint = glyph.characterIndex
-                }
+                if (line.glyphs.size > 1) { // don't actually wrap single-character lines
+                    var wrapPoint =
+                        if (breakIterator.isBoundary(glyph.characterIndex))
+                            glyph.characterIndex
+                        else
+                            breakIterator.preceding(glyph.characterIndex)
+                    // if we couldn't find a suitable wrap point inside the line, wrap on the character instead.
+                    if (wrapPoint <= line.characterRange.first) {
+                        wrapPoint = glyph.characterIndex
+                    }
 
-                // roll back to the wrap point, pushing everything back into the iterator
-                while (line.glyphs.isNotEmpty()) {
-                    if (line.glyphs.last().characterIndex < wrapPoint) break
-                    pushBackIterator.pushBack(line.glyphs.removeLast())
+                    // roll back to the wrap point, pushing everything back into the iterator
+                    while (line.glyphs.isNotEmpty()) {
+                        if (line.glyphs.last().characterIndex < wrapPoint) break
+                        pushBackIterator.pushBack(line.glyphs.removeLast())
+                    }
                 }
 
                 newLine(true)
             }
         }
-        if(containerIndex < textContainers.size) // Don't try to put the final line in if we ran out of space
+        if (containerIndex < textContainers.size) // Don't try to put the final line in if we ran out of space
             newLine(false)
     }
 

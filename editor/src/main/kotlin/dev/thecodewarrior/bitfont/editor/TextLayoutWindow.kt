@@ -5,6 +5,7 @@ import dev.thecodewarrior.bitfont.editor.utils.DistinctColors
 import dev.thecodewarrior.bitfont.editor.utils.DrawList
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.GlyphGenerator
+import dev.thecodewarrior.bitfont.typesetting.LineFragment
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
 import dev.thecodewarrior.bitfont.typesetting.Typesetter
@@ -32,6 +33,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
 
     private var showLines = false
     private var splitColumns = false
+    private var exclusionZones = false
 
     override fun pushControls(ctx: NkContext) {
         MemoryStack.stackPush().use { stack ->
@@ -57,26 +59,20 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
                 }
             }
 
-            nk_layout_row_dynamic(ctx, 25f, 2)
+            nk_layout_row_dynamic(ctx, 25f, 3)
             val active = stack.ints(0)
-            var previous: Boolean
+            fun checkbox(name: String, value: Boolean): Boolean {
+                active.put(0, if(value) 1 else 0)
+                nk_checkbox_label(ctx, name, active)
+                val newValue = active[0] != 0
+                if(newValue != value)
+                    markDirty()
+                return newValue
+            }
 
-            previous = showLines
-            active.put(0, if(showLines) 1 else 0)
-            nk_checkbox_label(ctx, "Show lines", active)
-            showLines = active[0] != 0
-            if(showLines != previous)
-                markDirty()
-
-            previous = splitColumns
-            active.put(0, if(splitColumns) 1 else 0)
-            nk_checkbox_label(ctx, "Split Columns", active)
-            splitColumns = active[0] != 0
-            if(splitColumns != previous)
-                markDirty()
-//            active.put(if(showRuns) 1 else 0)
-//            nk_checkbox_label(ctx, "Show runs", active)
-//            showRuns = active[0] != 0
+            showLines = checkbox("Show lines", showLines)
+            splitColumns = checkbox("Split columns", splitColumns)
+            exclusionZones = checkbox("Exclusion zones", exclusionZones)
         }
     }
 
@@ -86,11 +82,11 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
         if(splitColumns) {
             val column1Width = logicalWidth / 3 - 4
             val column2Width = 2 * logicalWidth / 3 - 4
-            containers.add(TextContainer(column1Width, logicalHeight - 2) to Vec2i(1, 1))
-            containers.add(TextContainer(column2Width, logicalHeight - 2) to Vec2i(logicalWidth - column2Width - 1, 1))
+            containers.add(ExclusionContainer(exclusionZones, column1Width, logicalHeight - 2) to Vec2i(1, 1))
+            containers.add(ExclusionContainer(exclusionZones, column2Width, logicalHeight - 2) to Vec2i(logicalWidth - column2Width - 1, 1))
             drawList.strokeLine(logicalWidth / 3, 0, logicalWidth / 3, logicalHeight, 2, DistinctColors.cyan)
         } else {
-            containers.add(TextContainer(logicalWidth - 2, logicalHeight - 2) to Vec2i(1, 1))
+            containers.add(ExclusionContainer(exclusionZones, logicalWidth - 2, logicalHeight - 2) to Vec2i(1, 1))
         }
 //        if(exclusion) configureExclusion(imgui, container, area, bounds)
 
@@ -136,6 +132,15 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
                         DistinctColors.green
                     )
                 }
+            }
+        }
+    }
+
+    private class ExclusionContainer(val exclude: Boolean, width: Int, height: Int = Int.MAX_VALUE): TextContainer(width, height) {
+        override fun fixLineFragment(line: LineFragment) {
+            if(exclude && line.posY < 64 && line.posY + line.height >= 0) {
+                line.width = width - 64
+                line.posX = 64
             }
         }
     }
