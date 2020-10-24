@@ -79,7 +79,7 @@ open class ShapeExclusionTextContainer(width: Int, height: Int = Int.MAX_VALUE):
                 return // null
             }
             else -> {
-                val next = LineFragment(range.last, line.posY, line.posX + line.width - range.last, line.height)
+                val next = LineFragment(line.spacing, range.last, line.posY, line.posX + line.width - range.last, line.height)
                 line.width = range.first - line.posX
                 return // next
             }

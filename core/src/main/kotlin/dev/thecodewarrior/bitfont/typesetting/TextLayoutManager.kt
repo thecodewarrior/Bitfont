@@ -13,6 +13,7 @@ public open class TextLayoutManager(public val fallbackFonts: List<Bitfont>) {
     public var attributedString: AttributedString = AttributedString("")
     public var linePadding: Int = 0
     public var lineSpacing: Int = 1
+    public var alignment: Alignment = Alignment.LEFT
 
     public fun layoutText() {
         textContainers.forEach { it.lines.clear() }
@@ -34,15 +35,32 @@ public open class TextLayoutManager(public val fallbackFonts: List<Bitfont>) {
          */
         var lineY = 0
 
-        var line = LineFragment(0, lineY, container.width, 0)
+        var line = LineFragment(lineSpacing, 0, lineY, container.width, 0)
 
         fun newLine(wrapped: Boolean) {
             val isBlank = line.glyphs.all { it.isInvisible }
             if (!isBlank) { // skip blank lines
-                val originX = line.glyphs.first().posX
+                var shiftX = line.glyphs.first().posX
+
+                // alignment
+                // compute the _visual_ right edge.
+                val max = line.glyphs.last().let {
+                    it.posX + it.glyph.bearingX + it.glyph.image.width
+                }
+                val visualWidth = max - line.glyphs.first().posX
+                val space = line.width - visualWidth
+                when(alignment) {
+                    Alignment.LEFT -> {}
+                    Alignment.RIGHT -> {
+                        shiftX -= space
+                    }
+                    Alignment.CENTER -> {
+                        shiftX -= space / 2
+                    }
+                }
                 line.baseline = line.glyphs.map { it.glyph.font?.ascent ?: 0 }.maxOrNull() ?: 0
                 line.glyphs.forEach {
-                    it.posX += linePadding - originX
+                    it.posX += linePadding - shiftX
                     it.posY += line.baseline
                 }
                 container.lines.add(line)
@@ -50,7 +68,7 @@ public open class TextLayoutManager(public val fallbackFonts: List<Bitfont>) {
             // create the next line
             if (!(isBlank && container.lines.isEmpty())) // ignore blank lines at the start of containers
                 lineY = line.posY + line.height + lineSpacing
-            line = LineFragment(0, lineY, container.width, 0)
+            line = LineFragment(lineSpacing, 0, lineY, container.width, 0)
         }
 
         for (glyph in pushBackIterator) {
@@ -78,7 +96,7 @@ public open class TextLayoutManager(public val fallbackFonts: List<Bitfont>) {
                 }
 
                 lineY = 0
-                line = LineFragment(0, lineY, container.width, 0)
+                line = LineFragment(lineSpacing, 0, lineY, container.width, 0)
                 continue
             }
 
@@ -119,13 +137,17 @@ public open class TextLayoutManager(public val fallbackFonts: List<Bitfont>) {
             newLine(false)
     }
 
+    public enum class Alignment {
+        LEFT, CENTER, RIGHT
+    }
+
     private val TypesetGlyph.height: Int
         get() = this.glyph.font?.height ?: 0
     private val Bitfont.height: Int
         get() = this.ascent + this.descent
 }
 
-public class LineFragment(public var posX: Int, public var posY: Int, public var width: Int, public var height: Int) {
+public class LineFragment (public val spacing: Int, public var posX: Int, public var posY: Int, public var width: Int, public var height: Int) {
     public val contentWidth: Int
         get() = if (glyphs.isEmpty()) 0 else glyphs.last().afterX - glyphs.first().posX
     public var baseline: Int = 0

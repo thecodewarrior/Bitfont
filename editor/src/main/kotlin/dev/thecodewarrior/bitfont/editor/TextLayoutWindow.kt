@@ -16,24 +16,30 @@ import org.lwjgl.nuklear.Nuklear.NK_EDIT_BOX
 import org.lwjgl.nuklear.Nuklear.NK_EDIT_FIELD
 import org.lwjgl.nuklear.Nuklear.nk_checkbox_label
 import org.lwjgl.nuklear.Nuklear.nk_checkbox_text
+import org.lwjgl.nuklear.Nuklear.nk_combo
+import org.lwjgl.nuklear.Nuklear.nk_combo_string
 import org.lwjgl.nuklear.Nuklear.nk_edit_string_zero_terminated
 import org.lwjgl.nuklear.Nuklear.nk_layout_row_dynamic
+import org.lwjgl.nuklear.Nuklear.nk_property_int
 import org.lwjgl.nuklear.Nuklear.nk_strlen
 import org.lwjgl.nuklear.Nuklear.nk_widget_position
 import org.lwjgl.nuklear.Nuklear.nk_window_get_width
+import org.lwjgl.nuklear.Nuklear.nnk_combo_string
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.text.ParseException
+import kotlin.math.max
 
-class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f, 300f) {
+class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f, 400f) {
     private var testText: String = ""
     private var currentWidth: Float = 0f
 
     private var showLines = false
     private var splitColumns = false
     private var exclusionZones = false
+    private var alignment = TextLayoutManager.Alignment.LEFT
 
     override fun pushControls(ctx: NkContext) {
         MemoryStack.stackPush().use { stack ->
@@ -59,20 +65,29 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
                 }
             }
 
-            nk_layout_row_dynamic(ctx, 25f, 3)
-            val active = stack.ints(0)
+            nk_layout_row_dynamic(ctx, 25f, 5)
+            val intBuf = stack.ints(0)
             fun checkbox(name: String, value: Boolean): Boolean {
-                active.put(0, if(value) 1 else 0)
-                nk_checkbox_label(ctx, name, active)
-                val newValue = active[0] != 0
-                if(newValue != value)
-                    markDirty()
-                return newValue
+                intBuf.put(0, if(value) 1 else 0)
+                nk_checkbox_label(ctx, name, intBuf)
+                return dirtyOnChange(intBuf[0] != 0, value)
             }
+
+            intBuf.put(0, testAreaScale)
+            nk_property_int(ctx, "Scale:", 1, intBuf, 5, 1, 1f)
+            testAreaScale = dirtyOnChange(intBuf[0], testAreaScale)
 
             showLines = checkbox("Show lines", showLines)
             splitColumns = checkbox("Split columns", splitColumns)
             exclusionZones = checkbox("Exclusion zones", exclusionZones)
+
+            val items = stack.bytes(*TextLayoutManager.Alignment.values().joinToString("") { "$it\u0000" }.toByteArray())
+            alignment = dirtyOnChange(TextLayoutManager.Alignment.values()[
+                nnk_combo_string(ctx.address(), MemoryUtil.memAddress(items),
+                    alignment.ordinal, TextLayoutManager.Alignment.values().size,
+                    25, NkVec2.mallocStack().set(150f, 100f).address()
+                )
+            ], alignment)
         }
     }
 
@@ -92,6 +107,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
 
         val layoutManager = TextLayoutManager(listOf(data.font))
         containers.forEach { (it, _) -> layoutManager.textContainers.add(it) }
+        layoutManager.alignment = alignment
 
 //        layoutManager.typesetterOptions = options
         layoutManager.attributedString = testAttributedText
@@ -139,8 +155,14 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
     private class ExclusionContainer(val exclude: Boolean, width: Int, height: Int = Int.MAX_VALUE): TextContainer(width, height) {
         override fun fixLineFragment(line: LineFragment) {
             if(exclude && line.posY < 64 && line.posY + line.height >= 0) {
-                line.width = width - 64
-                line.posX = 64
+                if(width <= 64) {
+                    val stepHeight = line.height + line.spacing
+                    val steps = (64 + stepHeight - 1) / stepHeight
+                    line.posY = steps * stepHeight
+                } else {
+                    line.width = width - 64
+                    line.posX = 64
+                }
             }
         }
     }

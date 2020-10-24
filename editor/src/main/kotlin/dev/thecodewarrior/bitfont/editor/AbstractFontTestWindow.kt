@@ -52,6 +52,12 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
         isDirty = true
     }
 
+    fun <T> dirtyOnChange(newValue: T, oldValue: T): T {
+        if(newValue != oldValue)
+            markDirty()
+        return newValue
+    }
+
     fun drawGlyph(image: BufferedImage, glyph: Glyph, posX: Int, posY: Int, color: Int) {
         val glyphX = posX + glyph.bearingX
         val glyphY = posY + glyph.bearingY
