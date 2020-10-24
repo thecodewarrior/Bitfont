@@ -58,7 +58,11 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
         for(x in 0 until glyph.image.width) {
             for(y in 0 until glyph.image.height) {
                 if(glyph.image[x, y]) {
-                    image.setRGB(glyphX + x, glyphY + y, color)
+                    val pixelX = glyphX + x
+                    val pixelY = glyphY + y
+                    if(pixelX >= 0 && pixelX < image.width && pixelY >= 0 && pixelY < image.height) {
+                        image.setRGB(pixelX, pixelY, color)
+                    }
                 }
             }
         }
@@ -98,6 +102,9 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
             val white = NkColor.mallocStack(stack)
             white.set(255.toByte(), 255.toByte(), 255.toByte(), 255.toByte())
             nk_draw_image(canvas, remainingBounds, testTextureImage, white)
+            testAreaDrawList.transformX = remainingBounds.x()
+            testAreaDrawList.transformY = remainingBounds.y()
+            testAreaDrawList.transformScale = testAreaScale.toFloat()
             testAreaDrawList.push(ctx)
 
             nk_layout_space_end(ctx)

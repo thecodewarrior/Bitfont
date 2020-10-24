@@ -8,12 +8,13 @@ import org.lwjgl.nuklear.Nuklear.*
 import org.lwjgl.system.MemoryStack
 import java.awt.Color
 
+@Suppress("NOTHING_TO_INLINE")
 class DrawList {
     var transformX: Float = 0f
     var transformY: Float = 0f
     var transformScale: Float = 1f
 
-    private val drawCommands = mutableListOf<DrawCommand>()
+    val drawCommands = mutableListOf<DrawCommand>()
 
     fun push(ctx: NkContext) {
         val canvas = nk_window_get_canvas(ctx)!!
@@ -30,7 +31,7 @@ class DrawList {
         drawCommands.clear()
     }
 
-    fun strokeLine(
+    inline fun strokeLine(
         x0: Number, y0: Number,
         x1: Number, y1: Number,
         thickness: Number, color: Color
@@ -43,7 +44,7 @@ class DrawList {
         return this
     }
 
-    fun strokeCurve(
+    inline fun strokeCurve(
         ax: Number, ay: Number,
         ctrl0x: Number, ctrl0y: Number,
         ctrl1x: Number, ctrl1y: Number,
@@ -60,7 +61,7 @@ class DrawList {
         return this
     }
 
-    fun strokeRect(
+    inline fun strokeRect(
         x: Number, y: Number,
         w: Number, h: Number,
         rounding: Number,
@@ -75,7 +76,7 @@ class DrawList {
         return this
     }
 
-    fun strokeCircle(
+    inline fun strokeCircle(
         x: Number, y: Number,
         w: Number, h: Number,
         thickness: Number, color: Color
@@ -88,7 +89,7 @@ class DrawList {
         return this
     }
 
-    fun strokeArc(
+    inline fun strokeArc(
         cx: Number, cy: Number,
         radius: Number,
         minAngle: Number, maxAngle: Number,
@@ -103,7 +104,7 @@ class DrawList {
         return this
     }
 
-    fun strokeTriangle(
+    inline fun strokeTriangle(
         x0: Number, y0: Number,
         x1: Number, y1: Number,
         x2: Number, y2: Number,
@@ -118,7 +119,7 @@ class DrawList {
         return this
     }
 
-    fun strokePolyline(
+    inline fun strokePolyline(
         thickness: Number, color: Color
     ): PolyBuilder {
         val points = mutableListOf<Float>()
@@ -126,7 +127,7 @@ class DrawList {
         return PolyBuilder(points, this)
     }
 
-    fun strokePolygon(
+    inline fun strokePolygon(
         thickness: Number, color: Color
     ): PolyBuilder {
         val points = mutableListOf<Float>()
@@ -134,7 +135,7 @@ class DrawList {
         return PolyBuilder(points, this)
     }
 
-    fun fillRect(
+    inline fun fillRect(
         x: Number, y: Number,
         w: Number, h: Number,
         rounding: Number,
@@ -148,7 +149,7 @@ class DrawList {
         return this
     }
 
-    fun fillArc(
+    inline fun fillArc(
         cx: Number, cy: Number,
         radius: Number,
         minAngle: Number, maxAngle: Number,
@@ -163,7 +164,7 @@ class DrawList {
         return this
     }
 
-    fun fillTriangle(
+    inline fun fillTriangle(
         x0: Number, y0: Number,
         x1: Number, y1: Number,
         x2: Number, y2: Number,
@@ -178,7 +179,7 @@ class DrawList {
         return this
     }
 
-    fun fillPolygon(
+    inline fun fillPolygon(
         color: Color
     ): PolyBuilder {
         val points = mutableListOf<Float>()
@@ -207,7 +208,7 @@ class DrawList {
         return delta * transformScale
     }
 
-    private sealed class DrawCommand {
+    sealed class DrawCommand {
         abstract fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack)
 
         fun nkColor(color: Color, stack: MemoryStack): NkColor {

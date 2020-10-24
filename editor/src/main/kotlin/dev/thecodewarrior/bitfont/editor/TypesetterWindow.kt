@@ -3,6 +3,7 @@ package dev.thecodewarrior.bitfont.editor
 import dev.thecodewarrior.bitfont.data.file.BitfontFile
 import dev.thecodewarrior.bitfont.data.file.BitfontFileFormat
 import dev.thecodewarrior.bitfont.editor.data.BitfontEditorData
+import dev.thecodewarrior.bitfont.editor.utils.DistinctColors
 import dev.thecodewarrior.bitfont.editor.utils.DrawList
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.GlyphGenerator
@@ -22,8 +23,10 @@ import org.lwjgl.system.MemoryUtil
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.InputStream
+import java.lang.RuntimeException
 import java.text.ParseException
 import java.util.UUID
+import kotlin.math.min
 
 class TypesetterWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f, 200f) {
     private var testText: String = ""
@@ -34,14 +37,11 @@ class TypesetterWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
             val baz = NkVec2.mallocStack(stack)
             nk_widget_position(ctx, baz)
             run {
-                val buffer = stack.calloc(256)
-                val length = MemoryUtil.memUTF8(testText, false, buffer)
-                val len = stack.ints(length)
-                nk_edit_string(ctx, NK_EDIT_FIELD, buffer, len, 255, null)
+                val buffer = stack.calloc(1024)
+                MemoryUtil.memUTF8(testText, true, buffer)
+                nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, buffer, 1024, null)
                 try {
                     val oldText = testText
-                    // `len` doesn't handle unicode well. It ends up with a bunch of extra null bytes, so we test it
-                    // ourselves
                     testText = MemoryUtil.memUTF8(buffer, nk_strlen(buffer))
                     if(testText != oldText)
                         markDirty()
@@ -65,14 +65,21 @@ class TypesetterWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
             drawGlyph(image, main.glyph, originX + main.posX, originY + main.posY, Color.WHITE.rgb)
             main.attachments?.also { attachments ->
                 for(attachment in attachments) {
-                    drawGlyph(image, main.glyph,
+                    drawGlyph(image, attachment.glyph,
                         originX + main.posX + attachment.posX,
-                        originY + main.posY + attachment.posX,
+                        originY + main.posY + attachment.posY,
                         Color.WHITE.rgb
                     )
                 }
             }
         }
+
+        drawList.strokeLine(originX, originY, logicalWidth, originY, 1, DistinctColors.orange)
+    }
+
+    override fun onHide(ctx: NkContext) {
+        testText = ""
+        markDirty()
     }
 
     override fun free() {

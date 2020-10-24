@@ -322,6 +322,11 @@ public class BitfontEditorApp {
                         nkButton = NK_BUTTON_LEFT;
                 }
                 nk_input_button(ctx, nkButton, x, y, action == GLFW_PRESS);
+
+                // clear all the crashed flags
+                for(Window it : windows) {
+                    it.setCrashed(false);
+                }
             }
         });
 
