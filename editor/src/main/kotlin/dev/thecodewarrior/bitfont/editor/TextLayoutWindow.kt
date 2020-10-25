@@ -42,9 +42,12 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
             val baz = NkVec2.mallocStack(stack)
             nk_widget_position(ctx, baz)
             run {
-                val buffer = stack.calloc(4096)
+                val bufferSize = 16384
+                val buffer = MemoryUtil.memAlloc(bufferSize)
+                // the null termination check tests the end of the buffer, which isn't necessarily the end of the string
+                buffer.put(buffer.limit() - 1, 0)
                 MemoryUtil.memUTF8(testText, true, buffer)
-                nk_edit_string_zero_terminated(ctx, NK_EDIT_BOX, buffer, 4096, null)
+                nk_edit_string_zero_terminated(ctx, NK_EDIT_BOX, buffer, bufferSize, null)
                 try {
                     val oldText = testText
                     testText = MemoryUtil.memUTF8(buffer, nk_strlen(buffer))
@@ -52,6 +55,8 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
                         markDirty()
                 } catch (e: ParseException) {
                     e.printStackTrace()
+                } finally {
+                    MemoryUtil.memFree(buffer)
                 }
             }
 

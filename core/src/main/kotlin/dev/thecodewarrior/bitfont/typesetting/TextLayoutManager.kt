@@ -137,7 +137,7 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
             layout.lines.forEach { line ->
                 // fix positions *after* truncation
                 fixGlyphPositions(line)
-                container.lines.add(line.toLineFragment())
+                container.lines.add(line.toTypesetLine())
             }
         }
     }
@@ -387,19 +387,10 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
             height = bounds.height
         }
 
-        public fun toLineFragment(): LineFragment {
-            return LineFragment(posX, posY, width, height, glyphs)
+        public fun toTypesetLine(): TextContainer.TypesetLine {
+            return TextContainer.TypesetLine(posX, posY, width, height, glyphs)
         }
     }
 
 }
 
-public class LineFragment(
-    public var posX: Int, public var posY: Int,
-    public var width: Int, public var height: Int,
-    public val glyphs: List<GraphemeCluster>
-) {
-    public val contentWidth: Int
-        get() = if (glyphs.isEmpty()) 0 else glyphs.last().afterX - glyphs.first().posX
-    public var baseline: Int = 0
-}
