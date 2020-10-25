@@ -18,7 +18,7 @@ class GlyphGeneratorTestWindow(document: BitfontDocument): AbstractTestWindow(do
     }
 
     override fun drawCanvas(imgui: ImGui) {
-        val glyphs = GlyphGenerator(text, listOf(document.bitfont))
+        val glyphs = GlyphGenerator(text, document.bitfont)
 
         val size = document.bitfont.ascent + document.bitfont.descent + 4
         val columns = canvas.width.toInt() / (size * scale)

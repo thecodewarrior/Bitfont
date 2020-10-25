@@ -17,7 +17,7 @@ public class PushBackIterator<T>(private val wrapped: Iterator<T>): Iterator<T> 
             return buffer.removeLast()
     }
 
-    fun peekNext(): T {
+    public fun peekNext(): T {
         val value = next()
         pushBack(value)
         return value

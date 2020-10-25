@@ -10,9 +10,11 @@ import kotlin.math.min
 public class Typesetter(private val glyphs: BufferedIterator<AttributedGlyph>): BufferedIterator<GraphemeCluster>() {
     public var options: Options = Options()
 
-    public class Options {
-        public var enableKerning: Boolean = false
-        public var enableCombiningCharacters: Boolean = true
+    public data class Options(
+        public val enableKerning: Boolean,
+        public val enableCombiningCharacters: Boolean
+    ) {
+        public constructor() : this(false, true)
         // callbacks for more advanced behavior? (e.g. dynamic leading)
         // maybe a system to transform attributes? (e.g. bold -> leading++)
     }

@@ -62,9 +62,9 @@ class TextLayoutTestWindow(document: BitfontDocument): AbstractTestWindow(docume
         val container = ShapeExclusionTextContainer(canvas.widthi / scale - height * 2)
         if(exclusion) configureExclusion(imgui, container, area, bounds)
 
-        val layoutManager = TextLayoutManager(listOf(document.bitfont))
+        val layoutManager = TextLayoutManager(document.bitfont)
         layoutManager.textContainers.add(container)
-        layoutManager.typesetterOptions = options
+        layoutManager.options.typesetterOptions = options
         layoutManager.attributedString = text
         layoutManager.layoutText()
 

@@ -45,7 +45,7 @@ class TypesetterWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
 
     override fun redraw(logicalWidth: Int, logicalHeight: Int, image: BufferedImage, drawList: DrawList) {
         val testAttributedText = AttributedString(testText)
-        val glyphs = GlyphGenerator(testAttributedText, listOf(data.font))
+        val glyphs = GlyphGenerator(testAttributedText, data.font)
         val typesetter = Typesetter(glyphs)
 //        typesetter.options = options
 

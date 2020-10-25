@@ -4,25 +4,20 @@ import dev.thecodewarrior.bitfont.editor.data.BitfontEditorData
 import dev.thecodewarrior.bitfont.editor.utils.DistinctColors
 import dev.thecodewarrior.bitfont.editor.utils.DrawList
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
-import dev.thecodewarrior.bitfont.typesetting.GlyphGenerator
-import dev.thecodewarrior.bitfont.typesetting.LineFragment
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
-import dev.thecodewarrior.bitfont.typesetting.Typesetter
 import dev.thecodewarrior.bitfont.utils.Vec2i
 import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.NkVec2
 import org.lwjgl.nuklear.Nuklear.NK_EDIT_BOX
-import org.lwjgl.nuklear.Nuklear.NK_EDIT_FIELD
 import org.lwjgl.nuklear.Nuklear.nk_checkbox_label
-import org.lwjgl.nuklear.Nuklear.nk_checkbox_text
-import org.lwjgl.nuklear.Nuklear.nk_combo
-import org.lwjgl.nuklear.Nuklear.nk_combo_string
 import org.lwjgl.nuklear.Nuklear.nk_edit_string_zero_terminated
 import org.lwjgl.nuklear.Nuklear.nk_layout_row_dynamic
 import org.lwjgl.nuklear.Nuklear.nk_property_int
 import org.lwjgl.nuklear.Nuklear.nk_strlen
 import org.lwjgl.nuklear.Nuklear.nk_widget_position
+import org.lwjgl.nuklear.Nuklear.nk_window_get_bounds
+import org.lwjgl.nuklear.Nuklear.nk_window_get_size
 import org.lwjgl.nuklear.Nuklear.nk_window_get_width
 import org.lwjgl.nuklear.Nuklear.nnk_combo_string
 import org.lwjgl.system.MemoryStack
@@ -30,24 +25,19 @@ import org.lwjgl.system.MemoryUtil
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.text.ParseException
-import kotlin.math.max
 
 class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f, 400f) {
     private var testText: String = ""
-    private var currentWidth: Float = 0f
 
     private var showLines = false
     private var splitColumns = false
     private var exclusionZones = false
     private var alignment = TextLayoutManager.Alignment.LEFT
+    private var truncation = false
+    private var maxLines = 1
 
     override fun pushControls(ctx: NkContext) {
         MemoryStack.stackPush().use { stack ->
-            val newWidth = nk_window_get_width(ctx)
-            if(newWidth != currentWidth)
-                markDirty()
-            currentWidth = newWidth
-
             nk_layout_row_dynamic(ctx, 100f, 1)
             val baz = NkVec2.mallocStack(stack)
             nk_widget_position(ctx, baz)
@@ -65,7 +55,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
                 }
             }
 
-            nk_layout_row_dynamic(ctx, 25f, 5)
+            nk_layout_row_dynamic(ctx, 25f, 3)
             val intBuf = stack.ints(0)
             fun checkbox(name: String, value: Boolean): Boolean {
                 intBuf.put(0, if(value) 1 else 0)
@@ -78,8 +68,6 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
             testAreaScale = dirtyOnChange(intBuf[0], testAreaScale)
 
             showLines = checkbox("Show lines", showLines)
-            splitColumns = checkbox("Split columns", splitColumns)
-            exclusionZones = checkbox("Exclusion zones", exclusionZones)
 
             val items = stack.bytes(*TextLayoutManager.Alignment.values().joinToString("") { "$it\u0000" }.toByteArray())
             alignment = dirtyOnChange(TextLayoutManager.Alignment.values()[
@@ -88,6 +76,17 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
                     25, NkVec2.mallocStack().set(150f, 100f).address()
                 )
             ], alignment)
+
+            nk_layout_row_dynamic(ctx, 25f, 3)
+            splitColumns = checkbox("Split columns", splitColumns)
+            exclusionZones = checkbox("Exclusion zones", exclusionZones)
+
+            nk_layout_row_dynamic(ctx, 25f, 3)
+            truncation = checkbox("Truncation", truncation)
+            val maxLinesOnOff = if(maxLines != 0) "ON" else "OFF"
+            intBuf.put(0, maxLines)
+            nk_property_int(ctx, "Max lines [$maxLinesOnOff]:", 0, intBuf, 100, 1, 1f)
+            maxLines = dirtyOnChange(intBuf[0], maxLines)
         }
     }
 
@@ -103,25 +102,17 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
         } else {
             containers.add(ExclusionContainer(exclusionZones, logicalWidth - 2, logicalHeight - 2) to Vec2i(1, 1))
         }
-//        if(exclusion) configureExclusion(imgui, container, area, bounds)
 
-        val layoutManager = TextLayoutManager(listOf(data.font))
+        val layoutManager = TextLayoutManager(data.font)
         containers.forEach { (it, _) -> layoutManager.textContainers.add(it) }
-        layoutManager.alignment = alignment
+        layoutManager.options.alignment = alignment
+        if(truncation)
+            layoutManager.options.truncationString = AttributedString("...")
+        if(maxLines != 0)
+            containers.forEach { (it, _) -> it.maxLines = maxLines }
 
-//        layoutManager.typesetterOptions = options
         layoutManager.attributedString = testAttributedText
         layoutManager.layoutText()
-
-//        if(fragmentBounds) {
-//            for (line in container.lines) {
-//                imgui.windowDrawList.addRectSized(
-//                    area.x + line.posX * scalef, area.y + line.posY * scalef,
-//                    line.width * scalef, line.height * scalef,
-//                    Colors.textLayout.lineFragment.u32
-//                )
-//            }
-//        }
 
         containers.forEach { (container, containerPos) ->
             for (line in container.lines) {
@@ -153,7 +144,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
     }
 
     private class ExclusionContainer(val exclude: Boolean, width: Int, height: Int = Int.MAX_VALUE): TextContainer(width, height) {
-        override fun fixLineFragment(line: LineFragment) {
+        override fun fixLineFragment(line: LineBounds) {
             if(exclude && line.posY < 64 && line.posY + line.height >= 0) {
                 if(width <= 64) {
                     val stepHeight = line.height + line.spacing

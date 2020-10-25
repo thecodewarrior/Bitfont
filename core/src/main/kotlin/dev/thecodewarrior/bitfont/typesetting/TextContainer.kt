@@ -1,9 +1,19 @@
 package dev.thecodewarrior.bitfont.typesetting
 
-import dev.thecodewarrior.bitfont.utils.Rect2i
-import dev.thecodewarrior.bitfont.utils.Vec2i
-
-public open class TextContainer @JvmOverloads constructor(public var width: Int, public var height: Int = Int.MAX_VALUE) {
+public open class TextContainer @JvmOverloads constructor(
+    /**
+     * The width of the container
+     */
+    public var width: Int,
+    /**
+     * The height of the container. Defaults to [Int.MAX_VALUE]
+     */
+    public var height: Int = Int.MAX_VALUE,
+    /**
+     * The maximum number of lines that this container can have. Defaults to [Int.MAX_VALUE]
+     */
+    public var maxLines: Int = Int.MAX_VALUE
+) {
 
 //    val exclusionPaths: MutableList<Any /*BezierPath*/> get() = TODO("not implemented")
 //    var lineBreakMode: LineBreakMode = LineBreakMode.WRAP_WORDS
@@ -32,6 +42,8 @@ public open class TextContainer @JvmOverloads constructor(public var width: Int,
      * modified input:   >|----------|<
      * ```
      */
-    public open fun fixLineFragment(line: LineFragment) {
+    public open fun fixLineFragment(line: LineBounds) {
     }
+
+    public data class LineBounds(val spacing: Int, var posX: Int, var posY: Int, var width: Int, val height: Int)
 }

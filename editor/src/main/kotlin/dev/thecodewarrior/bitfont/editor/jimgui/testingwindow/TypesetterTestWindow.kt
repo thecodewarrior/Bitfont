@@ -32,7 +32,7 @@ class TypesetterTestWindow(document: BitfontDocument): AbstractTestWindow(docume
     }
 
     override fun drawCanvas(imgui: ImGui) {
-        val glyphs = GlyphGenerator(text, listOf(document.bitfont))
+        val glyphs = GlyphGenerator(text, document.bitfont)
         val typesetter = Typesetter(glyphs)
         typesetter.options = options
 

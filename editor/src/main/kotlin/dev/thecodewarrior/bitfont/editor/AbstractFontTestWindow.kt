@@ -30,6 +30,8 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
     private var testTextureBuffer = MemoryUtil.memAlloc(testTextureWidth * testTextureHeight * 4)
     private val testAreaDrawList = DrawList()
 
+    private var lastWidth = 0
+    private var lastHeight = 0
     private var isDirty = true
 
     protected var testAreaScale = 3
@@ -96,8 +98,13 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
             remainingBounds.w(remainingBounds.w() - 2 * padding.x())
             remainingBounds.h(remainingBounds.h() - padding.y()) // bottom padding, otherwise it gets clipped
 
+            val logicalWidth = (remainingBounds.w() / testAreaScale).toInt()
+            val logicalHeight = (remainingBounds.h() / testAreaScale).toInt()
+            if(logicalWidth != lastWidth || logicalHeight != lastHeight)
+                markDirty()
+
             if(isDirty)
-                doRedraw(remainingBounds)
+                doRedraw(logicalWidth, logicalHeight)
 
             testAreaDrawList.transformX = remainingBounds.x()
             testAreaDrawList.transformY = remainingBounds.y()
@@ -119,9 +126,7 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
     /**
      * Call [redraw] and perform related tasks
      */
-    private fun doRedraw(remainingBounds: NkRect) {
-        val logicalWidth = (remainingBounds.w() / testAreaScale).toInt()
-        val logicalHeight = (remainingBounds.h() / testAreaScale).toInt()
+    private fun doRedraw(logicalWidth: Int, logicalHeight: Int) {
         ensureTextureSize(logicalWidth, logicalHeight)
 
         for(y in 0 until testTextureHeight) {

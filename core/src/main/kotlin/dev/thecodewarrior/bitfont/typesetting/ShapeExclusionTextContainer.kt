@@ -2,20 +2,18 @@ package dev.thecodewarrior.bitfont.typesetting
 
 import java.awt.Shape
 import java.awt.geom.Area
-import java.awt.geom.FlatteningPathIterator
 import java.awt.geom.Path2D
 import java.awt.geom.PathIterator
 import java.awt.geom.Rectangle2D
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
-import kotlin.math.min
 
 open class ShapeExclusionTextContainer(width: Int, height: Int = Int.MAX_VALUE): TextContainer(width, height) {
     var verticalPadding: Int = 1
     val exclusionPaths: MutableList<Shape> = mutableListOf()
 
-    override fun fixLineFragment(line: LineFragment) {
+    override fun fixLineFragment(line: LineBounds) {
         val rect = Rectangle2D.Float(
             line.posX.toFloat(),
             line.posY.toFloat() - verticalPadding,
@@ -79,7 +77,7 @@ open class ShapeExclusionTextContainer(width: Int, height: Int = Int.MAX_VALUE):
                 return // null
             }
             else -> {
-                val next = LineFragment(line.spacing, range.last, line.posY, line.posX + line.width - range.last, line.height)
+//                val next = LineFragment(line.spacing, range.last, line.posY, line.posX + line.width - range.last, line.height)
                 line.width = range.first - line.posX
                 return // next
             }
