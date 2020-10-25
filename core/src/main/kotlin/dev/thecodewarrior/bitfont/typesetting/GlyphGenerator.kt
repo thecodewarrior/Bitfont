@@ -1,7 +1,6 @@
 package dev.thecodewarrior.bitfont.typesetting
 
 import dev.thecodewarrior.bitfont.data.Bitfont
-import dev.thecodewarrior.bitfont.utils.Attribute
 
 /**
  * Generates a sequence of glyphs for the given attributed string. Behavior is undefined if the string is mutated
@@ -11,13 +10,13 @@ public class GlyphGenerator(string: AttributedString, public val font: Bitfont):
     override fun refillBuffer() {
         if(isEnd) return
 
-        val font = attributeValue(Attribute.font)
+        val font = attributeValue(TextAttribute.font)
             ?.takeIf { codepoint in it.glyphs }
             ?: font.takeIf { codepoint in it.glyphs }
-            ?: attributeValue(Attribute.font)
+            ?: attributeValue(TextAttribute.font)
             ?: font
-        val glyph = font.glyphs[codepoint] ?: font.defaultGlyph
-        push(AttributedGlyph(codepoint, glyph, string, index, offset))
+        val textObject: TextObject = font.glyphs[codepoint] ?: font.defaultGlyph
+        push(TypesetGlyph(0, 0, codepoint, textObject, string, index, offset))
         advance()
     }
 }

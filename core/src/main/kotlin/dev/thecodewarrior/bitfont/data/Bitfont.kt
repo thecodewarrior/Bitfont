@@ -28,6 +28,7 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
             defaultGlyph = createDefaultGlyph()
         }
 
+    @Deprecated("This is dumb. Just encode the advance, dummy. (I am the dummy)")
     var spacing: Int = spacing.clamp(0, 65535)
         set(value) {
             field = value.clamp(0, 65535)

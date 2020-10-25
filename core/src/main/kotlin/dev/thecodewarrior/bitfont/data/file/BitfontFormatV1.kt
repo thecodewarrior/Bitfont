@@ -50,7 +50,7 @@ object BitfontFormatV1: BitfontFileFormat() {
                 packMapHeader(glyphEntries.size)
                 glyphEntries.forEach { (point, glyph) ->
                     packInt(point)
-                    GlyphFormat.pack(packer, glyph)
+                    GlyphFormat.pack(packer, glyph, value)
                 }
             }
         }
@@ -60,37 +60,35 @@ object BitfontFormatV1: BitfontFileFormat() {
                 val glyphCount = unpackMapHeader()
                 for (i in 0 until glyphCount) {
                     val codepoint = unpackInt()
-                    val glyph = GlyphFormat.unpack(unpacker)
-                    glyph.font = value
+                    val glyph = GlyphFormat.unpack(unpacker, value)
                     value.glyphs[codepoint] = glyph
                 }
             }
         }
     }
 
-    private object GlyphFormat: ImmutableFormat<Glyph> {
-        override fun pack(packer: MessagePacker, value: Glyph) {
+    private object GlyphFormat: ContextAwareImmutableFormat<Glyph, Bitfont> {
+        override fun pack(packer: MessagePacker, value: Glyph, context: Bitfont) {
             value.crop()
             packer.pack {
                 packInt(value.bearingX)
                 packInt(value.bearingY)
-                value.advance.also {
-                    if(it == null)
-                        packNil()
-                    else
-                        packInt(it)
-                }
+                packInt(value.advance)
                 BitGridFormat.pack(packer, value.image)
             }
         }
 
-        override fun unpack(unpacker: MessageUnpacker): Glyph {
+        override fun unpack(unpacker: MessageUnpacker, context: Bitfont): Glyph {
             unpacker.apply {
-                val glyph = Glyph(null)
+                val glyph = Glyph(context)
                 glyph.bearingX = unpackInt()
                 glyph.bearingY = unpackInt()
-                glyph.advance = if (tryUnpackNil()) null else unpackInt()
+                val advance = if (tryUnpackNil()) null else unpackInt()
                 glyph.image = BitGridFormat.unpack(unpacker)
+                glyph.advance = advance ?: if (glyph.image.isEmpty())
+                    0
+                else
+                    glyph.bearingX + glyph.image.width + context.spacing
                 glyph.crop()
                 return glyph
             }

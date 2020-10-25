@@ -1,7 +1,7 @@
 package dev.thecodewarrior.bitfont.editor.jimgui.utils.extensions
 
-import dev.thecodewarrior.bitfont.utils.Attribute
+import dev.thecodewarrior.bitfont.typesetting.TextAttribute
 import java.awt.Color
 
-private val colorAttr = Attribute.get<Color>("color")
-val Attribute.Companion.color get() = colorAttr
+private val colorAttr = TextAttribute.get<Color>("color")
+val TextAttribute.Companion.color get() = colorAttr

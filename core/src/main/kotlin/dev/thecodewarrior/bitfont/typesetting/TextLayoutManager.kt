@@ -130,7 +130,6 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
             truncateLastLine(containerLayouts.flatMap { it.lines })
         }
 
-
         // add the lines to the containers
         for((i, layout) in containerLayouts.withIndex()) {
             val container = textContainers[i]
@@ -168,20 +167,20 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
             return
 
         // === add back wrapped glyphs ===
-        line.glyphs.addAll(line.wrappedGlyphs)
+        line.clusters.addAll(line.wrappedGlyphs)
 
         // === remove glyphs to make space ===
-        val truncationLength = truncationGlyphs.last().afterX
-        while(line.glyphs.isNotEmpty() && line.contentWidth > line.innerWidth - truncationLength) {
-            line.glyphs.removeLast()
+        val truncationLength = truncationGlyphs.last().main.afterX
+        while(line.clusters.isNotEmpty() && line.contentWidth > line.innerWidth - truncationLength) {
+            line.clusters.removeLast()
         }
 
         // === append truncation string ===
-        val truncationStartX = line.glyphs.lastOrNull()?.afterX ?: 0
+        val truncationStartX = line.clusters.lastOrNull()?.main?.afterX ?: 0
         truncationGlyphs.forEach {
-            it.posX += truncationStartX
+            it.main.posX += truncationStartX
         }
-        line.glyphs.addAll(truncationGlyphs)
+        line.clusters.addAll(truncationGlyphs)
     }
 
     /**
@@ -202,7 +201,7 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
             val line = layoutLine(container, lineY)
                 ?: break // we're out of space
 
-            val isBlank = line.glyphs.all { it.isInvisible }
+            val isBlank = line.clusters.all { it.isInvisible }
 
             if(isBlank && layout.lines.isEmpty() && swallowLeadingBlanks)
                 continue // if we're still swallowing leading blanks, continue
@@ -231,10 +230,10 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
         var maxDescent = 0
 
         val line = LineLayout(options.linePadding, options.lineSpacing, 0, lineY, container.width, 0)
-        for (glyph in pushBackIterator) {
-            line.glyphs.add(glyph)
-            maxAscent = max(maxAscent, glyph.glyph.font?.ascent ?: 0)
-            maxDescent = max(maxDescent, glyph.glyph.font?.descent ?: 0)
+        for (cluster in pushBackIterator) {
+            line.clusters.add(cluster)
+            maxAscent = max(maxAscent, cluster.main.ascent)
+            maxDescent = max(maxDescent, cluster.main.descent)
 
             if (line.height < maxAscent + maxDescent) {
                 val bounds = TextContainer.LineBounds(options.lineSpacing,
@@ -248,18 +247,18 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
             // the line doesn't fit in the container
             if (line.posY + line.height > container.height) {
                 // push everything back onto the iterator
-                while (line.glyphs.isNotEmpty()) {
-                    pushBackIterator.pushBack(line.glyphs.removeLast())
+                while (line.clusters.isNotEmpty()) {
+                    pushBackIterator.pushBack(line.clusters.removeLast())
                 }
 
                 return null // a null return signals that we ran out of space
             }
 
             // an explicit line break occurred
-            if (glyph.codepoint == '\r'.toInt() || glyph.codepoint == '\n'.toInt()) {
+            if (cluster.main.codepoint == '\r'.toInt() || cluster.main.codepoint == '\n'.toInt()) {
                 // if this is a \r\n pair, consume the \n
-                if (glyph.codepoint == '\r'.toInt() && pushBackIterator.hasNext() &&
-                    pushBackIterator.peekNext().codepoint == '\n'.toInt()) {
+                if (cluster.main.codepoint == '\r'.toInt() && pushBackIterator.hasNext() &&
+                    pushBackIterator.peekNext().main.codepoint == '\n'.toInt()) {
                     pushBackIterator.next()
                 }
 
@@ -268,26 +267,26 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
 
             // line breaking
             if (
-                !glyph.isInvisible && // don't perform line breaks in the middle of trailing whitespace
+                !cluster.isInvisible && // don't perform line breaks in the middle of trailing whitespace
                 line.contentWidth > line.innerWidth
             ) {
-                if (line.glyphs.size > 1) { // don't actually wrap single-character lines
+                if (line.clusters.size > 1) { // don't actually wrap single-character lines
                     // find the closest wrap point. Either on this character or before it
                     var wrapPoint =
-                        if (breakIterator.isBoundary(glyph.characterIndex))
-                            glyph.characterIndex
+                        if (breakIterator.isBoundary(cluster.main.characterIndex))
+                            cluster.main.characterIndex
                         else
-                            breakIterator.preceding(glyph.characterIndex)
+                            breakIterator.preceding(cluster.main.characterIndex)
                     // if we couldn't find a suitable wrap point inside the line, wrap on the character instead.
-                    if (wrapPoint <= line.glyphs.first().characterIndex) {
-                        wrapPoint = glyph.characterIndex
+                    if (wrapPoint <= line.clusters.first().main.characterIndex) {
+                        wrapPoint = cluster.main.characterIndex
                     }
 
                     // roll back to the wrap point, pushing everything back into the iterator, and add them to the
                     // wrapped glyphs
-                    while (line.glyphs.isNotEmpty()) {
-                        if (line.glyphs.last().characterIndex < wrapPoint) break
-                        val dropped = line.glyphs.removeLast()
+                    while (line.clusters.isNotEmpty()) {
+                        if (line.clusters.last().main.characterIndex < wrapPoint) break
+                        val dropped = line.clusters.removeLast()
                         pushBackIterator.pushBack(dropped)
                         line.wrappedGlyphs.add(dropped)
                     }
@@ -313,17 +312,17 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
     protected open fun fixGlyphPositions(line: LineLayout) {
         // === shift glyphs to 0 ===
         // the amount to shift glyphs left in order for them to start at 0
-        var startX = line.glyphs.first().posX
+        var startX = line.clusters.first().main.posX
 
         // === apply line padding ===
         startX -= options.linePadding
 
         // === apply alignment ===
         // compute the _visual_ right edge.
-        val rightEdge = line.glyphs.last().let {
-            it.posX + it.glyph.bearingX + it.glyph.image.width
+        val rightEdge = line.clusters.last().let {
+            it.main.posX + it.main.bearingX + it.main.width
         }
-        val visualWidth = rightEdge - line.glyphs.first().posX
+        val visualWidth = rightEdge - line.clusters.first().main.posX
         val remainingSpace = line.innerWidth - visualWidth
         // offset the starting point
         startX -= when (options.alignment) {
@@ -335,13 +334,13 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
         // === baseline correction ===
         // compute the baseline offset (lines are positioned based on their top-left corner, but glyphs are
         // positioned based on on their baseline)
-        line.baseline = line.glyphs.map { it.glyph.font?.ascent ?: 0 }.maxOrNull() ?: 0
+        line.baseline = line.clusters.map { it.main.ascent }.maxOrNull() ?: 0
 
         // === applying shifts ===
         // shift all the glyphs into the correct locations
-        line.glyphs.forEach {
-            it.posX -= startX
-            it.posY += line.baseline
+        line.clusters.forEach {
+            it.main.posX -= startX
+            it.main.posY += line.baseline
         }
     }
 
@@ -363,13 +362,13 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
         public val innerWidth: Int
             get() = width - padding * 2
         public val contentWidth: Int
-            get() = if (glyphs.isEmpty()) 0 else glyphs.last().afterX - glyphs.first().posX
+            get() = if (clusters.isEmpty()) 0 else clusters.last().main.afterX - clusters.first().main.posX
         public var baseline: Int = 0
 
         /**
          * The glyphs in this line
          */
-        public val glyphs: MutableList<GraphemeCluster> = mutableListOf()
+        public val clusters: MutableList<GraphemeCluster> = mutableListOf()
 
         /**
          * The glyphs that were wrapped off this line. This is used when truncating text. When truncating we want to ignore
@@ -388,6 +387,15 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
         }
 
         public fun toTypesetLine(): TextContainer.TypesetLine {
+            val glyphs = mutableListOf<TypesetGlyph>()
+            clusters.forEach { cluster ->
+                glyphs.add(cluster.main)
+                cluster.attachments.forEach {
+                    it.posX += cluster.main.posX
+                    it.posY += cluster.main.posY
+                    glyphs.add(it)
+                }
+            }
             return TextContainer.TypesetLine(posX, posY, width, height, glyphs)
         }
     }

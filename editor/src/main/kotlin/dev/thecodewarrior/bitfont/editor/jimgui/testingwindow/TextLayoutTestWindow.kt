@@ -30,9 +30,9 @@ class TextLayoutTestWindow(document: BitfontDocument): AbstractTestWindow(docume
 
     override fun drawControls(imgui: ImGui) {
         imgui.sameLine()
-        withNative(options::enableKerning) {
-            imgui.checkbox("Kerning", it)
-        }
+//        withNative(options::enableKerning) {
+//            imgui.checkbox("Kerning", it)
+//        }
         imgui.sameLine()
         withNative(options::enableCombiningCharacters) {
             imgui.checkbox("Combining Characters", it)
@@ -82,14 +82,14 @@ class TextLayoutTestWindow(document: BitfontDocument): AbstractTestWindow(docume
             val origin = vec(area.x, area.y) + vec(line.posX, line.posY) * scale
             for(main in line.glyphs) {
                 main.draw(imgui, origin + vec(main.posX, main.posY) * scale, scale, Colors.textLayout.text.u32)
-                main.attachments?.also { attachments ->
-                    for(attachment in attachments) {
-                        attachment.draw(imgui,
-                            origin + vec(main.posX + attachment.posX, main.posY + attachment.posY) * scale,
-                            scale, Colors.textLayout.text.u32
-                        )
-                    }
-                }
+//                main.attachments?.also { attachments ->
+//                    for(attachment in attachments) {
+//                        attachment.draw(imgui,
+//                            origin + vec(main.posX + attachment.posX, main.posY + attachment.posY) * scale,
+//                            scale, Colors.textLayout.text.u32
+//                        )
+//                    }
+//                }
             }
         }
     }

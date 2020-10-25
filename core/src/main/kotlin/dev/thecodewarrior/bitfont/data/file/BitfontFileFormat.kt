@@ -6,33 +6,33 @@ import org.msgpack.core.MessagePacker
 import org.msgpack.core.MessageUnpacker
 import java.lang.UnsupportedOperationException
 
-abstract class BitfontFileFormat {
+public abstract class BitfontFileFormat {
     /**
      * True if this format is no longer writable (e.g. because the internal data structure has changed incompatibly)
      */
-    abstract val readOnly: Boolean
+    public abstract val readOnly: Boolean
 
-    abstract fun packTables(font: Bitfont, file: BitfontFile)
-    abstract fun unpackTables(file: BitfontFile): Bitfont
+    public abstract fun packTables(font: Bitfont, file: BitfontFile)
+    public abstract fun unpackTables(file: BitfontFile): Bitfont
 
-    inline fun packToBytes(block: MessagePacker.() -> Unit): ByteArray {
+    public inline fun packToBytes(block: MessagePacker.() -> Unit): ByteArray {
         val packer = MessagePack.newDefaultBufferPacker()
         block(packer)
         return packer.toByteArray()
     }
 
-    inline fun <T> MessageUnpacker.unpack(block: MessageUnpacker.() -> T): T {
+    public inline fun <T> MessageUnpacker.unpack(block: MessageUnpacker.() -> T): T {
         return this.block()
     }
 
-    inline fun MessagePacker.pack(block: MessagePacker.() -> Unit) {
+    public inline fun MessagePacker.pack(block: MessagePacker.() -> Unit) {
         this.block()
     }
 
-    companion object {
-        val magic = "BITFONT"
-        val magicBytes = magic.toByteArray()
-        val formats: List<BitfontFileFormat> = listOf(Version0, BitfontFormatV1)
+    public companion object {
+        private val magic = "BITFONT"
+        private val magicBytes = magic.toByteArray()
+        private val formats: List<BitfontFileFormat> = listOf(Version0, BitfontFormatV1)
 
         /**
          * Writes the specified font to a new [BitfontFile]
@@ -42,7 +42,7 @@ abstract class BitfontFileFormat {
          */
         @JvmStatic
         @JvmOverloads
-        fun pack(font: Bitfont, version: Int = formats.lastIndex): BitfontFile {
+        public fun pack(font: Bitfont, version: Int = formats.lastIndex): BitfontFile {
             if (version !in 1..formats.lastIndex) {
                 throw FileFormatException("Can't write file version $version. Only versions in the range " +
                     "[1, ${formats.lastIndex}] are supported")
@@ -62,7 +62,7 @@ abstract class BitfontFileFormat {
          * Reads a font from the passed [MessageUnpacker].
          */
         @JvmStatic
-        fun unpack(file: BitfontFile): Bitfont {
+        public fun unpack(file: BitfontFile): Bitfont {
             if (file.version !in 1..formats.lastIndex) {
                 throw FileFormatException("Unsupported file version ${file.version}. Only versions in the range " +
                     "[1, ${formats.lastIndex}] are supported")
@@ -90,12 +90,12 @@ abstract class BitfontFileFormat {
     /**
      * A packer/unpacker that modifies an existing value when unpacking
      */
-    interface MutableFormat<T> {
-        fun pack(packer: MessagePacker, value: T)
-        fun unpack(unpacker: MessageUnpacker, value: T)
+    public interface MutableFormat<T> {
+        public fun pack(packer: MessagePacker, value: T)
+        public fun unpack(unpacker: MessageUnpacker, value: T)
 
         @JvmDefault
-        fun packToBytes(value: T): ByteArray {
+        public fun packToBytes(value: T): ByteArray {
             val packer = MessagePack.newDefaultBufferPacker()
             pack(packer, value)
             return packer.toByteArray()
@@ -103,16 +103,46 @@ abstract class BitfontFileFormat {
     }
 
     /**
-     * A packer/unpacker that creates a new value when unpacking
+     * A packer/unpacker that modifies an existing value when unpacking and receives a context
      */
-    interface ImmutableFormat<T> {
-        fun pack(packer: MessagePacker, value: T)
-        fun unpack(unpacker: MessageUnpacker): T
+    public interface ContextAwareMutableFormat<T, C> {
+        public fun pack(packer: MessagePacker, value: T, context: C)
+        public fun unpack(unpacker: MessageUnpacker, value: T, context: C)
 
         @JvmDefault
-        fun packToBytes(value: T): ByteArray {
+        public fun packToBytes(value: T, context: C): ByteArray {
+            val packer = MessagePack.newDefaultBufferPacker()
+            pack(packer, value, context)
+            return packer.toByteArray()
+        }
+    }
+
+    /**
+     * A packer/unpacker that creates a new value when unpacking
+     */
+    public interface ImmutableFormat<T> {
+        public fun pack(packer: MessagePacker, value: T)
+        public fun unpack(unpacker: MessageUnpacker): T
+
+        @JvmDefault
+        public fun packToBytes(value: T): ByteArray {
             val packer = MessagePack.newDefaultBufferPacker()
             pack(packer, value)
+            return packer.toByteArray()
+        }
+    }
+
+    /**
+     * A packer/unpacker that creates a new value when unpacking and receives a context
+     */
+    public interface ContextAwareImmutableFormat<T, C> {
+        public fun pack(packer: MessagePacker, value: T, context: C)
+        public fun unpack(unpacker: MessageUnpacker, context: C): T
+
+        @JvmDefault
+        public fun packToBytes(value: T, context: C): ByteArray {
+            val packer = MessagePack.newDefaultBufferPacker()
+            pack(packer, value, context)
             return packer.toByteArray()
         }
     }

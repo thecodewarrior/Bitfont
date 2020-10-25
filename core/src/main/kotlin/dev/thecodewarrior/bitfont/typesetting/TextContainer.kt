@@ -37,6 +37,6 @@ public open class TextContainer @JvmOverloads constructor(
     public class TypesetLine(
         public var posX: Int, public var posY: Int,
         public var width: Int, public var height: Int,
-        public val glyphs: List<GraphemeCluster>
+        public val glyphs: List<TypesetGlyph>
     )
 }

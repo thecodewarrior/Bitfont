@@ -2,8 +2,7 @@ package dev.thecodewarrior.bitfont.editor
 
 import dev.thecodewarrior.bitfont.data.Glyph
 import dev.thecodewarrior.bitfont.editor.utils.DrawList
-import dev.thecodewarrior.bitfont.typesetting.AttributedGlyph
-import dev.thecodewarrior.bitfont.utils.Vec2i
+import dev.thecodewarrior.bitfont.typesetting.TextObject
 import org.lwjgl.nuklear.NkColor
 import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.NkImage
@@ -13,10 +12,7 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL12
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
-import java.awt.AlphaComposite
-import java.awt.Color
 import java.awt.image.BufferedImage
-import kotlin.math.abs
 
 /**
  * An abstract base class for windows that have a font test area (e.g. the typesetter and text layout test windows)
@@ -60,16 +56,18 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
         return newValue
     }
 
-    fun drawGlyph(image: BufferedImage, glyph: Glyph, posX: Int, posY: Int, color: Int) {
+    fun drawGlyph(image: BufferedImage, glyph: TextObject, posX: Int, posY: Int, color: Int) {
         val glyphX = posX + glyph.bearingX
         val glyphY = posY + glyph.bearingY
-        for(x in 0 until glyph.image.width) {
-            for(y in 0 until glyph.image.height) {
-                if(glyph.image[x, y]) {
-                    val pixelX = glyphX + x
-                    val pixelY = glyphY + y
-                    if(pixelX >= 0 && pixelX < image.width && pixelY >= 0 && pixelY < image.height) {
-                        image.setRGB(pixelX, pixelY, color)
+        if(glyph is Glyph) {
+            for (x in 0 until glyph.image.width) {
+                for (y in 0 until glyph.image.height) {
+                    if (glyph.image[x, y]) {
+                        val pixelX = glyphX + x
+                        val pixelY = glyphY + y
+                        if (pixelX >= 0 && pixelX < image.width && pixelY >= 0 && pixelY < image.height) {
+                            image.setRGB(pixelX, pixelY, color)
+                        }
                     }
                 }
             }

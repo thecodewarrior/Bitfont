@@ -117,7 +117,7 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
                 document.children.add(test)
             }
         }
-        test("Old Typesetting", ::TestingWindow)
+//        test("Old Typesetting", ::TestingWindow)
         test("Glyph Generator", ::GlyphGeneratorTestWindow)
         test("Typesetter", ::TypesetterTestWindow)
         test("Text Layout", ::TextLayoutTestWindow)
@@ -237,8 +237,8 @@ class FontInfoWindow(val document: BitfontDocument): IMWindow() {
 
         if(autoAdvance) {
             bitfont.glyphs.forEach { (_, it) ->
-                if (!it.isEmpty())
-                    it.advance = null
+//                if (!it.isEmpty())
+//                    it.advance = null
             }
         }
 

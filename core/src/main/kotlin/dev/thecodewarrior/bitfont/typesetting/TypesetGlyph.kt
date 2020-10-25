@@ -1,22 +1,29 @@
 package dev.thecodewarrior.bitfont.typesetting
 
-import dev.thecodewarrior.bitfont.data.Glyph
-import dev.thecodewarrior.bitfont.utils.Attribute
-
-public open class AttributedGlyph(
+public open class TypesetGlyph(
+    public var posX: Int, public var posY: Int,
     public val codepoint: Int,
-    public val glyph: Glyph,
+    public val textObject: TextObject,
     public val source: AttributedString,
     public val codepointIndex: Int,
     public val characterIndex: Int
-) {
-    private var attributeOverrides: MutableMap<Attribute<*>, Any?>? = null
+): TextObject by textObject {
+    public val afterX: Int
+        get() = posX + textObject.advance
+
+    public fun setPosition(posX: Int, posY: Int): TypesetGlyph {
+        this.posX = posX
+        this.posY = posY
+        return this
+    }
+
+    private var attributeOverrides: MutableMap<TextAttribute<*>, Any?>? = null
 
     /**
      * Get the value of [attr]
      */
     @Suppress("UNCHECKED_CAST")
-    public operator fun <T> get(attr: Attribute<T>): T? {
+    public operator fun <T> get(attr: TextAttribute<T>): T? {
         val attributeOverrides = attributeOverrides
         if(attributeOverrides != null && attr in attributeOverrides)
             return attributeOverrides[attr] as T?
@@ -26,7 +33,7 @@ public open class AttributedGlyph(
     /**
      * Set the attribute override for [attr]
      */
-    public operator fun <T> set(attr: Attribute<T>, value: T?) {
+    public operator fun <T> set(attr: TextAttribute<T>, value: T?) {
         attributeOverrides = (attributeOverrides ?: mutableMapOf()).also {
             it[attr] = value
         }
@@ -35,7 +42,7 @@ public open class AttributedGlyph(
     /**
      * Remove the attribute override for [attr]
      */
-    public fun <T> remove(attr: Attribute<T>) {
+    public fun <T> remove(attr: TextAttribute<T>) {
         attributeOverrides?.remove(attr)
     }
 }

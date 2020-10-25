@@ -1,32 +1,22 @@
 package dev.thecodewarrior.bitfont.data
 
-import dev.thecodewarrior.bitfont.utils.Vec2i
+import dev.thecodewarrior.bitfont.typesetting.TextObject
 import dev.thecodewarrior.bitfont.utils.clamp
 import kotlin.math.max
 import kotlin.math.min
 
-class Glyph(var font: Bitfont?) {
-    var bearingX: Int = 0
-        set(value) {
-            field = value.clamp(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
-        }
-    var bearingY: Int = 0
-        set(value) {
-            field = value.clamp(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
-        }
-    var bearing: Vec2i
-        get() = Vec2i(bearingX, bearingY)
-        set(value) {
-            bearingX = value.x
-            bearingY = value.y
-        }
-    var advance: Int? = null
-        set(value) {
-            field = value?.clamp(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
-        }
-
-    fun calcAdvance(): Int = calcAdvance(font?.spacing ?: 0)
-    fun calcAdvance(spacing: Int): Int = advance ?: if (image.isEmpty()) 0 else bearingX + image.width + spacing
+public class Glyph(public val font: Bitfont): TextObject {
+    public override var bearingX: Int = 0
+    public override var bearingY: Int = 0
+    public override var advance: Int = 0
+    override val ascent: Int
+        get() = font.ascent
+    override val descent: Int
+        get() = font.descent
+    override val width: Int
+        get() = image.width
+    override val height: Int
+        get() = image.height
 
     var image: BitGrid = BitGrid(1, 1)
 

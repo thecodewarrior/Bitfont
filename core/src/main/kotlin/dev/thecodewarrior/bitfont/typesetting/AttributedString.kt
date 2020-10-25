@@ -1,7 +1,5 @@
 package dev.thecodewarrior.bitfont.typesetting
 
-import dev.thecodewarrior.bitfont.utils.Attribute
-import dev.thecodewarrior.bitfont.utils.AttributeMap
 import dev.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import dev.thecodewarrior.bitfont.utils.RangeMap
 import dev.thecodewarrior.bitfont.utils.TreeRangeMap
@@ -9,7 +7,7 @@ import dev.thecodewarrior.bitfont.utils.TreeRangeMap
 @ExperimentalBitfont
 open class AttributedString internal constructor(
     open val plaintext: String,
-    protected open val attributes: Map<Attribute<*>, RangeMap<Int, Any>>
+    protected open val attributes: Map<TextAttribute<*>, RangeMap<Int, Any>>
 ) {
 
     constructor(other: AttributedString): this(
@@ -20,14 +18,14 @@ open class AttributedString internal constructor(
     constructor(plaintext: String, attributes: AttributeMap): this(plaintext, attributes.map.mapValues { (_, value) ->
         TreeRangeMap<Int, Any>().also { map -> map[0, plaintext.length] = value }
     })
-    constructor(plaintext: String, vararg attributes: Pair<Attribute<*>, Any>): this(plaintext, AttributeMap(*attributes))
+    constructor(plaintext: String, vararg attributes: Pair<TextAttribute<*>, Any>): this(plaintext, AttributeMap(*attributes))
 
     val length: Int
         get() = plaintext.length
     fun isEmpty(): Boolean = length == 0
     fun isNotEmpty(): Boolean = !isEmpty()
 
-    open fun getAllAttributes(): Map<Attribute<*>, RangeMap<Int, Any>> {
+    open fun getAllAttributes(): Map<TextAttribute<*>, RangeMap<Int, Any>> {
         return attributes.mapValues { it.value.copy() }
     }
 
@@ -36,13 +34,13 @@ open class AttributedString internal constructor(
         attributes.forEach { key, value ->
             value[index]?.also {
                 @Suppress("UNCHECKED_CAST")
-                attrs[key as Attribute<Any>] = it
+                attrs[key as TextAttribute<Any>] = it
             }
         }
         return attrs
     }
 
-    open operator fun <T> get(attr: Attribute<T>, index: Int): T? {
+    open operator fun <T> get(attr: TextAttribute<T>, index: Int): T? {
         @Suppress("UNCHECKED_CAST")
         return attributes[attr]?.get(index) as T?
     }

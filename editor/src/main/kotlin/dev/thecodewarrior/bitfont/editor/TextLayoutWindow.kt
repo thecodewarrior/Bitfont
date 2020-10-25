@@ -16,9 +16,6 @@ import org.lwjgl.nuklear.Nuklear.nk_layout_row_dynamic
 import org.lwjgl.nuklear.Nuklear.nk_property_int
 import org.lwjgl.nuklear.Nuklear.nk_strlen
 import org.lwjgl.nuklear.Nuklear.nk_widget_position
-import org.lwjgl.nuklear.Nuklear.nk_window_get_bounds
-import org.lwjgl.nuklear.Nuklear.nk_window_get_size
-import org.lwjgl.nuklear.Nuklear.nk_window_get_width
 import org.lwjgl.nuklear.Nuklear.nnk_combo_string
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
@@ -123,17 +120,8 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
             for (line in container.lines) {
                 val originX = line.posX + containerPos.x
                 val originY = line.posY + containerPos.y
-                for (main in line.glyphs) {
-                    drawGlyph(image, main.glyph, originX + main.posX, originY + main.posY, Color.WHITE.rgb)
-                    main.attachments?.also { attachments ->
-                        for (attachment in attachments) {
-                            drawGlyph(image, attachment.glyph,
-                                originX + main.posX + attachment.posX,
-                                originY + main.posY + attachment.posY,
-                                Color.WHITE.rgb
-                            )
-                        }
-                    }
+                for (glyph in line.glyphs) {
+                    drawGlyph(image, glyph.textObject, originX + glyph.posX, originY + glyph.posY, Color.WHITE.rgb)
                 }
 
                 if (showLines) {

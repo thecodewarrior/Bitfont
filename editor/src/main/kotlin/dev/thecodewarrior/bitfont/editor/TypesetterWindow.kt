@@ -52,16 +52,14 @@ class TypesetterWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
         val originX = data.font.ascent
         val originY = logicalHeight / 2
 
-        for(main in typesetter) {
-            drawGlyph(image, main.glyph, originX + main.posX, originY + main.posY, Color.WHITE.rgb)
-            main.attachments?.also { attachments ->
-                for(attachment in attachments) {
-                    drawGlyph(image, attachment.glyph,
-                        originX + main.posX + attachment.posX,
-                        originY + main.posY + attachment.posY,
-                        Color.WHITE.rgb
-                    )
-                }
+        for(cluster in typesetter) {
+            drawGlyph(image, cluster.main.textObject, originX + cluster.main.posX, originY + cluster.main.posY, Color.WHITE.rgb)
+            for(attachment in cluster.attachments) {
+                drawGlyph(image, attachment.textObject,
+                    originX + cluster.main.posX + attachment.posX,
+                    originY + cluster.main.posY + attachment.posY,
+                    Color.WHITE.rgb
+                )
             }
         }
 

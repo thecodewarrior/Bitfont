@@ -22,9 +22,9 @@ class TypesetterTestWindow(document: BitfontDocument): AbstractTestWindow(docume
 
     override fun drawControls(imgui: ImGui) {
         imgui.sameLine()
-        withNative(options::enableKerning) {
-            imgui.checkbox("Kerning", it)
-        }
+//        withNative(options::enableKerning) {
+//            imgui.checkbox("Kerning", it)
+//        }
         imgui.sameLine()
         withNative(options::enableCombiningCharacters) {
             imgui.checkbox("Combining Characters", it)
@@ -40,15 +40,15 @@ class TypesetterTestWindow(document: BitfontDocument): AbstractTestWindow(docume
         val min = canvas.min + vec(height * scale, canvas.heighti / 2)
 
         for(main in typesetter) {
-            main.draw(imgui, min + vec(main.posX, main.posY) * scale, scale, Colors.layoutTest.text.u32)
-            main.attachments?.also { attachments ->
-                for(attachment in attachments) {
-                    attachment.draw(imgui,
-                        min + vec(main.posX + attachment.posX, main.posY + attachment.posY) * scale,
-                        scale, Colors.layoutTest.text.u32
-                    )
-                }
-            }
+//            main.draw(imgui, min + vec(main.posX, main.posY) * scale, scale, Colors.layoutTest.text.u32)
+//            main.attachments?.also { attachments ->
+//                for(attachment in attachments) {
+//                    attachment.draw(imgui,
+//                        min + vec(main.posX + attachment.posX, main.posY + attachment.posY) * scale,
+//                        scale, Colors.layoutTest.text.u32
+//                    )
+//                }
+//            }
         }
     }
 }
