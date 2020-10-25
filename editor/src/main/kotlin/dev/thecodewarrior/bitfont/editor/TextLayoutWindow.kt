@@ -4,6 +4,8 @@ import dev.thecodewarrior.bitfont.editor.data.BitfontEditorData
 import dev.thecodewarrior.bitfont.editor.utils.DistinctColors
 import dev.thecodewarrior.bitfont.editor.utils.DrawList
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
+import dev.thecodewarrior.bitfont.typesetting.MutableAttributedString
+import dev.thecodewarrior.bitfont.typesetting.TextAttribute
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
 import dev.thecodewarrior.bitfont.utils.Vec2i
@@ -22,6 +24,7 @@ import org.lwjgl.system.MemoryUtil
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.text.ParseException
+import javax.imageio.ImageIO
 
 class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f, 400f) {
     private var testText: String = ""
@@ -29,6 +32,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
     private var showLines = false
     private var splitColumns = false
     private var exclusionZones = false
+    private var embeds = false
     private var alignment = TextLayoutManager.Alignment.LEFT
     private var truncation = false
     private var maxLines = 0
@@ -82,6 +86,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
             nk_layout_row_dynamic(ctx, 25f, 3)
             splitColumns = checkbox("Split columns", splitColumns)
             exclusionZones = checkbox("Exclusion zones", exclusionZones)
+            embeds = checkbox("Embeds (* = embed)", embeds)
 
             nk_layout_row_dynamic(ctx, 25f, 3)
             truncation = checkbox("Truncation", truncation)
@@ -93,7 +98,22 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
     }
 
     override fun redraw(logicalWidth: Int, logicalHeight: Int, image: BufferedImage, drawList: DrawList) {
-        val testAttributedText = AttributedString(testText)
+        val testAttributedText = MutableAttributedString(testText)
+
+        if(embeds) {
+            val testEmbed = BufferedImageEmbed(
+                testEmbedImage.width + 1,
+                0, -(data.font.xHeight + testEmbedImage.height) / 2,
+                testEmbedImage
+            )
+
+            var index = testText.indexOf('*')
+            while(index >= 0) {
+                testAttributedText.setAttribute(index, index+1, TextAttribute.textEmbed, testEmbed)
+                index = testText.indexOf('*', index+1)
+            }
+        }
+
         val containers = mutableListOf<Pair<TextContainer, Vec2i>>()
         if(splitColumns) {
             val column1Width = logicalWidth / 3 - 4
@@ -160,4 +180,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
         super.free()
     }
 
+    companion object {
+        val testEmbedImage: BufferedImage = ImageIO.read(TextLayoutWindow::class.java.getResourceAsStream("testEmbed.png"))
+    }
 }

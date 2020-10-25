@@ -11,22 +11,7 @@ package dev.thecodewarrior.bitfont.typesetting
  *
  * For most embeds you should be able to use [pua], which is a character in Unicode's private use area.
  */
-public class TextEmbed : TextObject {
-    override val advance: Int
-        get() = TODO("Not yet implemented")
-    override val ascent: Int
-        get() = TODO("Not yet implemented")
-    override val descent: Int
-        get() = TODO("Not yet implemented")
-    override val bearingX: Int
-        get() = TODO("Not yet implemented")
-    override val bearingY: Int
-        get() = TODO("Not yet implemented")
-    override val width: Int
-        get() = TODO("Not yet implemented")
-    override val height: Int
-        get() = TODO("Not yet implemented")
-
+public abstract class TextEmbed : TextObject {
     public companion object {
         /**
          * A [private use area](https://en.wikipedia.org/wiki/Private_Use_Areas) character that can be used as an

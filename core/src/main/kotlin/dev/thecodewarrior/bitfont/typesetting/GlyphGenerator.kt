@@ -10,13 +10,17 @@ public class GlyphGenerator(string: AttributedString, public val font: Bitfont):
     override fun refillBuffer() {
         if(isEnd) return
 
-        val font = attributeValue(TextAttribute.font)
+        val textObject: TextObject = attributeValue(TextAttribute.textEmbed)
+            ?: findFont().let { it.glyphs[codepoint] ?: it.defaultGlyph }
+        push(TypesetGlyph(0, 0, codepoint, textObject, string, index, offset))
+        advance()
+    }
+
+    private fun findFont(): Bitfont {
+        return attributeValue(TextAttribute.font)
             ?.takeIf { codepoint in it.glyphs }
             ?: font.takeIf { codepoint in it.glyphs }
             ?: attributeValue(TextAttribute.font)
             ?: font
-        val textObject: TextObject = font.glyphs[codepoint] ?: font.defaultGlyph
-        push(TypesetGlyph(0, 0, codepoint, textObject, string, index, offset))
-        advance()
     }
 }

@@ -2,6 +2,7 @@ package dev.thecodewarrior.bitfont.editor
 
 import dev.thecodewarrior.bitfont.data.Glyph
 import dev.thecodewarrior.bitfont.editor.utils.DrawList
+import dev.thecodewarrior.bitfont.typesetting.TextEmbed
 import dev.thecodewarrior.bitfont.typesetting.TextObject
 import org.lwjgl.nuklear.NkColor
 import org.lwjgl.nuklear.NkContext
@@ -13,6 +14,7 @@ import org.lwjgl.opengl.GL12
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.awt.image.BufferedImage
+import kotlin.math.max
 
 /**
  * An abstract base class for windows that have a font test area (e.g. the typesetter and text layout test windows)
@@ -68,6 +70,16 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
                         if (pixelX >= 0 && pixelX < image.width && pixelY >= 0 && pixelY < image.height) {
                             image.setRGB(pixelX, pixelY, color)
                         }
+                    }
+                }
+            }
+        } else if(glyph is BufferedImageEmbed) {
+            for (x in 0 until glyph.image.width) {
+                for (y in 0 until glyph.image.height) {
+                    val pixelX = glyphX + x
+                    val pixelY = glyphY + y
+                    if (pixelX >= 0 && pixelX < image.width && pixelY >= 0 && pixelY < image.height) {
+                        image.setRGB(pixelX, pixelY, glyph.image.getRGB(x, y))
                     }
                 }
             }
@@ -178,5 +190,21 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
     override fun free() {
         GL11.glDeleteTextures(testTextureID)
         testTextureImage.free()
+    }
+
+    protected class BufferedImageEmbed(
+        override val advance: Int,
+        override val bearingX: Int,
+        override val bearingY: Int,
+        val image: BufferedImage
+    ): TextEmbed() {
+        override val ascent: Int
+            get() = max(0, -bearingY)
+        override val descent: Int
+            get() = max(0, bearingY + image.height)
+        override val width: Int
+            get() = image.width
+        override val height: Int
+            get() = image.height
     }
 }
