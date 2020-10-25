@@ -34,7 +34,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
     private var exclusionZones = false
     private var alignment = TextLayoutManager.Alignment.LEFT
     private var truncation = false
-    private var maxLines = 1
+    private var maxLines = 0
 
     override fun pushControls(ctx: NkContext) {
         MemoryStack.stackPush().use { stack ->

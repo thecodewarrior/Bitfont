@@ -204,7 +204,7 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
 
             val isBlank = line.glyphs.all { it.isInvisible }
 
-            if(isBlank && container.lines.isEmpty() && swallowLeadingBlanks)
+            if(isBlank && layout.lines.isEmpty() && swallowLeadingBlanks)
                 continue // if we're still swallowing leading blanks, continue
             lineY = line.posY + line.height + options.lineSpacing
 
