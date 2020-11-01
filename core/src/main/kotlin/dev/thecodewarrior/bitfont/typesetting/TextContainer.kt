@@ -1,5 +1,7 @@
 package dev.thecodewarrior.bitfont.typesetting
 
+import dev.thecodewarrior.bitfont.utils.BufferedIterator
+
 public open class TextContainer @JvmOverloads constructor(
     /**
      * The width of the container
@@ -14,8 +16,6 @@ public open class TextContainer @JvmOverloads constructor(
      */
     public var maxLines: Int = Int.MAX_VALUE
 ) {
-
-//    var lineBreakMode: LineBreakMode = LineBreakMode.WRAP_WORDS
 
     public val lines: MutableList<TypesetLine> = mutableListOf()
 
@@ -35,8 +35,26 @@ public open class TextContainer @JvmOverloads constructor(
     public data class LineBounds(val spacing: Int, var posX: Int, var posY: Int, var width: Int, val height: Int)
 
     public class TypesetLine(
-        public var posX: Int, public var posY: Int,
-        public var width: Int, public var height: Int,
-        public val glyphs: List<TypesetGlyph>
-    )
+        public val posX: Int, public val posY: Int,
+        public val width: Int, public val height: Int,
+        public val clusters: List<GraphemeCluster>
+    ): Iterable<TypesetGlyph> {
+        override fun iterator(): Iterator<TypesetGlyph> {
+            return Iter()
+        }
+
+        private inner class Iter: BufferedIterator<TypesetGlyph>() {
+            val clusterIterator = clusters.iterator()
+
+            override fun refillBuffer() {
+                if(clusterIterator.hasNext()) {
+                    val cluster = clusterIterator.next()
+                    push(cluster.main)
+                    cluster.attachments.forEach {
+                        push(it)
+                    }
+                }
+            }
+        }
+    }
 }

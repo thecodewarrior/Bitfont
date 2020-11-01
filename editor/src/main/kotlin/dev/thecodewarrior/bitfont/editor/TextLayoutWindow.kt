@@ -140,7 +140,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
             for (line in container.lines) {
                 val originX = line.posX + containerPos.x
                 val originY = line.posY + containerPos.y
-                for (glyph in line.glyphs) {
+                for (glyph in line) {
                     drawGlyph(image, glyph.textObject, originX + glyph.posX, originY + glyph.posY, Color.WHITE.rgb)
                 }
 

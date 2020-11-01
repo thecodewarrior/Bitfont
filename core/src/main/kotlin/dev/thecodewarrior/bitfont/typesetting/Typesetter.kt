@@ -100,10 +100,8 @@ public class Typesetter(private val glyphs: BufferedIterator<TypesetGlyph>): Buf
                 }
             }
 
-            attachment.setPosition(
-                attachmentX - attachment.bearingX,
-                attachmentY - attachment.bearingY
-            )
+            attachment.posX = cluster.main.posX + attachmentX - attachment.bearingX
+            attachment.posY = cluster.main.posY + attachmentY - attachment.bearingY
             cluster.attachments.add(attachment)
         }
     }

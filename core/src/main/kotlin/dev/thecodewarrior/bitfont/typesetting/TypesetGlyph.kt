@@ -11,12 +11,6 @@ public open class TypesetGlyph(
     public val afterX: Int
         get() = posX + textObject.advance
 
-    public fun setPosition(posX: Int, posY: Int): TypesetGlyph {
-        this.posX = posX
-        this.posY = posY
-        return this
-    }
-
     private var attributeOverrides: MutableMap<TextAttribute<*>, Any?>? = null
 
     /**

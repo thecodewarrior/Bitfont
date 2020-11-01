@@ -178,7 +178,7 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
         // === append truncation string ===
         val truncationStartX = line.clusters.lastOrNull()?.main?.afterX ?: 0
         truncationGlyphs.forEach {
-            it.main.posX += truncationStartX
+            it.offsetX(truncationStartX)
         }
         line.clusters.addAll(truncationGlyphs)
     }
@@ -338,9 +338,9 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
 
         // === applying shifts ===
         // shift all the glyphs into the correct locations
-        line.clusters.forEach {
-            it.main.posX -= startX
-            it.main.posY += line.baseline
+        line.clusters.forEach { cluster ->
+            cluster.offsetX(-startX)
+            cluster.offsetY(line.baseline)
         }
     }
 
@@ -387,16 +387,7 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
         }
 
         public fun toTypesetLine(): TextContainer.TypesetLine {
-            val glyphs = mutableListOf<TypesetGlyph>()
-            clusters.forEach { cluster ->
-                glyphs.add(cluster.main)
-                cluster.attachments.forEach {
-                    it.posX += cluster.main.posX
-                    it.posY += cluster.main.posY
-                    glyphs.add(it)
-                }
-            }
-            return TextContainer.TypesetLine(posX, posY, width, height, glyphs)
+            return TextContainer.TypesetLine(posX, posY, width, height, clusters)
         }
     }
 

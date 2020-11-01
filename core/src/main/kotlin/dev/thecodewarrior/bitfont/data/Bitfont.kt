@@ -1,7 +1,10 @@
 package dev.thecodewarrior.bitfont.data
 
+import dev.thecodewarrior.bitfont.data.file.BitfontFile
+import dev.thecodewarrior.bitfont.data.file.BitfontFileFormat
 import dev.thecodewarrior.bitfont.utils.clamp
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import java.io.InputStream
 
 class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: Int, spacing: Int) {
     var name: String = name
@@ -56,5 +59,13 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
         }
         glyph.image = grid
         return glyph
+    }
+
+    public companion object {
+        @JvmStatic
+        public fun unpack(stream: InputStream): Bitfont {
+            val file = BitfontFile.unpack(stream)
+            return BitfontFileFormat.unpack(file)
+        }
     }
 }

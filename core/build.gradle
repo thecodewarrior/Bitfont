@@ -1,8 +1,12 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.0'
+    id 'org.jetbrains.kotlin.jvm'
     id 'maven'
 }
+
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: "com.jfrog.artifactory"
 
 repositories {
     mavenCentral()
@@ -41,6 +45,70 @@ task sourcesJar(type: Jar) {
 
 jar.dependsOn sourcesJar
 
-artifacts {
-    archives sourcesJar
+publishing {
+    publications {
+        create("maven", MavenPublication) {
+            groupId = 'dev.thecodewarrior'
+            artifactId = 'bitfont'
+            version = project.version
+
+            artifact sourcesJar
+            from components.java
+
+            pom {
+                name = "Bitfont"
+                description = "A custom bitmap font format and platform-agnostic text layout engine"
+                url = 'http://github.com/thecodewarrior/Bitfont'
+                licenses {
+                    license {
+                        name = 'BSD 2-Clause'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/thecodewarrior/Bitfont.git'
+                    developerConnection = 'scm:git:ssh://github.com/thecodewarrior/Bitfont.git'
+                    url = 'https://github.com/thecodewarrior/Bitfont'
+                }
+            }
+        }
+    }
+}
+
+apply plugin: 'com.jfrog.bintray'
+
+bintray {
+    user = System.getenv("BINTRAY_USER")
+    key = System.getenv("BINTRAY_API_KEY")
+    publications = ["maven"]
+    pkg {
+        repo = "thecodewarrior"
+        name = "bitfont"
+        desc = project.description
+        labels = ["bitmap fonts", "typesetting", "text-layout"]
+        licenses = ["BSD 2-Clause"]
+
+        websiteUrl = "https://github.com/thecodewarrior/Bitfont"
+        githubRepo = "thecodewarrior/Bitfont"
+        vcsUrl = "https://github.com/thecodewarrior/Bitfont.git"
+        issueTrackerUrl = "https://github.com/thecodewarrior/Bitfont/issues"
+
+    }
+}
+
+apply plugin: 'com.jfrog.artifactory'
+
+artifactory {
+    setContextUrl 'https://oss.jfrog.org'
+    publish {
+        repository {
+            repoKey = project.version.endsWith("-SNAPSHOT") ? "oss-snapshot-local" : "oss-release-local"
+            username = System.getenv("BINTRAY_USER")
+            password = System.getenv("BINTRAY_API_KEY")
+            maven = true
+        }
+        defaults {
+            publications "maven"
+        }
+    }
+    clientConfig.info.setBuildNumber(System.getenv('ARTIFACTORY_BUILD_NUMBER')) // no env = null -> default value
 }

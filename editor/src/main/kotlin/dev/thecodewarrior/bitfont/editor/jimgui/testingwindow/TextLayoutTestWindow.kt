@@ -80,7 +80,7 @@ class TextLayoutTestWindow(document: BitfontDocument): AbstractTestWindow(docume
 
         for(line in container.lines) {
             val origin = vec(area.x, area.y) + vec(line.posX, line.posY) * scale
-            for(main in line.glyphs) {
+            for(main in line) {
                 main.draw(imgui, origin + vec(main.posX, main.posY) * scale, scale, Colors.textLayout.text.u32)
 //                main.attachments?.also { attachments ->
 //                    for(attachment in attachments) {
