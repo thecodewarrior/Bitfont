@@ -1,0 +1,27 @@
+# Styles
+- Sans 
+- Serif 
+- Mono 
+- Music 
+- KufiArabic 
+- NaskhArabic 
+- NastaliqUrdu 
+- RashiHebrew 
+- TraditionalNushu 
+
+# Fallback order
+- Sans > Serif
+- Serif > Sans
+- Mono
+
+# Weights
+- CondensedLight
+- Condensed
+- CondensedMedium
+- CondensedBold
+- CondensedBlack
+- Light
+- Regular
+- Medium
+- Bold
+- Black

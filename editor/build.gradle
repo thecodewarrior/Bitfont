@@ -1,0 +1,69 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+import org.gradle.internal.os.OperatingSystem
+switch (OperatingSystem.current()) {
+    case OperatingSystem.LINUX:
+    ext.lwjglNatives = "natives-linux"
+    break
+    case OperatingSystem.MAC_OS:
+    ext.lwjglNatives = "natives-macos"
+    break
+    case OperatingSystem.WINDOWS:
+    ext.lwjglNatives = "natives-windows"
+    break
+}
+ext.lwjglVersion = '3.2.3'
+ext.jimguiVersion = 'v0.9'
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url = 'https://kotlin.bintray.com/kotlinx' }
+    maven { url = 'https://dl.bintray.com/kotlin/kotlin-dev' }
+    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url = 'https://jitpack.io' }
+}
+
+dependencies {
+    compile project(':bitfontcore')
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect'
+    compile 'it.unimi.dsi:fastutil:8.2.2'
+    compile 'com.ibm.icu:icu4j:63.1'
+    compile 'org.msgpack:msgpack-core:0.8.16'
+
+    compile("org.ice1000.jimgui:core:$jimguiVersion") // basic functionality
+    runtime("org.ice1000.jimgui:core:$jimguiVersion") // basic functionality
+
+    implementation "org.lwjgl:lwjgl:$lwjglVersion"
+    implementation "org.lwjgl:lwjgl-nuklear:$lwjglVersion"
+    implementation "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+    implementation "org.lwjgl:lwjgl-opengl:$lwjglVersion"
+    implementation "org.lwjgl:lwjgl-stb:$lwjglVersion"
+    implementation "org.lwjgl:lwjgl-nfd:$lwjglVersion"
+
+    runtimeClasspath "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+    runtimeClasspath "org.lwjgl:lwjgl-nuklear:$lwjglVersion:$lwjglNatives"
+    runtimeClasspath "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
+    runtimeClasspath "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
+    runtimeClasspath "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
+    runtimeClasspath "org.lwjgl:lwjgl-nfd:$lwjglVersion:$lwjglNatives"
+}
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = '1.8'
+        freeCompilerArgs += [
+                '-Xjvm-default=enable',
+                '-Xuse-experimental=kotlin.Experimental',
+                '-Xuse-experimental=kotlin.ExperimentalUnsignedTypes'
+        ]
+    }
+}
