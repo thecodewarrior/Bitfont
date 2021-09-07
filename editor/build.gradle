@@ -28,17 +28,16 @@ repositories {
 }
 
 dependencies {
-    compile project(':bitfontcore')
+    implementation project(':bitfont')
     implementation 'org.jetbrains.kotlin:kotlin-stdlib'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
-    compile 'it.unimi.dsi:fastutil:8.2.2'
-    compile 'com.ibm.icu:icu4j:63.1'
-    compile 'org.msgpack:msgpack-core:0.8.16'
+    implementation 'it.unimi.dsi:fastutil:8.2.2'
+    implementation 'com.ibm.icu:icu4j:63.1'
+    implementation 'org.msgpack:msgpack-core:0.8.16'
 
-    compile("org.ice1000.jimgui:core:$jimguiVersion") // basic functionality
-    runtime("org.ice1000.jimgui:core:$jimguiVersion") // basic functionality
+    implementation("org.ice1000.jimgui:core:$jimguiVersion") // basic functionality
 
     implementation "org.lwjgl:lwjgl:$lwjglVersion"
     implementation "org.lwjgl:lwjgl-nuklear:$lwjglVersion"
@@ -47,12 +46,12 @@ dependencies {
     implementation "org.lwjgl:lwjgl-stb:$lwjglVersion"
     implementation "org.lwjgl:lwjgl-nfd:$lwjglVersion"
 
-    runtimeClasspath "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
-    runtimeClasspath "org.lwjgl:lwjgl-nuklear:$lwjglVersion:$lwjglNatives"
-    runtimeClasspath "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
-    runtimeClasspath "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
-    runtimeClasspath "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
-    runtimeClasspath "org.lwjgl:lwjgl-nfd:$lwjglVersion:$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-nuklear:$lwjglVersion:$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-nfd:$lwjglVersion:$lwjglNatives"
 }
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'

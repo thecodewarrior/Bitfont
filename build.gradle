@@ -1,36 +1,4 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
-    }
-}
-
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.4.0"
-}
-
-def maven_version = library_version
-def snapshotBranch = System.getenv('SNAPSHOT_BRANCH')
-if(snapshotBranch != null) {
-    if(snapshotBranch.startsWith('refs/heads/'))
-        snapshotBranch = snapshotBranch.substring('refs/heads/'.length())
-    maven_version = snapshotBranch.replaceAll('[^.\\w-]', '-') + '-SNAPSHOT'
-    logger.lifecycle("Using SNAPSHOT version `{}`", version)
-}
-
-// pass `-PbitfontVersion=foo` to set the version directly. Useful for publishing to the local maven repository
-if(hasProperty('bitfontVersion')) {
-    maven_version = bitfontVersion
-}
-
-allprojects {
-    group = "dev.thecodewarrior.bitfont"
-    version = maven_version
-
-    repositories {
-        jcenter()
-    }
+    id "org.jetbrains.kotlin.jvm" version "1.5.21" apply false
+    id 'org.jetbrains.dokka' version '1.5.0' apply false
 }

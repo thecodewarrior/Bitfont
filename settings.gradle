@@ -1,6 +1,5 @@
 include "editor", "core"
 
-rootProject.name = "bitfont"
-project(":editor").name = "bitfonteditor"
-project(":core").name = "bitfontcore"
+rootProject.name = "bitfont_env"
+project(":core").name = "bitfont"
 

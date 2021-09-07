@@ -1,9 +1,9 @@
-# This workflow will build a package using Gradle and then publish it oss.jfrog.org when a release is created
-# For more information see: https://github.com/actions/setup-java#publishing-using-gradle
-
 name: Publish Snapshots
 
-on: push
+on:
+  push:
+    branches:
+      - '**'
 
 jobs:
   build:
@@ -19,13 +19,12 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-      - name: Build with Gradle
-        run: ./gradlew :bitfontcore:build
-
-      - name: Publish to oss.jfrog.org
-        run: ./gradlew :bitfontcore:artifactoryPublish
+      - name: Publish to ossrh
+        run: ./gradlew publish
         env:
-          SNAPSHOT_BRANCH: ${{ github.ref }}
-          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-          ARTIFACTORY_BUILD_NUMBER: ${{ github.run_number }}
+          SNAPSHOT_REF: ${{ github.ref }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
