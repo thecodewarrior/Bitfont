@@ -94,7 +94,6 @@ public abstract class BitfontFileFormat {
         public fun pack(packer: MessagePacker, value: T)
         public fun unpack(unpacker: MessageUnpacker, value: T)
 
-        @JvmDefault
         public fun packToBytes(value: T): ByteArray {
             val packer = MessagePack.newDefaultBufferPacker()
             pack(packer, value)
@@ -109,7 +108,6 @@ public abstract class BitfontFileFormat {
         public fun pack(packer: MessagePacker, value: T, context: C)
         public fun unpack(unpacker: MessageUnpacker, value: T, context: C)
 
-        @JvmDefault
         public fun packToBytes(value: T, context: C): ByteArray {
             val packer = MessagePack.newDefaultBufferPacker()
             pack(packer, value, context)
@@ -124,7 +122,6 @@ public abstract class BitfontFileFormat {
         public fun pack(packer: MessagePacker, value: T)
         public fun unpack(unpacker: MessageUnpacker): T
 
-        @JvmDefault
         public fun packToBytes(value: T): ByteArray {
             val packer = MessagePack.newDefaultBufferPacker()
             pack(packer, value)
@@ -139,7 +136,6 @@ public abstract class BitfontFileFormat {
         public fun pack(packer: MessagePacker, value: T, context: C)
         public fun unpack(unpacker: MessageUnpacker, context: C): T
 
-        @JvmDefault
         public fun packToBytes(value: T, context: C): ByteArray {
             val packer = MessagePack.newDefaultBufferPacker()
             pack(packer, value, context)

@@ -1,10 +1,8 @@
 package dev.thecodewarrior.bitfont.typesetting
 
-import dev.thecodewarrior.bitfont.utils.ExperimentalBitfont
 import dev.thecodewarrior.bitfont.utils.RangeMap
 import dev.thecodewarrior.bitfont.utils.TreeRangeMap
 
-@ExperimentalBitfont
 open class AttributedString internal constructor(
     open val plaintext: String,
     protected open val attributes: Map<TextAttribute<*>, RangeMap<Int, Any>>

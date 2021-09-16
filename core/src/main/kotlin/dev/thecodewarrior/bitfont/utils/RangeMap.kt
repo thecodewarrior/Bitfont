@@ -30,11 +30,8 @@ interface RangeMap<K: Comparable<K>, V> {
         val end: K
         val value: V
 
-        @JvmDefault
         operator fun component1() = start
-        @JvmDefault
         operator fun component2() = end
-        @JvmDefault
         operator fun component3() = value
     }
 }
