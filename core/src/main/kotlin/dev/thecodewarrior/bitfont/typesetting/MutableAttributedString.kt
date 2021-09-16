@@ -5,6 +5,7 @@ import dev.thecodewarrior.bitfont.utils.TreeRangeMap
 
 open class MutableAttributedString: AttributedString {
     private val buffer: StringBuffer = StringBuffer(super.plaintext)
+    private val markers = mutableSetOf<Marker>()
 
     override val attributes: MutableMap<TextAttribute<*>, RangeMap<Int, Any>> = super.attributes.toMutableMap()
     override val plaintext: String get() = buffer.toString()
@@ -14,11 +15,29 @@ open class MutableAttributedString: AttributedString {
     internal constructor(plaintext: String, attributes: Map<TextAttribute<*>, RangeMap<Int, Any>>): super(plaintext, attributes)
     constructor(other: AttributedString): super(other)
 
+    fun registerMarker(marker: Marker) {
+        if(markers.none { it === marker })
+            markers.add(marker)
+    }
+
+    fun removeMarker(marker: Marker) {
+        markers.removeIf { it === marker }
+    }
+
+    private fun moveMarkers(start: Int, offset: Int) {
+        markers.forEach {
+            if(it.position >= start)
+                it.position += offset
+        }
+    }
+
 //region String manipulation
+
     fun append(string: String, attributes: AttributeMap): MutableAttributedString {
         val start = buffer.length
         buffer.append(string)
         setAttributes(start, buffer.length, attributes)
+        moveMarkers(start, string.length)
         return this
     }
 
@@ -26,6 +45,7 @@ open class MutableAttributedString: AttributedString {
         val start = buffer.length
         buffer.append(string.plaintext)
         applyAttributes(string.getAllAttributes(), start)
+        moveMarkers(start, string.length)
         return this
     }
 
@@ -40,6 +60,7 @@ open class MutableAttributedString: AttributedString {
             value.shift(pos, null) { it + string.length }
         }
         setAttributes(pos, pos+string.length, attributes)
+        moveMarkers(pos, string.length)
         return this
     }
 
@@ -49,6 +70,7 @@ open class MutableAttributedString: AttributedString {
             value.shift(pos, null) { it + string.length }
         }
         applyAttributes(string.getAllAttributes(), pos)
+        moveMarkers(pos, string.length)
         return this
     }
 
@@ -64,11 +86,18 @@ open class MutableAttributedString: AttributedString {
             ranges.clear(start, end)
             ranges.shift(end, null) { it - len }
         }
+        markers.forEach {
+            if(it.position in start until end)
+                it.position = start
+        }
+        moveMarkers(end, start - end)
         return this
     }
+
 //endregion
 
 //region Attribute manipulation
+
     fun <T> setAttribute(start: Int, end: Int, attribute: TextAttribute<T>, value: T): MutableAttributedString {
         attributes.getOrPut(attribute) { TreeRangeMap() }[start, end] = value
         return this
@@ -115,6 +144,7 @@ open class MutableAttributedString: AttributedString {
         }
         return this
     }
+
 //endregion
 
     override fun substring(start: Int, end: Int): AttributedString {
@@ -127,6 +157,21 @@ open class MutableAttributedString: AttributedString {
                 map
             }
         )
+    }
+
+    /**
+     * A marker for an index that will move as text is inserted or removed
+     */
+    public open class Marker(position: Int) {
+        open var position: Int = position
+            set(value) {
+                if(field != value) {
+                    field = value
+                    moved()
+                }
+            }
+
+        open fun moved() {}
     }
 }
 
