@@ -34,7 +34,7 @@ public class BitfontEditorApp {
     private static final int MAX_VERTEX_BUFFER = 512 * 1024;
     private static final int MAX_ELEMENT_BUFFER = 128 * 1024;
 
-    private static final NkAllocator ALLOCATOR;
+    public static final NkAllocator ALLOCATOR;
     private static final NkDrawVertexLayoutElement.Buffer VERTEX_LAYOUT;
 
     private static BitfontEditorApp instance;

@@ -4,19 +4,26 @@ import dev.thecodewarrior.bitfont.editor.data.BitfontEditorData
 import dev.thecodewarrior.bitfont.editor.utils.DistinctColors
 import dev.thecodewarrior.bitfont.editor.utils.DrawList
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
+import dev.thecodewarrior.bitfont.typesetting.GraphemeCluster
 import dev.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import dev.thecodewarrior.bitfont.typesetting.TextAttribute
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
 import dev.thecodewarrior.bitfont.utils.Vec2i
 import org.lwjgl.nuklear.NkContext
+import org.lwjgl.nuklear.NkRect
+import org.lwjgl.nuklear.NkTextEdit
 import org.lwjgl.nuklear.NkVec2
 import org.lwjgl.nuklear.Nuklear.NK_EDIT_BOX
+import org.lwjgl.nuklear.Nuklear.NK_TEXT_LEFT
 import org.lwjgl.nuklear.Nuklear.nk_checkbox_label
-import org.lwjgl.nuklear.Nuklear.nk_edit_string_zero_terminated
+import org.lwjgl.nuklear.Nuklear.nk_edit_buffer
 import org.lwjgl.nuklear.Nuklear.nk_layout_row_dynamic
 import org.lwjgl.nuklear.Nuklear.nk_property_int
-import org.lwjgl.nuklear.Nuklear.nk_strlen
+import org.lwjgl.nuklear.Nuklear.nk_str_len
+import org.lwjgl.nuklear.Nuklear.nk_str_len_char
+import org.lwjgl.nuklear.Nuklear.nk_text
+import org.lwjgl.nuklear.Nuklear.nk_textedit_init
 import org.lwjgl.nuklear.Nuklear.nk_widget_position
 import org.lwjgl.nuklear.Nuklear.nnk_combo_string
 import org.lwjgl.system.MemoryStack
@@ -25,6 +32,8 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 import java.text.ParseException
 import javax.imageio.ImageIO
+import kotlin.math.abs
+import kotlin.math.min
 
 class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f, 400f) {
     private var testText: String = ""
@@ -37,27 +46,34 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
     private var truncation = false
     private var maxLines = 0
 
+    private var containers = mutableListOf<Pair<TextContainer, Vec2i>>()
+
+    private var textEditor = NkTextEdit.malloc()
+    init {
+        nk_textedit_init(textEditor, BitfontEditorApp.ALLOCATOR, 10)
+    }
+
+    override fun onClose(ctx: NkContext) {
+        super.onClose(ctx)
+        textEditor.free()
+    }
+
     override fun pushControls(ctx: NkContext) {
         MemoryStack.stackPush().use { stack ->
             nk_layout_row_dynamic(ctx, 100f, 1)
             val baz = NkVec2.mallocStack(stack)
             nk_widget_position(ctx, baz)
             run {
-                val bufferSize = 16384
-                val buffer = MemoryUtil.memAlloc(bufferSize)
-                // the null termination check tests the end of the buffer, which isn't necessarily the end of the string
-                buffer.put(buffer.limit() - 1, 0)
-                MemoryUtil.memUTF8(testText, true, buffer)
-                nk_edit_string_zero_terminated(ctx, NK_EDIT_BOX, buffer, bufferSize, null)
+                nk_edit_buffer(ctx, NK_EDIT_BOX, textEditor, null)
                 try {
                     val oldText = testText
-                    testText = MemoryUtil.memUTF8(buffer, nk_strlen(buffer))
+                    val string = textEditor.string()
+                    val pointer = string.buffer().memory().ptr()!!
+                    testText = MemoryUtil.memUTF8(pointer, nk_str_len_char(string))
                     if(testText != oldText)
                         markDirty()
                 } catch (e: ParseException) {
                     e.printStackTrace()
-                } finally {
-                    MemoryUtil.memFree(buffer)
                 }
             }
 
@@ -114,7 +130,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
             }
         }
 
-        val containers = mutableListOf<Pair<TextContainer, Vec2i>>()
+        containers = mutableListOf<Pair<TextContainer, Vec2i>>()
         if(splitColumns) {
             val column1Width = logicalWidth / 3 - 4
             val column2Width = 2 * logicalWidth / 3 - 4

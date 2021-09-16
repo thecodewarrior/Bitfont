@@ -7,6 +7,7 @@ import dev.thecodewarrior.bitfont.typesetting.TextObject
 import org.lwjgl.nuklear.NkColor
 import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.NkImage
+import org.lwjgl.nuklear.NkInput
 import org.lwjgl.nuklear.NkRect
 import org.lwjgl.nuklear.Nuklear.*
 import org.lwjgl.opengl.GL11
@@ -47,6 +48,7 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
 
     abstract fun pushControls(ctx: NkContext)
     abstract fun redraw(logicalWidth: Int, logicalHeight: Int, image: BufferedImage, drawList: DrawList)
+    open fun decorate(mouseX: Int, mouseY: Int, drawList: DrawList) {}
 
     fun markDirty() {
         isDirty = true
@@ -128,6 +130,16 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
             val white = NkColor.mallocStack(stack)
             white.set(255.toByte(), 255.toByte(), 255.toByte(), 255.toByte())
             nk_draw_image(canvas, remainingBounds, testTextureImage, white)
+
+            val decorations = DrawList()
+            val mouseX = (ctx.input().mouse().pos().x() - remainingBounds.x()) / testAreaScale
+            val mouseY = (ctx.input().mouse().pos().y() - remainingBounds.y()) / testAreaScale
+            decorate(mouseX.toInt(), mouseY.toInt(), decorations)
+            decorations.transformX = remainingBounds.x()
+            decorations.transformY = remainingBounds.y()
+            decorations.transformScale = testAreaScale.toFloat()
+            decorations.push(ctx)
+
 
             nk_layout_space_end(ctx)
         }
