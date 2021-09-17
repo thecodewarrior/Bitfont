@@ -27,9 +27,6 @@ public open class TextContainer @JvmOverloads constructor(
      */
     public val endIndex: Int get() = lines.lastOrNull()?.endIndex ?: 0
 
-    public val clusters: Sequence<GraphemeCluster>
-        get() = lines.asSequence().flatMap { it.clusters }
-
     public val glyphs: Sequence<PositionedGlyph>
         get() = lines.asSequence().flatMap { it.glyphs }
 
@@ -54,7 +51,9 @@ public open class TextContainer @JvmOverloads constructor(
         public val clusters: MutableList<GraphemeCluster>
     ) {
         public val startIndex: Int get() = clusters.minOfOrNull { it.index } ?: 0
-        public val endIndex: Int get() = clusters.minOfOrNull { it.afterIndex } ?: 0
+        public val endIndex: Int get() = clusters.maxOfOrNull { it.afterIndex } ?: 0
+        public val baselineStart: Int get() = clusters.minOfOrNull { it.baselineStart } ?: 0
+        public val baselineEnd: Int get() = clusters.maxOfOrNull { it.baselineEnd } ?: 0
 
         public val glyphs: Sequence<PositionedGlyph>
             get() = clusters.asSequence().flatMap { it.glyphs }

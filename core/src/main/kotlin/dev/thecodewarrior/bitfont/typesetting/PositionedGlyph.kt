@@ -37,11 +37,6 @@ public class PositionedGlyph(
     )
 
     /**
-     * The index of the line within this glyph's [TextContainer]
-     */
-    public var lineIndex: Int = -1
-
-    /**
      * The index after this codepoint
      */
     public val afterIndex: Int = index + Character.charCount(codepoint)
@@ -49,4 +44,6 @@ public class PositionedGlyph(
      * The X position after this glyph
      */
     public val afterX: Int = posX + textObject.advance
+
+    public operator fun <T> get(attr: TextAttribute<T>): T? = source[attr, index]
 }

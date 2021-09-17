@@ -133,9 +133,9 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
         // add the lines to the containers
         for((i, layout) in containerLayouts.withIndex()) {
             val container = textContainers[i]
-            layout.lines.forEach { line ->
+            layout.lines.forEachIndexed { lineIndex, line ->
                 // fix positions *after* truncation
-                fixGlyphPositions(line)
+                fixGlyphPositions(line, lineIndex)
                 container.lines.add(line.toTypesetLine())
             }
         }
@@ -304,12 +304,11 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
      * After typesetting the glyph positions in a line are incorrect, so we need to shift them into place. Text
      * alignment is also performed at this point.
      *
-     * - The typesetter spits out glyphs off to infinity so for every line but the first we have to shift the glyphs
-     * left so they start at 0.
-     * - The glyphs are positioned with their baseline at 0, but 0 for a line is their top-left corner, so we have to
-     * shift the glyphs down.
+     * - The typesetter spits out glyphs off to infinity, so for every line but the first we have to shift the glyphs
+     * left until they start at 0.
+     * - The glyphs are positioned with their baseline at 0, so we have to shift the glyphs down to where their line is.
      */
-    protected open fun fixGlyphPositions(line: LineLayout) {
+    protected open fun fixGlyphPositions(line: LineLayout, lineIndex: Int) {
         // === shift glyphs to 0 ===
         // the amount to shift glyphs left in order for them to start at 0
         var offsetX = -line.clusters.first().baselineStart
