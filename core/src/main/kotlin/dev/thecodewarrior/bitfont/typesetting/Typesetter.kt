@@ -4,7 +4,7 @@ import dev.thecodewarrior.bitfont.utils.BufferedIterator
 import dev.thecodewarrior.bitfont.utils.CombiningClass
 import kotlin.math.max
 
-public class Typesetter(private val glyphs: BufferedIterator<TypesetGlyph>): BufferedIterator<GraphemeCluster>() {
+public class Typesetter(private val glyphs: GlyphGenerator): BufferedIterator<GraphemeCluster>() {
     public var options: Options = Options()
 
     public data class Options(
@@ -16,23 +16,28 @@ public class Typesetter(private val glyphs: BufferedIterator<TypesetGlyph>): Buf
     }
 
     private var cursorX: Int = 0
-    private var previousGlyph: GraphemeCluster? = null
 
     override fun refillBuffer() {
         if(!glyphs.hasNext())
             return
 
-        val typesetObject = glyphs.next()
-        typesetObject.posX = cursorX
+        val glyph = glyphs.next()
 
-        val cluster = GraphemeCluster(typesetObject)
+        val cluster = GraphemeCluster(
+            metrics = glyph.textObject,
+            codepoint = glyph.codepoint,
+            index = glyph.index,
+            afterIndex = glyph.afterIndex,
+            baselineStart = 0,
+            baselineEnd = glyph.textObject.advance,
+        )
+        cluster.glyphs.add(PositionedGlyph(glyph, 0, 0))
 
         if(options.enableCombiningCharacters)
-            addAttachments(cluster)
+            addAttachments(cluster, glyph.textObject)
 
-        cursorX += cluster.main.advance
-
-        previousGlyph = cluster
+        cluster.offsetX(cursorX)
+        cursorX += glyph.textObject.advance
         push(cluster)
     }
 
@@ -40,15 +45,15 @@ public class Typesetter(private val glyphs: BufferedIterator<TypesetGlyph>): Buf
      * Consume any combining characters and add them to the passed grapheme cluster. Once a non-combining character
      * is found, this method returns without consuming it
      */
-    private fun addAttachments(cluster: GraphemeCluster) {
+    private fun addAttachments(cluster: GraphemeCluster, main: TextObject) {
         // how far to space combining characters apart for this font
-        val combiningGap = max(1, cluster.main.ascent / 8)
+        val combiningGap = max(1, main.ascent / 8)
 
         // the bounding box of the parent
-        val parentTop = cluster.main.bearingY
-        val parentHeight = cluster.main.height
-        val parentLeft = cluster.main.bearingX
-        val parentRight = cluster.main.bearingX + cluster.main.width
+        val parentTop = main.bearingY
+        val parentHeight = main.height
+        val parentLeft = main.bearingX
+        val parentRight = main.bearingX + main.width
 
         // the attachment points, relative to the glyph origin
         // these will be updated as more characters are attached
@@ -61,9 +66,9 @@ public class Typesetter(private val glyphs: BufferedIterator<TypesetGlyph>): Buf
             if(combiningClass == CombiningClass.NOT_REORDERED)
                 break
 
-            val attachment = glyphs.next()
-            val attachmentWidth = attachment.width
-            val attachmentHeight = attachment.height
+            val glyph = glyphs.next()
+            val attachmentWidth = glyph.textObject.width
+            val attachmentHeight = glyph.textObject.height
 
             val attachmentX = when(combiningClass.xAlign) {
                 CombiningClass.XAlignment.LEFT -> {
@@ -100,9 +105,12 @@ public class Typesetter(private val glyphs: BufferedIterator<TypesetGlyph>): Buf
                 }
             }
 
-            attachment.posX = cluster.main.posX + attachmentX - attachment.bearingX
-            attachment.posY = cluster.main.posY + attachmentY - attachment.bearingY
-            cluster.attachments.add(attachment)
+            cluster.glyphs.add(PositionedGlyph(
+                glyph,
+                attachmentX - glyph.textObject.bearingX,
+                attachmentY - glyph.textObject.bearingY
+            ))
+            cluster.afterIndex = max(cluster.afterIndex, glyph.afterIndex)
         }
     }
 }

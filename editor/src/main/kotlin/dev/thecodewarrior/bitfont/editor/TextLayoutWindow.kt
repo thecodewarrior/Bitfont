@@ -153,21 +153,18 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
         layoutManager.layoutText()
 
         containers.forEach { (container, containerPos) ->
-            for (line in container.lines) {
-                val originX = line.posX + containerPos.x
-                val originY = line.posY + containerPos.y
-                for (glyph in line) {
-                    drawGlyph(image, glyph.textObject, originX + glyph.posX, originY + glyph.posY, Color.WHITE.rgb)
-                }
-
-                if (showLines) {
+            if (showLines) {
+                for (line in container.lines) {
                     drawList.strokeRect(
-                        originX, originY,
+                        containerPos.x + line.posX, containerPos.y + line.posY,
                         line.width, line.height,
                         0, 2,
                         DistinctColors.green
                     )
                 }
+            }
+            for (glyph in container.glyphs) {
+                drawGlyph(image, glyph.textObject, containerPos.x + glyph.posX, containerPos.y + glyph.posY, Color.WHITE.rgb)
             }
         }
     }

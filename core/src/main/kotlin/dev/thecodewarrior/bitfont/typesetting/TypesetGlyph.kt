@@ -1,15 +1,32 @@
 package dev.thecodewarrior.bitfont.typesetting
 
 public open class TypesetGlyph(
-    public var posX: Int, public var posY: Int,
+    /**
+     * The line-relative position of this glyph
+     */
+    public var posX: Int,
+    /**
+     * The line-relative position of this glyph
+     */
+    public var posY: Int,
     public val codepoint: Int,
     public val textObject: TextObject,
     public val source: AttributedString,
-    public val codepointIndex: Int,
-    public val characterIndex: Int
+    /**
+     * The index of the codepoint in the source string
+     */
+    public val index: Int,
 ): TextObject by textObject {
+    /**
+     * The X coordinate after this character
+     */
     public val afterX: Int
         get() = posX + textObject.advance
+    /**
+     * The index after this codepoint
+     */
+    public val afterIndex: Int
+        get() = index + Character.charCount(codepoint)
 
     private var attributeOverrides: MutableMap<TextAttribute<*>, Any?>? = null
 
@@ -21,7 +38,7 @@ public open class TypesetGlyph(
         val attributeOverrides = attributeOverrides
         if(attributeOverrides != null && attr in attributeOverrides)
             return attributeOverrides[attr] as T?
-        return source[attr, characterIndex]
+        return source[attr, index]
     }
 
     /**

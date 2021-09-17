@@ -1,6 +1,6 @@
 package dev.thecodewarrior.bitfont.typesetting
 
-import dev.thecodewarrior.bitfont.utils.BufferedIterator
+import java.util.Collections
 
 public open class TextContainer @JvmOverloads constructor(
     /**
@@ -16,12 +16,26 @@ public open class TextContainer @JvmOverloads constructor(
      */
     public var maxLines: Int = Int.MAX_VALUE
 ) {
-
     public val lines: MutableList<TypesetLine> = mutableListOf()
 
     /**
-     * "fixes" the passed line fragment to allow text to wrap around exclusion areas. The same fragment may be sent
-     * multiple times as taller characters are laid out.
+     * The index of the first character in this container.
+     */
+    public val startIndex: Int get() = lines.firstOrNull()?.startIndex ?: 0
+    /**
+     * The index after the last character in this container.
+     */
+    public val endIndex: Int get() = lines.lastOrNull()?.endIndex ?: 0
+
+    public val clusters: Sequence<GraphemeCluster>
+        get() = lines.asSequence().flatMap { it.clusters }
+
+    public val glyphs: Sequence<PositionedGlyph>
+        get() = lines.asSequence().flatMap { it.glyphs }
+
+    /**
+     * "fixes" the passed line fragment to allow text to wrap around exclusion areas. The same input fragment may be
+     * sent multiple times as taller characters are laid out.
      *
      * ```
      *          input: |---------------|
@@ -35,26 +49,14 @@ public open class TextContainer @JvmOverloads constructor(
     public data class LineBounds(val spacing: Int, var posX: Int, var posY: Int, var width: Int, val height: Int)
 
     public class TypesetLine(
-        public val posX: Int, public val posY: Int,
+        public val posX: Int, public val posY: Int, public val baseline: Int,
         public val width: Int, public val height: Int,
-        public val clusters: List<GraphemeCluster>
-    ): Iterable<TypesetGlyph> {
-        override fun iterator(): Iterator<TypesetGlyph> {
-            return Iter()
-        }
+        public val clusters: MutableList<GraphemeCluster>
+    ) {
+        public val startIndex: Int get() = clusters.minOfOrNull { it.index } ?: 0
+        public val endIndex: Int get() = clusters.minOfOrNull { it.afterIndex } ?: 0
 
-        private inner class Iter: BufferedIterator<TypesetGlyph>() {
-            val clusterIterator = clusters.iterator()
-
-            override fun refillBuffer() {
-                if(clusterIterator.hasNext()) {
-                    val cluster = clusterIterator.next()
-                    push(cluster.main)
-                    cluster.attachments.forEach {
-                        push(it)
-                    }
-                }
-            }
-        }
+        public val glyphs: Sequence<PositionedGlyph>
+            get() = clusters.asSequence().flatMap { it.glyphs }
     }
 }

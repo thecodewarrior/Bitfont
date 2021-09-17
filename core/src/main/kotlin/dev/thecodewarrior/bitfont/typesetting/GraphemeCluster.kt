@@ -2,36 +2,65 @@ package dev.thecodewarrior.bitfont.typesetting
 
 import com.ibm.icu.lang.UCharacter
 
-public class GraphemeCluster(public val main: TypesetGlyph) {
+/**
+ * Keeps track of the "logical" position of a group of glyphs, and acts as a container for a set of positioned glyphs.
+ *
+ * One assumption we make is that the cluster contains a continuous range of codepoints.
+ */
+public class GraphemeCluster(
     /**
-     * Offset the X position of [main] and all its [attachments]
+     * The metrics for this cluster
+     */
+    public val metrics: TextObject,
+    /**
+     * The base codepoint this cluster represents
+     */
+    public val codepoint: Int,
+    /**
+     * The index of the first glyph in this cluster
+     */
+    public val index: Int,
+    /**
+     * The index after the last glyph in this cluster
+     */
+    public var afterIndex: Int,
+    /**
+     * The position of this cluster along the baseline.
+     */
+    public var baselineStart: Int,
+    /**
+     * The position after this cluster along the baseline
+     */
+    public var baselineEnd: Int,
+) {
+    /**
+     * The glyphs in this cluster.
+     */
+    public val glyphs: MutableList<PositionedGlyph> = mutableListOf()
+
+    /**
+     * Offset the X position of [baselineStart], [baselineEnd] and all the glyphs in this cluster
      */
     public fun offsetX(offset: Int) {
-        main.posX += offset
-        attachments.forEach {
+        baselineStart += offset
+        baselineEnd += offset
+        for (it in glyphs) {
             it.posX += offset
         }
     }
 
     /**
-     * Offset the Y position of [main] and move all its [attachments]
+     * Offset the Y position of all the glyphs in this cluster
      */
     public fun offsetY(offset: Int) {
-        main.posY += offset
-        attachments.forEach {
+        for (it in glyphs) {
             it.posY += offset
         }
     }
 
     /**
-     * Any combining characters attached to [main]. These are positioned absolutely, not relatively.
+     * Returns true if all the glyphs in the cluster are whitespace.
      */
-    public val attachments: MutableList<TypesetGlyph> = mutableListOf()
-
-    /**
-     * Whether this glyph has any visible display. This returns true if the represented codepoint is whitespace and this
-     * glyph has no [attachments]
-     */
-    public val isInvisible: Boolean
-        get() = UCharacter.isWhitespace(main.codepoint) && attachments.isEmpty()
+    public val isBlank: Boolean
+        get() = glyphs.all { UCharacter.isWhitespace(it.codepoint) }
 }

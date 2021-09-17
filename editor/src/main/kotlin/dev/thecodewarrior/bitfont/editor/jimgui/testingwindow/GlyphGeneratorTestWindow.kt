@@ -50,7 +50,7 @@ class GlyphGeneratorTestWindow(document: BitfontDocument): AbstractTestWindow(do
         for((i, glyph) in glyphs.withIndex()) {
             val line = i / columns + 1
             val column = i % columns
-            glyph.draw(imgui, min + vec(column * size, line * size) * scale, scale, Colors.layoutTest.text.u32)
+//            glyph.draw(imgui, min + vec(column * size, line * size) * scale, scale, Colors.layoutTest.text.u32)
         }
     }
 }

@@ -58,6 +58,7 @@ class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: 
             grid[xHeight - 1, y] = true
         }
         glyph.image = grid
+        glyph.advance = xHeight + 1
         return glyph
     }
 

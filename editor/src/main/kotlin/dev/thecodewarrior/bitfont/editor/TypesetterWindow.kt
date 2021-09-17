@@ -53,11 +53,10 @@ class TypesetterWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
         val originY = logicalHeight / 2
 
         for(cluster in typesetter) {
-            drawGlyph(image, cluster.main.textObject, originX + cluster.main.posX, originY + cluster.main.posY, Color.WHITE.rgb)
-            for(attachment in cluster.attachments) {
-                drawGlyph(image, attachment.textObject,
-                    originX + cluster.main.posX + attachment.posX,
-                    originY + cluster.main.posY + attachment.posY,
+            for(glyph in cluster.glyphs) {
+                drawGlyph(image, glyph.textObject,
+                    originX + glyph.posX,
+                    originY + glyph.posY,
                     Color.WHITE.rgb
                 )
             }
