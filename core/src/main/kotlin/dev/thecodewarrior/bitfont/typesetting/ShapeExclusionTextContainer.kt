@@ -9,9 +9,9 @@ import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
 
-open class ShapeExclusionTextContainer(width: Int, height: Int = Int.MAX_VALUE): TextContainer(width, height) {
-    var verticalPadding: Int = 1
-    val exclusionPaths: MutableList<Shape> = mutableListOf()
+public open class ShapeExclusionTextContainer(width: Int, height: Int = Int.MAX_VALUE): TextContainer(width, height) {
+    public var verticalPadding: Int = 1
+    public val exclusionPaths: MutableList<Shape> = mutableListOf()
 
     override fun fixLineFragment(line: LineBounds) {
         val rect = Rectangle2D.Float(

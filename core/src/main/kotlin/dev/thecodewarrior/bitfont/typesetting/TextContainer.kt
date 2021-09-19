@@ -1,7 +1,5 @@
 package dev.thecodewarrior.bitfont.typesetting
 
-import java.util.Collections
-
 public open class TextContainer @JvmOverloads constructor(
     /**
      * The width of the container

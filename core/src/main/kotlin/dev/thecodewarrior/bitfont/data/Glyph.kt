@@ -1,7 +1,6 @@
 package dev.thecodewarrior.bitfont.data
 
 import dev.thecodewarrior.bitfont.typesetting.TextObject
-import dev.thecodewarrior.bitfont.utils.clamp
 import kotlin.math.max
 import kotlin.math.min
 
@@ -18,11 +17,11 @@ public class Glyph(public val font: Bitfont): TextObject {
     override val height: Int
         get() = image.height
 
-    var image: BitGrid = BitGrid(1, 1)
+    public var image: BitGrid = BitGrid(1, 1)
 
-    fun isEmpty(): Boolean = image.isEmpty() && advance == null
+    public fun isEmpty(): Boolean = image.isEmpty()
 
-    fun crop() {
+    public fun crop() {
         if(image.isEmpty())  {
             image = BitGrid(1, 1)
             bearingX = 0

@@ -43,7 +43,7 @@ public open class GlyphGenerator(public val string: AttributedString, public val
     /**
      * The offset of the current codepoint within the string
      */
-    protected var index = 0
+    protected var index: Int = 0
         private set
 
     /**

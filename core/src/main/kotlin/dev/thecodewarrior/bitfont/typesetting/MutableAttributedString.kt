@@ -3,24 +3,24 @@ package dev.thecodewarrior.bitfont.typesetting
 import dev.thecodewarrior.bitfont.utils.RangeMap
 import dev.thecodewarrior.bitfont.utils.TreeRangeMap
 
-open class MutableAttributedString: AttributedString {
-    private val buffer: StringBuffer = StringBuffer(super.plaintext)
-    private val markers = mutableSetOf<Marker>()
+public open class MutableAttributedString: AttributedString {
+    protected val buffer: StringBuffer = StringBuffer(super.plaintext)
+    protected val markers: MutableSet<Marker> = mutableSetOf()
 
     override val attributes: MutableMap<TextAttribute<*>, RangeMap<Int, Any>> = super.attributes.toMutableMap()
     override val plaintext: String get() = buffer.toString()
 
-    constructor(plaintext: String): super(plaintext)
-    constructor(plaintext: String, attributes: AttributeMap): super(plaintext, attributes)
+    public constructor(plaintext: String): super(plaintext)
+    public constructor(plaintext: String, attributes: AttributeMap): super(plaintext, attributes)
     internal constructor(plaintext: String, attributes: Map<TextAttribute<*>, RangeMap<Int, Any>>): super(plaintext, attributes)
-    constructor(other: AttributedString): super(other)
+    public constructor(other: AttributedString): super(other)
 
-    fun registerMarker(marker: Marker) {
+    public fun registerMarker(marker: Marker) {
         if(markers.none { it === marker })
             markers.add(marker)
     }
 
-    fun removeMarker(marker: Marker) {
+    public fun removeMarker(marker: Marker) {
         markers.removeIf { it === marker }
     }
 
@@ -33,7 +33,7 @@ open class MutableAttributedString: AttributedString {
 
 //region String manipulation
 
-    fun append(string: String, attributes: AttributeMap): MutableAttributedString {
+    public fun append(string: String, attributes: AttributeMap): MutableAttributedString {
         val start = buffer.length
         buffer.append(string)
         setAttributes(start, buffer.length, attributes)
@@ -41,7 +41,7 @@ open class MutableAttributedString: AttributedString {
         return this
     }
 
-    fun append(string: AttributedString): MutableAttributedString {
+    public fun append(string: AttributedString): MutableAttributedString {
         val start = buffer.length
         buffer.append(string.plaintext)
         applyAttributes(string.getAllAttributes(), start)
@@ -49,12 +49,12 @@ open class MutableAttributedString: AttributedString {
         return this
     }
 
-    fun append(string: String, attributes: Map<TextAttribute<*>, Any>): MutableAttributedString
+    public fun append(string: String, attributes: Map<TextAttribute<*>, Any>): MutableAttributedString
         = this.append(string, AttributeMap(attributes))
-    fun append(string: String, vararg attributes: Pair<TextAttribute<*>, Any>): MutableAttributedString
+    public fun append(string: String, vararg attributes: Pair<TextAttribute<*>, Any>): MutableAttributedString
         = this.append(string, AttributeMap(*attributes))
 
-    fun insert(pos: Int, string: String, attributes: AttributeMap): MutableAttributedString {
+    public fun insert(pos: Int, string: String, attributes: AttributeMap): MutableAttributedString {
         buffer.insert(pos, string)
         this.attributes.forEach { key, value ->
             value.shift(pos, null) { it + string.length }
@@ -64,7 +64,7 @@ open class MutableAttributedString: AttributedString {
         return this
     }
 
-    fun insert(pos: Int, string: AttributedString): MutableAttributedString {
+    public fun insert(pos: Int, string: AttributedString): MutableAttributedString {
         buffer.insert(pos, string.plaintext)
         this.attributes.forEach { key, value ->
             value.shift(pos, null) { it + string.length }
@@ -74,12 +74,12 @@ open class MutableAttributedString: AttributedString {
         return this
     }
 
-    fun insert(pos: Int, string: String, attributes: Map<TextAttribute<*>, Any>): MutableAttributedString
+    public fun insert(pos: Int, string: String, attributes: Map<TextAttribute<*>, Any>): MutableAttributedString
         = this.insert(pos, string, AttributeMap(attributes))
-    fun insert(pos: Int, string: String, vararg attributes: Pair<TextAttribute<*>, Any>): MutableAttributedString
+    public fun insert(pos: Int, string: String, vararg attributes: Pair<TextAttribute<*>, Any>): MutableAttributedString
         = this.insert(pos, string, AttributeMap(*attributes))
 
-    fun delete(start: Int, end: Int): MutableAttributedString {
+    public fun delete(start: Int, end: Int): MutableAttributedString {
         buffer.delete(start, end)
         this.attributes.forEach { attr, ranges ->
             val len = end - start
@@ -98,12 +98,12 @@ open class MutableAttributedString: AttributedString {
 
 //region Attribute manipulation
 
-    fun <T> setAttribute(start: Int, end: Int, attribute: TextAttribute<T>, value: T): MutableAttributedString {
+    public fun <T> setAttribute(start: Int, end: Int, attribute: TextAttribute<T>, value: T): MutableAttributedString {
         attributes.getOrPut(attribute) { TreeRangeMap() }[start, end] = value
         return this
     }
 
-    fun setAttributes(start: Int, end: Int, attributes: AttributeMap): MutableAttributedString {
+    public fun setAttributes(start: Int, end: Int, attributes: AttributeMap): MutableAttributedString {
         attributes.map.forEach { (attr, value) ->
             @Suppress("UNCHECKED_CAST")
             setAttribute(start, end, attr as TextAttribute<Any>, value)
@@ -111,12 +111,12 @@ open class MutableAttributedString: AttributedString {
         return this
     }
 
-    fun setAttributes(start: Int, end: Int, attributes: Map<TextAttribute<*>, Any>): MutableAttributedString
+    public fun setAttributes(start: Int, end: Int, attributes: Map<TextAttribute<*>, Any>): MutableAttributedString
         = this.setAttributes(start, end, AttributeMap(attributes))
-    fun setAttributes(start: Int, end: Int, vararg attributes: Pair<TextAttribute<*>, Any>): MutableAttributedString
+    public fun setAttributes(start: Int, end: Int, vararg attributes: Pair<TextAttribute<*>, Any>): MutableAttributedString
         = this.setAttributes(start, end, AttributeMap(*attributes))
 
-    fun <T> applyAttributes(attribute: TextAttribute<T>, values: RangeMap<Int, T>, offset: Int): MutableAttributedString {
+    public fun <T> applyAttributes(attribute: TextAttribute<T>, values: RangeMap<Int, T>, offset: Int): MutableAttributedString {
         val ourMap = attributes.getOrPut(attribute) { TreeRangeMap() }
         values.entries.forEach { (start, end, value) ->
             ourMap[start + offset, end + offset] = value
@@ -124,7 +124,7 @@ open class MutableAttributedString: AttributedString {
         return this
     }
 
-    fun applyAttributes(attributes: Map<TextAttribute<*>, RangeMap<Int, Any>>, offset: Int): MutableAttributedString {
+    public fun applyAttributes(attributes: Map<TextAttribute<*>, RangeMap<Int, Any>>, offset: Int): MutableAttributedString {
         attributes.forEach { (attr, values) ->
             @Suppress("UNCHECKED_CAST")
             applyAttributes(attr as TextAttribute<Any>, values, offset)
@@ -132,7 +132,7 @@ open class MutableAttributedString: AttributedString {
         return this
     }
 
-    fun removeAttributes(start: Int, end: Int, vararg attributes: TextAttribute<*>): MutableAttributedString {
+    public fun removeAttributes(start: Int, end: Int, vararg attributes: TextAttribute<*>): MutableAttributedString {
         if(attributes.isEmpty()) {
             this.attributes.forEach { key, value ->
                 value.clear(start, end)
@@ -160,10 +160,11 @@ open class MutableAttributedString: AttributedString {
     }
 
     /**
-     * A marker for an index that will move as text is inserted or removed
+     * A marker for an index that will move as text is inserted or removed.
+     * (using equals()/hashCode() by identity is important)
      */
     public open class Marker(position: Int) {
-        open var position: Int = position
+        public open var position: Int = position
             set(value) {
                 if(field != value) {
                     field = value
@@ -171,7 +172,7 @@ open class MutableAttributedString: AttributedString {
                 }
             }
 
-        open fun moved() {}
+        public open fun moved() {}
     }
 }
 

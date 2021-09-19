@@ -3,31 +3,31 @@ package dev.thecodewarrior.bitfont.typesetting
 import dev.thecodewarrior.bitfont.utils.RangeMap
 import dev.thecodewarrior.bitfont.utils.TreeRangeMap
 
-open class AttributedString internal constructor(
-    open val plaintext: String,
+public open class AttributedString internal constructor(
+    public open val plaintext: String,
     protected open val attributes: Map<TextAttribute<*>, RangeMap<Int, Any>>
 ) {
 
-    constructor(other: AttributedString): this(
+    public constructor(other: AttributedString): this(
         other.plaintext,
         other.getAllAttributes()
     )
-    constructor(plaintext: String): this(plaintext, mutableMapOf())
-    constructor(plaintext: String, attributes: AttributeMap): this(plaintext, attributes.map.mapValues { (_, value) ->
+    public constructor(plaintext: String): this(plaintext, mutableMapOf())
+    public constructor(plaintext: String, attributes: AttributeMap): this(plaintext, attributes.map.mapValues { (_, value) ->
         TreeRangeMap<Int, Any>().also { map -> map[0, plaintext.length] = value }
     })
-    constructor(plaintext: String, vararg attributes: Pair<TextAttribute<*>, Any>): this(plaintext, AttributeMap(*attributes))
+    public constructor(plaintext: String, vararg attributes: Pair<TextAttribute<*>, Any>): this(plaintext, AttributeMap(*attributes))
 
-    val length: Int
+    public val length: Int
         get() = plaintext.length
-    fun isEmpty(): Boolean = length == 0
-    fun isNotEmpty(): Boolean = !isEmpty()
+    public fun isEmpty(): Boolean = length == 0
+    public fun isNotEmpty(): Boolean = !isEmpty()
 
-    open fun getAllAttributes(): Map<TextAttribute<*>, RangeMap<Int, Any>> {
+    public open fun getAllAttributes(): Map<TextAttribute<*>, RangeMap<Int, Any>> {
         return attributes.mapValues { it.value.copy() }
     }
 
-    open fun getAttributes(index: Int): AttributeMap {
+    public open fun getAttributes(index: Int): AttributeMap {
         val attrs = AttributeMap()
         attributes.forEach { key, value ->
             value[index]?.also {
@@ -38,12 +38,12 @@ open class AttributedString internal constructor(
         return attrs
     }
 
-    open operator fun <T> get(attr: TextAttribute<T>, index: Int): T? {
+    public open operator fun <T> get(attr: TextAttribute<T>, index: Int): T? {
         @Suppress("UNCHECKED_CAST")
         return attributes[attr]?.get(index) as T?
     }
 
-    open fun substring(start: Int, end: Int): AttributedString {
+    public open fun substring(start: Int, end: Int): AttributedString {
         return AttributedString(
             plaintext.substring(start, end),
             attributes.mapValues {
@@ -55,11 +55,11 @@ open class AttributedString internal constructor(
         )
     }
 
-    open fun staticCopy(): AttributedString {
+    public open fun staticCopy(): AttributedString {
         return AttributedString(this)
     }
 
-    open fun mutableCopy(): MutableAttributedString {
+    public open fun mutableCopy(): MutableAttributedString {
         return MutableAttributedString(this)
     }
 
@@ -71,5 +71,5 @@ open class AttributedString internal constructor(
      * Companion object so conversion extensions can be made (e.g. `AttributedString.fromMC` for Minecraft formatting
      * -> AttributedString)
      */
-    companion object
+    public companion object
 }

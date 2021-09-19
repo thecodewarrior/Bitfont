@@ -32,7 +32,7 @@ dependencies {
 }
 
 kotlin {
-//    explicitApi()
+    explicitApi()
 }
 
 tasks.withType<KotlinCompile> {

@@ -6,7 +6,7 @@ import dev.thecodewarrior.bitfont.data.Glyph
 import org.msgpack.core.MessagePacker
 import org.msgpack.core.MessageUnpacker
 
-object BitfontFormatV1: BitfontFileFormat() {
+public object BitfontFormatV1: BitfontFileFormat() {
     override val readOnly: Boolean = false
 
     override fun packTables(font: Bitfont, file: BitfontFile) {

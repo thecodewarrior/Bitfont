@@ -6,24 +6,24 @@ import com.ibm.icu.lang.UCharacter
  * Information about how to lay out various combining characters. Data is sourced from the Unicode Character Database
  * page here https://unicode.org/reports/tr44/#Canonical_Combining_Class_Values
  */
-enum class CombiningClass(
+public enum class CombiningClass(
     /**
      * The unicode combining character code.
      */
-    val unicode: Int,
+    public val unicode: Int,
     /**
      * The horizontal alignment with respect to the parent glyph.
      */
-    val xAlign: XAlignment,
+    public val xAlign: XAlignment,
     /**
      * The vertical alignment with respect to the parent glyph.
      */
-    val yAlign: YAlignment,
+    public val yAlign: YAlignment,
     /**
      * Whether the character should be "attached" to its parent. Normally combining characters have a gap added between
      * them and their parent, but when this is true the gap isn't added.
      */
-    val attached: Boolean
+    public val attached: Boolean
 ) {
     NOT_REORDERED        (0,   XAlignment.CENTER, YAlignment.CENTER, false),
     OVERLAY              (1,   XAlignment.CENTER, YAlignment.CENTER, false),
@@ -50,19 +50,19 @@ enum class CombiningClass(
     DOUBLE_ABOVE         (234, XAlignment.DOUBLE, YAlignment.ABOVE, false),
     IOTA_SUBSCRIPT       (240, XAlignment.CENTER, YAlignment.CENTER, false);
 
-    companion object {
+    public companion object {
         private val values: Map<Int, CombiningClass> = values().associateBy { it.unicode }
 
-        operator fun get(codepoint: Int): CombiningClass {
+        public operator fun get(codepoint: Int): CombiningClass {
             return fromUnicode(UCharacter.getCombiningClass(codepoint))
         }
 
-        fun fromUnicode(unicode: Int): CombiningClass {
+        public fun fromUnicode(unicode: Int): CombiningClass {
             return values[unicode] ?: NOT_REORDERED
         }
     }
 
-    enum class XAlignment {
+    public enum class XAlignment {
         /**
          * The right edge of this glyph is aligned with the left edge of the parent glyph.
          * [(image)](https://i.imgur.com/34WfnCc.png)
@@ -97,7 +97,7 @@ enum class CombiningClass(
         DOUBLE
     }
 
-    enum class YAlignment {
+    public enum class YAlignment {
         /**
          * The bottom of the combining glyph is aligned with the top of the parent glyph.
          */

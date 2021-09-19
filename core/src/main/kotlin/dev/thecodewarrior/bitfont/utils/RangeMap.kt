@@ -3,45 +3,44 @@ package dev.thecodewarrior.bitfont.utils
 import java.util.Collections
 import java.util.NavigableMap
 import java.util.TreeMap
-import kotlin.math.min
 
-interface RangeMap<K: Comparable<K>, V> {
-    val entries: Collection<Entry<K, V>>
+public interface RangeMap<K: Comparable<K>, V> {
+    public val entries: Collection<Entry<K, V>>
 
-    operator fun get(key: K): V?
-    operator fun set(min: K, max: K, value: V?)
+    public operator fun get(key: K): V?
+    public operator fun set(min: K, max: K, value: V?)
 
-    fun clear(min: K, max: K)
+    public fun clear(min: K, max: K)
 
-    fun copy(): RangeMap<K, V>
+    public fun copy(): RangeMap<K, V>
     /**
      * Copies this map, applying the passed transform to all keys
      */
-    fun copy(transform: (K) -> K): RangeMap<K, V>
+    public fun copy(transform: (K) -> K): RangeMap<K, V>
 
     /**
      * Shifts the passed range by passing each key through the passed transform. Anything in the destination range
      * will be removed in this process.
      */
-    fun shift(min: K?, max: K?, transform: (K) -> K)
+    public fun shift(min: K?, max: K?, transform: (K) -> K)
 
-    interface Entry<K: Comparable<K>, V> {
-        val start: K
-        val end: K
-        val value: V
+    public interface Entry<K: Comparable<K>, V> {
+        public val start: K
+        public val end: K
+        public val value: V
 
-        operator fun component1() = start
-        operator fun component2() = end
-        operator fun component3() = value
+        public operator fun component1(): K = start
+        public operator fun component2(): K = end
+        public operator fun component3(): V = value
     }
 }
 
-class TreeRangeMap<K: Comparable<K>, V> private constructor(
+public class TreeRangeMap<K: Comparable<K>, V> private constructor(
     private val tree: NavigableMap<K, Entry<K, V>>
 ): RangeMap<K, V> {
     override val entries: Collection<RangeMap.Entry<K, V>> = Collections.unmodifiableCollection(tree.values)
 
-    constructor(): this(TreeMap<K, Entry<K, V>>())
+    public constructor(): this(TreeMap<K, Entry<K, V>>())
 
     override operator fun get(key: K): V? {
         return entryAt(key)?.value
@@ -148,7 +147,7 @@ class TreeRangeMap<K: Comparable<K>, V> private constructor(
         return tree.hashCode()
     }
 
-    class Entry<K: Comparable<K>, V>(
+    private class Entry<K: Comparable<K>, V>(
         override val start: K,
         override var end: K,
         override val value: V

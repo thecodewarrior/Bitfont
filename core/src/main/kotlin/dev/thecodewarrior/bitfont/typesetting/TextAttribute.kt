@@ -29,7 +29,7 @@ public class TextAttribute<T> private constructor(public val name: String) {
 }
 
 public class AttributeMap() {
-    val map = mutableMapOf<TextAttribute<*>, Any>()
+    public val map: MutableMap<TextAttribute<*>, Any> = mutableMapOf<TextAttribute<*>, Any>()
 
     public constructor(vararg attributes: Pair<TextAttribute<*>, Any>): this() {
         map.putAll(attributes)
@@ -39,25 +39,29 @@ public class AttributeMap() {
     }
 
     @Suppress("UNCHECKED_CAST")
-    operator fun <T: Any> get(key: TextAttribute<T>): T? = map[key] as T?
-    operator fun <T: Any> set(key: TextAttribute<T>, value: T): Any? = put(key, value)
+    public operator fun <T: Any> get(key: TextAttribute<T>): T? = map[key] as T?
+    public operator fun <T: Any> set(key: TextAttribute<T>, value: T): Any? = put(key, value)
 
     @Suppress("UNCHECKED_CAST")
-    fun <T: Any> remove(key: TextAttribute<T>): T? = map.remove(key) as T?
+    public fun <T: Any> remove(key: TextAttribute<T>): T? = map.remove(key) as T?
 
-    fun <T: Any> put(key: TextAttribute<T>, value: T): Any? = map.put(key, value)
+    public fun <T: Any> put(key: TextAttribute<T>, value: T): Any? = map.put(key, value)
 
-    val size: Int
+    public val size: Int
         get() = map.size
 
-    fun isEmpty(): Boolean = map.isEmpty()
+    public fun isEmpty(): Boolean = map.isEmpty()
 
-    val keys: MutableSet<TextAttribute<*>>
+    public val keys: MutableSet<TextAttribute<*>>
         get() = map.keys
-    val values: MutableCollection<Any>
+    public val values: MutableCollection<Any>
         get() = map.values
 
-    fun clear() = map.clear()
+    public fun clear() {
+        map.clear()
+    }
 
-    fun putAll(from: AttributeMap) = map.putAll(from.map)
+    public fun putAll(from: AttributeMap) {
+        map.putAll(from.map)
+    }
 }

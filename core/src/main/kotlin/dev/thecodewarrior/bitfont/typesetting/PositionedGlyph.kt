@@ -31,7 +31,7 @@ public class PositionedGlyph(
      */
     public val source: AttributedString,
 ) {
-    constructor(glyph: GlyphGenerator.Glyph, posX: Int, posY: Int) : this(
+    public constructor(glyph: GlyphGenerator.Glyph, posX: Int, posY: Int) : this(
         posX, posY,
         glyph.index, glyph.codepoint, glyph.textObject, glyph.source
     )

@@ -9,14 +9,14 @@ import org.msgpack.core.buffer.MessageBufferInput
 import java.io.InputStream
 import java.lang.IllegalArgumentException
 
-class BitfontFile(val version: Int) {
-    val tables: MutableMap<String, ByteArray> = mutableMapOf()
+public class BitfontFile(public val version: Int) {
+    public val tables: MutableMap<String, ByteArray> = mutableMapOf()
 
     /**
      * Creates a new table with the specified name using the passed block or throws if a table with the same name
      * already exists.
      */
-    inline fun createTable(name: String, block: MessagePacker.() -> Unit) {
+    public inline fun createTable(name: String, block: MessagePacker.() -> Unit) {
         MessagePack.newDefaultBufferPacker().use {
             it.block()
             tables[name] = it.toByteArray()
@@ -26,7 +26,7 @@ class BitfontFile(val version: Int) {
     /**
      * Gets an unpacker for the specified table, or null if no such table exists
      */
-    fun getTable(name: String): MessageUnpacker? {
+    public fun getTable(name: String): MessageUnpacker? {
         return tables[name]?.let { MessagePack.newDefaultUnpacker(it) }
     }
 
@@ -35,11 +35,11 @@ class BitfontFile(val version: Int) {
      *
      * @throws IllegalArgumentException if the specified table doesn't exist
      */
-    inline fun <T> useTable(name: String, block: MessageUnpacker.() -> T): T {
+    public inline fun <T> useTable(name: String, block: MessageUnpacker.() -> T): T {
         return (getTable(name) ?: throw IllegalArgumentException("No such table '$name'")).use { it.block() }
     }
 
-    fun pack(packer: MessagePacker) {
+    public fun pack(packer: MessagePacker) {
         packer.apply {
             writePayload(magicBytes)
             packInt(version)
@@ -54,19 +54,19 @@ class BitfontFile(val version: Int) {
         }
     }
 
-    fun packToBytes(): ByteArray {
+    public fun packToBytes(): ByteArray {
         MessagePack.newDefaultBufferPacker().use {
             pack(it)
             return it.toByteArray()
         }
     }
 
-    companion object {
-        val magic = "BITFONT"
-        val magicBytes = magic.toByteArray()
+    public companion object {
+        public val magic: String = "BITFONT"
+        private val magicBytes: ByteArray = magic.toByteArray()
 
         @JvmStatic
-        fun unpack(unpacker: MessageUnpacker): BitfontFile {
+        public fun unpack(unpacker: MessageUnpacker): BitfontFile {
             val fileMagic = (try {
                 unpacker.readPayload(magicBytes.size)
             } catch (e: MessageInsufficientBufferException) {
@@ -92,8 +92,8 @@ class BitfontFile(val version: Int) {
         }
 
         @JvmStatic
-        fun unpack(bytes: ByteArray) = MessagePack.newDefaultUnpacker(bytes).use { unpack(it) }
+        public fun unpack(bytes: ByteArray): BitfontFile = MessagePack.newDefaultUnpacker(bytes).use { unpack(it) }
         @JvmStatic
-        fun unpack(inputStream: InputStream) = MessagePack.newDefaultUnpacker(inputStream).use { unpack(it) }
+        public fun unpack(inputStream: InputStream): BitfontFile = MessagePack.newDefaultUnpacker(inputStream).use { unpack(it) }
     }
 }
