@@ -318,9 +318,9 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
 
         // === apply alignment ===
         // compute the _visual_ right edge.
-        val rightEdge = line.clusters.last { !it.isBlank }.let {
+        val rightEdge = line.clusters.lastOrNull { !it.isBlank }?.let {
             it.baselineStart + it.metrics.bearingX + it.metrics.width
-        }
+        } ?: line.clusters.first().baselineStart
         val visualWidth = rightEdge - line.clusters.first().baselineStart
         val remainingSpace = line.innerWidth - visualWidth
         // offset the starting point
@@ -333,7 +333,7 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
         // === baseline correction ===
         // compute the baseline offset (lines are positioned based on their top-left corner, but glyphs are
         // positioned based on on their baseline)
-        line.baseline = line.clusters.map { it.metrics.ascent }.maxOrNull() ?: 0
+        line.baseline = line.clusters.maxOfOrNull { it.metrics.ascent } ?: 0
 
         // === applying shifts ===
         // shift all the glyphs into the correct locations

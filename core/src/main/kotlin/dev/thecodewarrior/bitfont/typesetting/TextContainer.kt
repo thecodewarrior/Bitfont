@@ -52,6 +52,9 @@ public open class TextContainer @JvmOverloads constructor(
     ) {
         public val startIndex: Int get() = clusters.minOfOrNull { it.index } ?: 0
         public val endIndex: Int get() = clusters.maxOfOrNull { it.afterIndex } ?: 0
+        public val endIndexNoNewline: Int get() = clusters.maxOfOrNull {
+            if(it.codepoint == '\r'.code || it.codepoint == '\n'.code) 0 else it.afterIndex
+        } ?: 0
         public val baselineStart: Int get() = clusters.minOfOrNull { it.baselineStart } ?: 0
         public val baselineEnd: Int get() = clusters.maxOfOrNull { it.baselineEnd } ?: 0
 
