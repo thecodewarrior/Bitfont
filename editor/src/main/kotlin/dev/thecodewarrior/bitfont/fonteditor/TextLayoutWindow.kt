@@ -5,6 +5,7 @@ import dev.thecodewarrior.bitfont.fonteditor.utils.DistinctColors
 import dev.thecodewarrior.bitfont.fonteditor.utils.DrawList
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.MutableAttributedString
+import dev.thecodewarrior.bitfont.typesetting.SimpleTextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextAttribute
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
@@ -162,8 +163,8 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
         }
     }
 
-    private class ExclusionContainer(val exclude: Boolean, width: Int, height: Int = Int.MAX_VALUE): TextContainer(width, height) {
-        override fun fixLineFragment(line: LineBounds) {
+    private class ExclusionContainer(val exclude: Boolean, width: Int, height: Int = Int.MAX_VALUE): SimpleTextContainer(width, height) {
+        override fun fixLineFragment(line: TextContainer.LineBounds) {
             if(exclude && line.posY < 64 && line.posY + line.height >= 0) {
                 if(width <= 64) {
                     val stepHeight = line.height + line.spacing

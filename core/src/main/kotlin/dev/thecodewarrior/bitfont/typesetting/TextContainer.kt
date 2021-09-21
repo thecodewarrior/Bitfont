@@ -1,20 +1,20 @@
 package dev.thecodewarrior.bitfont.typesetting
 
-public open class TextContainer @JvmOverloads constructor(
+public interface TextContainer {
     /**
      * The width of the container
      */
-    public var width: Int,
+    public var width: Int
     /**
      * The height of the container. Defaults to [Int.MAX_VALUE]
      */
-    public var height: Int = Int.MAX_VALUE,
+    public var height: Int
     /**
      * The maximum number of lines that this container can have. Defaults to [Int.MAX_VALUE]
      */
-    public var maxLines: Int = Int.MAX_VALUE
-) {
-    public val lines: MutableList<TypesetLine> = mutableListOf()
+    public var maxLines: Int
+
+    public val lines: MutableList<TypesetLine>
 
     /**
      * The index of the first character in this container.
