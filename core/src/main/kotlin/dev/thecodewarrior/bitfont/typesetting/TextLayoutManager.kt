@@ -8,7 +8,25 @@ import kotlin.math.max
 public open class TextLayoutManager(font: Bitfont, vararg containers: TextContainer) {
     public val textContainers: MutableList<TextContainer> = mutableListOf(*containers)
     public val options: Options = Options(font)
+
+    /**
+     * The last [MutableAttributedString] version. The version of non-mutable attributed strings is always zero.
+     */
+    private var layoutVersion = -1
     public var attributedString: AttributedString = AttributedString("")
+        set(value) {
+            if(field !== value)
+                layoutVersion = -1
+            field = value
+        }
+
+    /**
+     * Whether the [attributedString] is dirty. This does not take into account changes to [options] or container
+     * settings.
+     */
+    public fun isStringDirty(): Boolean {
+        return attributedString.version != layoutVersion
+    }
 
     public enum class Alignment {
         LEFT, CENTER, RIGHT
@@ -99,6 +117,7 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
     protected var pushBackIterator: PushBackIterator<GraphemeCluster> = PushBackIterator(emptyList<GraphemeCluster>().iterator())
 
     public open fun layoutText() {
+        layoutVersion = attributedString.version
         if(textContainers.isEmpty())
             return
 

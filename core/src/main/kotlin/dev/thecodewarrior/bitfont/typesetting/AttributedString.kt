@@ -7,6 +7,12 @@ public open class AttributedString internal constructor(
     public open val plaintext: String,
     protected open val attributes: Map<TextAttribute<*>, RangeMap<Int, Any>>
 ) {
+    /**
+     * A version that monotonically increases with each modification of this string. For non-mutable strings this
+     * generally stays zero.
+     */
+    public var version: Int = 0
+        protected set
 
     public constructor(other: AttributedString): this(
         other.plaintext,
