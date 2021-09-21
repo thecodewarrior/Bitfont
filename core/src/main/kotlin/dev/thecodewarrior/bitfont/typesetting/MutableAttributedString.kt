@@ -98,6 +98,39 @@ public class MutableAttributedString: AttributedString {
         return this
     }
 
+    public fun replace(start: Int, end: Int, string: String, attributes: AttributeMap): MutableAttributedString {
+        version++
+        val delta = string.length - (end - start)
+        this.attributes.forEach { (_, ranges) ->
+            ranges.clear(start, end)
+            ranges.shift(end, null) { it + delta }
+        }
+        moveMarkers(end, delta)
+
+        buffer.replace(start, end, string)
+        setAttributes(start, end, attributes)
+        return this
+    }
+
+    public fun replace(start: Int, end: Int, string: AttributedString): MutableAttributedString {
+        version++
+        val delta = string.length - (end - start)
+        this.attributes.forEach { (_, ranges) ->
+            ranges.clear(start, end)
+            ranges.shift(end, null) { it + delta }
+        }
+        moveMarkers(end, delta)
+
+        buffer.replace(start, end, string.plaintext)
+        applyAttributes(string.getAllAttributes(), start)
+        return this
+    }
+
+    public fun replace(start: Int, end: Int, string: String, attributes: Map<TextAttribute<*>, Any>): MutableAttributedString
+        = this.replace(start, end, string, AttributeMap(attributes))
+    public fun replace(start: Int, end: Int, string: String, vararg attributes: Pair<TextAttribute<*>, Any>): MutableAttributedString
+        = this.replace(start, end, string, AttributeMap(*attributes))
+
 //endregion
 
 //region Attribute manipulation
