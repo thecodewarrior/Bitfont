@@ -62,6 +62,10 @@ public class BitfontEditorApp {
         return instance;
     }
 
+    public static long glfwWindow() {
+        return getInstance().win;
+    }
+
     private long win;
 
     private int
@@ -118,10 +122,10 @@ public class BitfontEditorApp {
         }
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 
-        int WINDOW_WIDTH = 640;
+        int WINDOW_WIDTH = 1280;
         int WINDOW_HEIGHT = 640;
 
-        win = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "GLFW Nuklear Demo", NULL, NULL);
+        win = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Bitfont", NULL, NULL);
         if (win == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
         }

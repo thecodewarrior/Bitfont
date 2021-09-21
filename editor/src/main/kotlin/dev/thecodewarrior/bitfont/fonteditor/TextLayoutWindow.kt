@@ -47,11 +47,6 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
         nk_textedit_init(textEditor, BitfontEditorApp.ALLOCATOR, 10)
     }
 
-    override fun onClose(ctx: NkContext) {
-        super.onClose(ctx)
-        textEditor.free()
-    }
-
     override fun pushControls(ctx: NkContext) {
         MemoryStack.stackPush().use { stack ->
             nk_layout_row_dynamic(ctx, 100f, 1)
@@ -184,6 +179,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
     }
 
     override fun free() {
+        textEditor.free()
         super.free()
     }
 
