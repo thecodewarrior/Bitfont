@@ -2,10 +2,12 @@ package dev.thecodewarrior.bitfont.typesetting
 
 import dev.thecodewarrior.bitfont.utils.RangeMap
 import dev.thecodewarrior.bitfont.utils.TreeRangeMap
+import java.util.Collections
+import java.util.IdentityHashMap
 
 public class MutableAttributedString: AttributedString {
     private val buffer: StringBuffer = StringBuffer(super.plaintext)
-    private val markers: MutableSet<Marker> = mutableSetOf()
+    private val markers: MutableSet<Marker> = Collections.newSetFromMap(IdentityHashMap())
 
     override val attributes: MutableMap<TextAttribute<*>, RangeMap<Int, Any>> = super.attributes.toMutableMap()
     override val plaintext: String get() = buffer.toString()
@@ -15,12 +17,11 @@ public class MutableAttributedString: AttributedString {
     public constructor(other: AttributedString): super(other)
 
     public fun registerMarker(marker: Marker) {
-        if(markers.none { it === marker })
-            markers.add(marker)
+        markers.add(marker)
     }
 
     public fun removeMarker(marker: Marker) {
-        markers.removeIf { it === marker }
+        markers.remove(marker)
     }
 
     private fun moveMarkers(start: Int, offset: Int) {
@@ -203,18 +204,9 @@ public class MutableAttributedString: AttributedString {
 
     /**
      * A marker for an index that will move as text is inserted or removed.
-     * (using equals()/hashCode() by identity is important)
      */
-    public open class Marker(position: Int) {
-        public open var position: Int = position
-            set(value) {
-                if(field != value) {
-                    field = value
-                    moved()
-                }
-            }
-
-        public open fun moved() {}
+    public interface Marker {
+        public var position: Int
     }
 }
 

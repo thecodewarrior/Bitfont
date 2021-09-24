@@ -44,10 +44,48 @@ public interface TextContainer {
     public data class LineBounds(val spacing: Int, var posX: Int, var posY: Int, var width: Int, val height: Int)
 
     public class TypesetLine(
-        public val posX: Int, public val posY: Int, public val baseline: Int,
-        public val width: Int, public val height: Int,
+        /**
+         * The index of the line within its text container
+         */
+        public val lineIndex: Int,
+        /**
+         * The X position of the top-left corner of the line segment
+         */
+        public val posX: Int,
+        /**
+         * The Y position of the top-left corner of the line segment
+         */
+        public val posY: Int,
+        /**
+         * The Y offset of the baseline from the top of the line segment
+         */
+        public val baseline: Int,
+        /**
+         * The width of the line segment
+         */
+        public val width: Int,
+        /**
+         * The height of the line segment
+         */
+        public val height: Int,
+        /**
+         * The list of grapheme clusters in this line
+         */
         public val clusters: MutableList<GraphemeCluster>
     ) {
+        /**
+         * The Y position of the baseline
+         */
+        public val baselineY: Int get() = posY + baseline
+        /**
+         * The line height above the baseline
+         */
+        public val ascent: Int get() = baseline
+        /**
+         * The line height below the baseline
+         */
+        public val descent: Int get() = height - baseline
+
         public val startIndex: Int get() = clusters.minOfOrNull { it.index } ?: 0
         public val endIndex: Int get() = clusters.maxOfOrNull { it.afterIndex } ?: 0
         public val endIndexNoNewline: Int get() = clusters.maxOfOrNull {
@@ -58,5 +96,47 @@ public interface TextContainer {
 
         public val glyphs: Sequence<PositionedGlyph>
             get() = clusters.asSequence().flatMap { it.glyphs }
+
+        /**
+         * Returns the index at the given column, including the "after the end" column. If the index is out of bounds
+         * this will return null.
+         */
+        public fun columnOf(index: Int): Int? {
+            clusters.forEachIndexed { column, cluster ->
+                if(index in cluster.index until cluster.afterIndex) {
+                    return column
+                }
+            }
+            if(clusters.isNotEmpty() && index == clusters.last().afterIndex) {
+                return clusters.size
+            }
+            return null
+        }
+
+        /**
+         * Returns the index at the given column, including the "after the end" column. If the index is out of bounds
+         * this will return null.
+         */
+        public fun indexAt(column: Int): Int? {
+            if(column !in 0 .. clusters.size)
+                return null
+            if(column == clusters.size)
+                return clusters.last().afterIndex
+            return clusters[column].index
+        }
+
+        /**
+         * Returns the X position at the given column, including the "after the end" column. If the index is out of
+         * bounds this will return null.
+         */
+        public fun positionAt(column: Int): Int? {
+            if(column !in 0 .. clusters.size)
+                return null
+            if(column == clusters.size)
+                return clusters.last().baselineEnd
+            return clusters[column].baselineStart
+        }
+
+
     }
 }

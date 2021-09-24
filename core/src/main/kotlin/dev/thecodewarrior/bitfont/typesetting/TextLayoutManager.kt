@@ -5,9 +5,11 @@ import dev.thecodewarrior.bitfont.data.Bitfont
 import dev.thecodewarrior.bitfont.utils.PushBackIterator
 import kotlin.math.max
 
-public open class TextLayoutManager(font: Bitfont, vararg containers: TextContainer) {
+public class TextLayoutManager(font: Bitfont, vararg containers: TextContainer) {
     public val textContainers: MutableList<TextContainer> = mutableListOf(*containers)
-    public val options: Options = Options(font)
+    public var options: Options = Options(font)
+
+    public var delegate: TextLayoutDelegate? = null
 
     /**
      * The last [MutableAttributedString] version. The version of non-mutable attributed strings is always zero.
@@ -109,14 +111,15 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
     /**
      * This is replaced with a thread-local iterator and configured with the current text before running any layout.
      */
-    protected val breakIterator: BreakIterator = BreakIterator.getLineInstance()
+    private val breakIterator: BreakIterator = BreakIterator.getLineInstance()
 
     /**
      * The glyphs being laid out
      */
-    protected var pushBackIterator: PushBackIterator<GraphemeCluster> = PushBackIterator(emptyList<GraphemeCluster>().iterator())
+    private var pushBackIterator: PushBackIterator<GraphemeCluster> = PushBackIterator(emptyList<GraphemeCluster>().iterator())
 
-    public open fun layoutText() {
+    public fun layoutText() {
+        delegate?.textWillLayout()
         layoutVersion = attributedString.version
         if(textContainers.isEmpty())
             return
@@ -154,10 +157,11 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
             val container = textContainers[i]
             layout.lines.forEachIndexed { lineIndex, line ->
                 // fix positions *after* truncation
-                fixGlyphPositions(line, lineIndex)
-                container.lines.add(line.toTypesetLine())
+                fixGlyphPositions(line)
+                container.lines.add(line.toTypesetLine(lineIndex))
             }
         }
+        delegate?.textDidLayout()
     }
 
     /**
@@ -169,7 +173,7 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
      * - remove glyphs from the end until the truncation string fits
      * - append the truncation string
      */
-    protected open fun truncateLastLine(allLines: List<LineLayout>) {
+    private fun truncateLastLine(allLines: List<LineLayout>) {
         // === preconditions ===
         val truncationString = options.truncationString ?: return
         if(allLines.isEmpty())
@@ -209,7 +213,7 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
      * @param container The container to lay text into
      * @param swallowLeadingBlanks Whether to swallow leading blanks
      */
-    protected open fun layoutForContainer(container: TextContainer, swallowLeadingBlanks: Boolean): ContainerLayout {
+    private fun layoutForContainer(container: TextContainer, swallowLeadingBlanks: Boolean): ContainerLayout {
         val layout = ContainerLayout()
         var lineY = 0
 
@@ -244,7 +248,7 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
      *
      * @return The laid out line, or null if it didn't fit in the container.
      */
-    protected open fun layoutLine(container: TextContainer, lineY: Int): LineLayout? {
+    private fun layoutLine(container: TextContainer, lineY: Int): LineLayout? {
         var maxAscent = 0
         var maxDescent = 0
 
@@ -327,7 +331,7 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
      * left until they start at 0.
      * - The glyphs are positioned with their baseline at 0, so we have to shift the glyphs down to where their line is.
      */
-    protected open fun fixGlyphPositions(line: LineLayout, lineIndex: Int) {
+    private fun fixGlyphPositions(line: LineLayout) {
         // === shift glyphs to 0 ===
         // the amount to shift glyphs left in order for them to start at 0
         var offsetX = -line.clusters.first().baselineStart
@@ -362,11 +366,11 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
         }
     }
 
-    protected class ContainerLayout {
+    private class ContainerLayout {
         public val lines: MutableList<LineLayout> = mutableListOf()
     }
 
-    protected class LineLayout(
+    private class LineLayout(
         public val padding: Int,
         public val spacing: Int,
         public var posX: Int,
@@ -404,10 +408,9 @@ public open class TextLayoutManager(font: Bitfont, vararg containers: TextContai
             height = bounds.height
         }
 
-        public fun toTypesetLine(): TextContainer.TypesetLine {
-            return TextContainer.TypesetLine(posX, posY, baseline, width, height, clusters)
+        public fun toTypesetLine(lineIndex: Int): TextContainer.TypesetLine {
+            return TextContainer.TypesetLine(lineIndex, posX, posY, baseline, width, height, clusters)
         }
     }
 
 }
-

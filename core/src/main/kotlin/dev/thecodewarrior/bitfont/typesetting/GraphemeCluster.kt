@@ -25,11 +25,12 @@ public class GraphemeCluster(
      */
     public var afterIndex: Int,
     /**
-     * The position of this cluster along the baseline.
+     * The position of this cluster along the baseline. This is absolute, not relative to the start of the line segment.
      */
     public var baselineStart: Int,
     /**
-     * The position after this cluster along the baseline
+     * The position after this cluster along the baseline. This is absolute, not relative to the start of the line
+     * segment.
      */
     public var baselineEnd: Int,
 ) {
