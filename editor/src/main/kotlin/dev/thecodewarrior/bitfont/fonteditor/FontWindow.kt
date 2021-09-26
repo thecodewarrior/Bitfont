@@ -15,11 +15,10 @@ import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.text.ParseException
 
-class FontWindow(val data: BitfontEditorData): Window(250f, 325f) {
+class FontWindow(val data: BitfontEditorData): Window(250f, 300f) {
     private val childWindows = mutableListOf<Window>()
     private val typesetterWindow = TypesetterWindow(data)
     private val textLayoutWindow = TextLayoutWindow(data)
-    private val textEditorWindow = TextEditorWindow(data)
 
     init {
         flags = flags or NK_WINDOW_NO_SCROLLBAR or NK_WINDOW_CLOSABLE
@@ -79,21 +78,16 @@ class FontWindow(val data: BitfontEditorData): Window(250f, 325f) {
             if (nk_button_label(ctx, "Text Layout")) {
                 textLayoutWindow.open(ctx)
             }
-            if (nk_button_label(ctx, "Text Editor")) {
-                textEditorWindow.open(ctx)
-            }
         }
     }
 
     override fun onClose(ctx: NkContext) {
         typesetterWindow.close(ctx)
         textLayoutWindow.close(ctx)
-        textEditorWindow.close(ctx)
     }
 
     override fun free() {
         typesetterWindow.free()
         textLayoutWindow.free()
-        textEditorWindow.free()
     }
 }
