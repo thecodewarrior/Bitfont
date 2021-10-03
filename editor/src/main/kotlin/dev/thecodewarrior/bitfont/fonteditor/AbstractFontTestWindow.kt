@@ -28,10 +28,6 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
     private var testTextureBuffer = MemoryUtil.memAlloc(testTextureWidth * testTextureHeight * 4)
     private val testAreaDrawList = DrawList()
 
-    private var lastWidth = 0
-    private var lastHeight = 0
-    private var isDirty = true
-
     protected var testAreaScale = 3
 
     init {
@@ -48,16 +44,6 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
     abstract fun pushControls(ctx: NkContext)
     abstract fun redraw(logicalWidth: Int, logicalHeight: Int, image: BufferedImage, drawList: DrawList)
     open fun decorate(mouseX: Int, mouseY: Int, drawList: DrawList) {}
-
-    fun markDirty() {
-        isDirty = true
-    }
-
-    fun <T> dirtyOnChange(newValue: T, oldValue: T): T {
-        if(newValue != oldValue)
-            markDirty()
-        return newValue
-    }
 
     fun drawGlyph(image: BufferedImage, glyph: TextObject, posX: Int, posY: Int, color: Int) {
         val glyphX = posX + glyph.bearingX
@@ -111,11 +97,8 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
 
             val logicalWidth = (remainingBounds.w() / testAreaScale).toInt()
             val logicalHeight = (remainingBounds.h() / testAreaScale).toInt()
-            if(logicalWidth != lastWidth || logicalHeight != lastHeight)
-                markDirty()
 
-            if(isDirty)
-                doRedraw(logicalWidth, logicalHeight)
+            doRedraw(logicalWidth, logicalHeight)
 
             testAreaDrawList.transformX = remainingBounds.x()
             testAreaDrawList.transformY = remainingBounds.y()
@@ -171,8 +154,6 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, testTextureID)
         GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, testTextureWidth, testTextureHeight, GL11.GL_RGBA,
             GL12.GL_UNSIGNED_INT_8_8_8_8_REV, testTextureBuffer)
-
-        isDirty = false
     }
 
     /**

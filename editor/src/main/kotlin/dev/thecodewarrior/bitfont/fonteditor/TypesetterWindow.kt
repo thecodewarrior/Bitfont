@@ -32,10 +32,7 @@ class TypesetterWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
                 MemoryUtil.memUTF8(testText, true, buffer)
                 nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, buffer, 1024, null)
                 try {
-                    val oldText = testText
                     testText = MemoryUtil.memUTF8(buffer, nk_strlen(buffer))
-                    if(testText != oldText)
-                        markDirty()
                 } catch (e: ParseException) {
                     e.printStackTrace()
                 }
@@ -67,7 +64,6 @@ class TypesetterWindow(val data: BitfontEditorData): AbstractFontTestWindow(500f
 
     override fun onHide(ctx: NkContext) {
         testText = ""
-        markDirty()
     }
 
     override fun free() {

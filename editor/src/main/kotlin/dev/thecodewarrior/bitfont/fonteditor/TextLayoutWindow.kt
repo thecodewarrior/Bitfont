@@ -55,12 +55,9 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
             run {
                 nk_edit_buffer(ctx, NK_EDIT_BOX, textEditor, null)
                 try {
-                    val oldText = testText
                     val string = textEditor.string()
                     val pointer = string.buffer().memory().ptr()!!
                     testText = MemoryUtil.memUTF8(pointer, nk_str_len_char(string))
-                    if(testText != oldText)
-                        markDirty()
                 } catch (e: ParseException) {
                     e.printStackTrace()
                 }
@@ -71,22 +68,22 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
             fun checkbox(name: String, value: Boolean): Boolean {
                 intBuf.put(0, if(value) 1 else 0)
                 nk_checkbox_label(ctx, name, intBuf)
-                return dirtyOnChange(intBuf[0] != 0, value)
+                return intBuf[0] != 0
             }
 
             intBuf.put(0, testAreaScale)
             nk_property_int(ctx, "Scale:", 1, intBuf, 5, 1, 1f)
-            testAreaScale = dirtyOnChange(intBuf[0], testAreaScale)
+            testAreaScale = intBuf[0]
 
             showLines = checkbox("Show lines", showLines)
 
             val items = stack.bytes(*TextLayoutManager.Alignment.values().joinToString("") { "$it\u0000" }.toByteArray())
-            alignment = dirtyOnChange(TextLayoutManager.Alignment.values()[
+            alignment = TextLayoutManager.Alignment.values()[
                 nnk_combo_string(ctx.address(), MemoryUtil.memAddress(items),
                     alignment.ordinal, TextLayoutManager.Alignment.values().size,
                     25, NkVec2.mallocStack().set(150f, 100f).address()
                 )
-            ], alignment)
+            ]
 
             nk_layout_row_dynamic(ctx, 25f, 3)
             splitColumns = checkbox("Split columns", splitColumns)
@@ -98,7 +95,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
             val maxLinesOnOff = if(maxLines != 0) "ON" else "OFF"
             intBuf.put(0, maxLines)
             nk_property_int(ctx, "Max lines [$maxLinesOnOff]:", 0, intBuf, 100, 1, 1f)
-            maxLines = dirtyOnChange(intBuf[0], maxLines)
+            maxLines = intBuf[0]
         }
     }
 
@@ -175,7 +172,6 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
 
     override fun onHide(ctx: NkContext) {
         testText = ""
-        markDirty()
     }
 
     override fun free() {
