@@ -41,7 +41,16 @@ public interface TextContainer {
     public open fun fixLineFragment(line: LineBounds) {
     }
 
-    public data class LineBounds(val spacing: Int, var posX: Int, var posY: Int, var width: Int, val height: Int)
+    public data class LineBounds(
+        /**
+         * The typographic leading, i.e. the amount of space to put between this and the next line. May be negative.
+         *
+         * The name comes from the practice of placing lead strips between lines of type on a printing press.
+         */
+        val leading: Int,
+        var posX: Int, var posY: Int,
+        var width: Int, val height: Int
+    )
 
     public class TypesetLine(
         /**

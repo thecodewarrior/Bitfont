@@ -19,12 +19,20 @@ public class TextAttribute<T> private constructor(public val name: String) {
             } as TextAttribute<T>
         }
 
-        public val font: TextAttribute<Bitfont> = get("font")
+        public val font: TextAttribute<Bitfont> = get("bitfont:font")
 
         /**
          * Add this to a character to give it custom rendering
          */
-        public val textEmbed: TextAttribute<TextEmbed> = get("text_embed")
+        public val textEmbed: TextAttribute<TextEmbed> = get("bitfont:text_embed")
+
+        /**
+         * The additional typographic leading, i.e. the amount of additional space to put between this and the next
+         * line. May be negative. The maximum value on a given line is used.
+         *
+         * The name comes from the practice of placing lead strips between lines of type on a printing press.
+         */
+        public val leading: TextAttribute<Int> = get("bitfont:leading")
     }
 }
 

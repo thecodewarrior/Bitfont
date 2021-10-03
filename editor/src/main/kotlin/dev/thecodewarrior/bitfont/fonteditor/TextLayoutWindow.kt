@@ -162,7 +162,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
         override fun fixLineFragment(line: TextContainer.LineBounds) {
             if(exclude && line.posY < 64 && line.posY + line.height >= 0) {
                 if(width <= 64) {
-                    val stepHeight = line.height + line.spacing
+                    val stepHeight = line.height + line.leading
                     val steps = (64 + stepHeight - 1) / stepHeight
                     line.posY = steps * stepHeight
                 } else {

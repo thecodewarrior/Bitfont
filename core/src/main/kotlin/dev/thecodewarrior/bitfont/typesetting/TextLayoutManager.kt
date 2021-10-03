@@ -3,7 +3,6 @@ package dev.thecodewarrior.bitfont.typesetting
 import com.ibm.icu.text.BreakIterator
 import dev.thecodewarrior.bitfont.data.Bitfont
 import dev.thecodewarrior.bitfont.utils.PushBackIterator
-import kotlin.math.max
 
 public class TextLayoutManager(font: Bitfont, vararg containers: TextContainer) {
     public val textContainers: MutableList<TextContainer> = mutableListOf(*containers)
@@ -48,9 +47,11 @@ public class TextLayoutManager(font: Bitfont, vararg containers: TextContainer) 
          */
         public var linePadding: Int,
         /**
-         * The spacing between lines
+         * The overall typographic leading, i.e. the amount of space to put between each line. May be negative.
+         *
+         * The name comes from the practice of placing lead strips between lines of type on a printing press.
          */
-        public var lineSpacing: Int,
+        public var leading: Int,
         /**
          * Additional typesetter options
          */
@@ -228,7 +229,7 @@ public class TextLayoutManager(font: Bitfont, vararg containers: TextContainer) 
 
             if(isBlank && layout.lines.isEmpty() && swallowLeadingBlanks)
                 continue // if we're still swallowing leading blanks, continue
-            lineY = line.posY + line.height + options.lineSpacing
+            lineY = line.posY + line.height + line.spacing
 
             layout.lines.add(line)
         }
@@ -251,15 +252,31 @@ public class TextLayoutManager(font: Bitfont, vararg containers: TextContainer) 
     private fun layoutLine(container: TextContainer, lineY: Int): LineLayout? {
         var maxAscent = 0
         var maxDescent = 0
+        var maxLeading: Int? = null
 
-        val line = LineLayout(options.linePadding, options.lineSpacing, 0, lineY, container.width, 0)
+        val line = LineLayout(options.linePadding, options.leading, 0, lineY, container.width, 0)
         for (cluster in pushBackIterator) {
             line.clusters.add(cluster)
-            maxAscent = max(maxAscent, cluster.metrics.ascent)
-            maxDescent = max(maxDescent, cluster.metrics.descent)
+            var lineDirty = false
+            if(cluster.metrics.ascent > maxAscent) {
+                maxAscent = cluster.metrics.ascent
+                lineDirty = true
+            }
+            if(cluster.metrics.descent > maxDescent) {
+                maxDescent = cluster.metrics.descent
+                lineDirty = true
+            }
+            for(glyph in cluster.glyphs) {
+                val leading = glyph[TextAttribute.leading] ?: continue
+                if(maxLeading == null || leading > maxLeading) {
+                    maxLeading = leading
+                    lineDirty = true
+                }
+            }
 
-            if (line.height < maxAscent + maxDescent) {
-                val bounds = TextContainer.LineBounds(options.lineSpacing,
+            if (lineDirty) {
+                val bounds = TextContainer.LineBounds(
+                    options.leading + (maxLeading ?: 0),
                     0, lineY,
                     container.width, maxAscent + maxDescent
                 )
@@ -372,7 +389,7 @@ public class TextLayoutManager(font: Bitfont, vararg containers: TextContainer) 
 
     private class LineLayout(
         public val padding: Int,
-        public val spacing: Int,
+        public var spacing: Int,
         public var posX: Int,
         public var posY: Int,
         public var width: Int,
@@ -406,6 +423,7 @@ public class TextLayoutManager(font: Bitfont, vararg containers: TextContainer) 
             posY = bounds.posY
             width = bounds.width
             height = bounds.height
+            spacing = bounds.leading
         }
 
         public fun toTypesetLine(lineIndex: Int): TextContainer.TypesetLine {
