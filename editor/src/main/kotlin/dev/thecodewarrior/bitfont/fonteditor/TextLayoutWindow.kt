@@ -44,7 +44,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
 
     private var textEditor = NkTextEdit.malloc()
     init {
-        nk_textedit_init(textEditor, BitfontEditorApp.ALLOCATOR, 10)
+        nk_textedit_init(textEditor, App.ALLOCATOR, 10)
     }
 
     override fun pushControls(ctx: NkContext) {

@@ -54,7 +54,7 @@ class MainMenu: Window(0f, 0f) {
                                 NativeFileDialog.nNFD_Free(pathOut.get(0))
                                 println("Selected: $path")
                                 val data = BitfontEditorData.open(Files.newInputStream(Paths.get(path)))
-                                BitfontEditorApp.getInstance().windows.add(FontWindow(data))
+                                App.getInstance().windows.add(FontWindow(data))
                             }
                             NFD_CANCEL -> {
                                 println("Canceled")

@@ -70,8 +70,8 @@ abstract class Window(width: Float, height: Float): Freeable {
     open fun onHide(ctx: NkContext) {}
 
     fun open(ctx: NkContext) {
-        if (!BitfontEditorApp.getInstance().windows.contains(this)) {
-            BitfontEditorApp.getInstance().windows.add(this)
+        if (!App.getInstance().windows.contains(this)) {
+            App.getInstance().windows.add(this)
         } else {
             nk_window_show(ctx, uuid, NK_SHOWN)
             nk_window_set_focus(ctx, uuid)
@@ -79,7 +79,7 @@ abstract class Window(width: Float, height: Float): Freeable {
     }
 
     fun close(ctx: NkContext) {
-        BitfontEditorApp.getInstance().windows.remove(this)
+        App.getInstance().windows.remove(this)
         onClose(ctx)
     }
 

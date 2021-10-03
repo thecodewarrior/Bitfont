@@ -27,7 +27,7 @@ import static org.lwjgl.system.MemoryUtil.*;
  * <p>This demo is a Java port of
  * <a href="https://github.com/vurtun/nuklear/tree/master/demo/glfw_opengl3">https://github.com/vurtun/nuklear/tree/master/demo/glfw_opengl3</a>.</p>
  */
-public class BitfontEditorApp {
+public class App {
 
     private static final int BUFFER_INITIAL_SIZE = 4 * 1024;
 
@@ -37,7 +37,7 @@ public class BitfontEditorApp {
     public static final NkAllocator ALLOCATOR;
     private static final NkDrawVertexLayoutElement.Buffer VERTEX_LAYOUT;
 
-    private static BitfontEditorApp instance;
+    private static App instance;
 
     static {
         ALLOCATOR = NkAllocator.create()
@@ -54,11 +54,11 @@ public class BitfontEditorApp {
 
     public static void main(String[] args) {
         System.setProperty("java.awt.headless", "true");
-        instance = new BitfontEditorApp();
+        instance = new App();
         instance.run();
     }
 
-    public static BitfontEditorApp getInstance() {
+    public static App getInstance() {
         return instance;
     }
 
@@ -102,7 +102,7 @@ public class BitfontEditorApp {
     private final MainMenu menu = new MainMenu();
     public final List<Window> windows = new ArrayList<>();
 
-    public BitfontEditorApp() {
+    public App() {
         windows.add(new NuklearFontWindow());
     }
 
