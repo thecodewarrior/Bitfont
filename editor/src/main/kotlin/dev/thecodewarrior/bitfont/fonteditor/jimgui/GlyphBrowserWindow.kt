@@ -11,7 +11,7 @@ import dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.math.Vec2
 import dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.math.rect
 import dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.math.vec
 import dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.opengl.Java2DTexture
-import dev.thecodewarrior.bitfont.utils.Vec2i
+import dev.thecodewarrior.bitfont.fonteditor.utils.Vec2i
 import org.ice1000.jimgui.flag.JImDirection
 import org.ice1000.jimgui.flag.JImHoveredFlags
 import org.ice1000.jimgui.flag.JImWindowFlags

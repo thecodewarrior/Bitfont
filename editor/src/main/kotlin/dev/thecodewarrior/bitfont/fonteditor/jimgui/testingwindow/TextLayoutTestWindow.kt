@@ -10,7 +10,7 @@ import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.ShapeExclusionTextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
 import dev.thecodewarrior.bitfont.typesetting.Typesetter
-import dev.thecodewarrior.bitfont.utils.Rect2i
+import dev.thecodewarrior.bitfont.fonteditor.utils.Rect2i
 import java.awt.Rectangle
 import java.awt.geom.AffineTransform
 import java.awt.geom.Area

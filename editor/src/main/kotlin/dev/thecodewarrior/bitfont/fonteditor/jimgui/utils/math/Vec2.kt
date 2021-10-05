@@ -1,6 +1,6 @@
 package dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.math
 
-import dev.thecodewarrior.bitfont.utils.Vec2i
+import dev.thecodewarrior.bitfont.fonteditor.utils.Vec2i
 
 @Suppress("NOTHING_TO_INLINE")
 class Vec2(val x: Double, val y: Double) {

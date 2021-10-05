@@ -301,6 +301,8 @@ public class App {
         glfwSetKeyCallback(win, this::process_key);
         glfwSetCursorPosCallback(win, (window, xpos, ypos) -> nk_input_motion(ctx, (int) xpos, (int) ypos));
         glfwSetMouseButtonCallback(win, (window, button, action, mods) -> {
+            Input.INSTANCE.setMouse(button, action == GLFW_PRESS);
+
             try (MemoryStack stack = stackPush()) {
                 DoubleBuffer cx = stack.mallocDouble(1);
                 DoubleBuffer cy = stack.mallocDouble(1);
@@ -361,48 +363,60 @@ public class App {
     }
 
     private void process_key(long window, int key, int scancode, int action, int mods) {
-        boolean press = action == GLFW_PRESS;
+        Input.INSTANCE.setKey(key, action == GLFW_PRESS || action == GLFW_REPEAT, action == GLFW_REPEAT);
+
+        boolean press = action == GLFW_PRESS || action == GLFW_REPEAT;
         switch (key) {
             case GLFW_KEY_LEFT_SHIFT:
             case GLFW_KEY_RIGHT_SHIFT:
+                if(action == GLFW_REPEAT) nk_input_key(ctx, NK_KEY_SHIFT, false);
                 nk_input_key(ctx, NK_KEY_SHIFT, press);
                 break;
             case GLFW_KEY_LEFT_CONTROL:
             case GLFW_KEY_RIGHT_CONTROL:
+                if(action == GLFW_REPEAT) nk_input_key(ctx, NK_KEY_CTRL, false);
                 nk_input_key(ctx, NK_KEY_CTRL, press);
                 break;
             case GLFW_KEY_DELETE:
+                if(action == GLFW_REPEAT) nk_input_key(ctx, NK_KEY_DEL, false);
                 nk_input_key(ctx, NK_KEY_DEL, press);
                 break;
             case GLFW_KEY_ENTER:
+                if(action == GLFW_REPEAT) nk_input_key(ctx, NK_KEY_ENTER, false);
                 nk_input_key(ctx, NK_KEY_ENTER, press);
                 break;
             case GLFW_KEY_TAB:
+                if(action == GLFW_REPEAT) nk_input_key(ctx, NK_KEY_TAB, false);
                 nk_input_key(ctx, NK_KEY_TAB, press);
                 break;
             case GLFW_KEY_BACKSPACE:
+                if(action == GLFW_REPEAT) nk_input_key(ctx, NK_KEY_BACKSPACE, false);
                 nk_input_key(ctx, NK_KEY_BACKSPACE, press);
                 break;
             case GLFW_KEY_UP:
+                if(action == GLFW_REPEAT) nk_input_key(ctx, NK_KEY_UP, false);
                 nk_input_key(ctx, NK_KEY_UP, press);
                 break;
             case GLFW_KEY_DOWN:
+                if(action == GLFW_REPEAT) nk_input_key(ctx, NK_KEY_DOWN, false);
                 nk_input_key(ctx, NK_KEY_DOWN, press);
                 break;
             case GLFW_KEY_LEFT:
+                if(action == GLFW_REPEAT) nk_input_key(ctx, NK_KEY_LEFT, false);
                 nk_input_key(ctx, NK_KEY_LEFT, press);
                 break;
             case GLFW_KEY_RIGHT:
+                if(action == GLFW_REPEAT) nk_input_key(ctx, NK_KEY_RIGHT, false);
                 nk_input_key(ctx, NK_KEY_RIGHT, press);
                 break;
         }
 
-        boolean alt = (mods & GLFW_MOD_ALT) != 0;
-        boolean ctrl = (mods & GLFW_MOD_CONTROL) != 0;
-        boolean shift = (mods & GLFW_MOD_SHIFT) != 0;
-        boolean sup = (mods & GLFW_MOD_SUPER) != 0;
-        boolean capsLock = (mods & GLFW_MOD_CAPS_LOCK) != 0;
-        boolean numLock = (mods & GLFW_MOD_NUM_LOCK) != 0;
+        Input.INSTANCE.setModifier(GLFW_MOD_ALT, (mods & GLFW_MOD_ALT) != 0);
+        Input.INSTANCE.setModifier(GLFW_MOD_CONTROL, (mods & GLFW_MOD_CONTROL) != 0);
+        Input.INSTANCE.setModifier(GLFW_MOD_SHIFT, (mods & GLFW_MOD_SHIFT) != 0);
+        Input.INSTANCE.setModifier(GLFW_MOD_SUPER, (mods & GLFW_MOD_SUPER) != 0);
+        Input.INSTANCE.setModifier(GLFW_MOD_CAPS_LOCK, (mods & GLFW_MOD_CAPS_LOCK) != 0);
+        Input.INSTANCE.setModifier(GLFW_MOD_NUM_LOCK, (mods & GLFW_MOD_NUM_LOCK) != 0);
 
         int modifiers = mods & ~GLFW_MOD_CAPS_LOCK & ~GLFW_MOD_NUM_LOCK;
 
@@ -496,6 +510,7 @@ public class App {
             display_height = h.get(0);
         }
 
+        Input.INSTANCE.flush();
         nk_input_begin(ctx);
         glfwPollEvents();
 

@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL12
 import org.lwjgl.stb.STBTTFontinfo
 import org.lwjgl.stb.STBTruetype.stbtt_FindGlyphIndex
 import org.lwjgl.stb.STBTruetype.stbtt_GetCodepointBitmapBoxSubpixel
+import org.lwjgl.stb.STBTruetype.stbtt_GetCodepointBox
 import org.lwjgl.stb.STBTruetype.stbtt_GetCodepointHMetrics
 import org.lwjgl.stb.STBTruetype.stbtt_GetFontVMetrics
 import org.lwjgl.stb.STBTruetype.stbtt_InitFont
@@ -33,6 +34,7 @@ class FontAtlas(val fonts: FontList, val fontHeight: Float) : Freeable {
     private val fontTexID = GL11.glGenTextures()
 
     private val packer = RectanglePacker<GlyphInfo>(textureSize, textureSize, 1)
+    private val metricsCache = Int2ObjectOpenHashMap<GlyphMetrics?>()
     private val cache = Int2ObjectOpenHashMap<GlyphInfo?>()
 
     private var debugImage: BufferedImage? = BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB)
@@ -68,6 +70,20 @@ class FontAtlas(val fonts: FontList, val fontHeight: Float) : Freeable {
                 it.id(fontTexID)
             }
         reverseMap[userFont] = this
+    }
+
+    fun getMetrics(codepoint: Int): GlyphMetrics? {
+        return metricsCache.getOrPut(codepoint) {
+            if(codepoint == '\n'.toInt() || codepoint == '\r'.toInt())
+                return@getOrPut null // otherwise it searches through every font
+            for (font in fonts) {
+                val glyph = font.getMetrics(codepoint)
+                if (glyph != null) {
+                    return@getOrPut glyph
+                }
+            }
+            return@getOrPut null
+        }
     }
 
     operator fun get(codepoint: Int): GlyphInfo? {
@@ -181,11 +197,66 @@ data class GlyphInfo(
     }
 }
 
+data class GlyphMetrics(
+    val font: TTFFont, val codepoint: Int,
+    val advance: Float, val lsb: Float,
+    val left: Float, val bottom: Float, val right: Float, val top: Float,
+) {
+    val ascent: Float get() = font.vMetrics.ascent
+    val descent: Float get() = font.vMetrics.descent
+    val lineGap: Float get() = font.vMetrics.lineGap
+}
+
 class TTFFont(val style: String, val weight: String, val file: String) {
     private var loaded = false
 
     private val fontInfo: STBTTFontinfo = STBTTFontinfo.create()
     private var ttf: ByteBuffer? = null
+
+    val vMetrics: VMetrics by lazy {
+        load()
+        MemoryStack.stackPush().use { stack ->
+            val ascent = stack.mallocInt(1)
+            val descent = stack.mallocInt(1)
+            val lineGap = stack.mallocInt(1)
+            stbtt_GetFontVMetrics(fontInfo, ascent, descent, lineGap)
+            val scale = stbtt_ScaleForPixelHeight(fontInfo, 1f)
+            VMetrics(ascent.get() * scale, descent.get() * scale, lineGap.get() * scale)
+        }
+    }
+
+    /**
+     * Gets the glyph info, not including the bitmap. Returns null if the specified codepoint isn't present in this font.
+     */
+    fun getMetrics(codepoint: Int): GlyphMetrics? {
+        load()
+        if (stbtt_FindGlyphIndex(fontInfo, codepoint) == 0)
+            return null
+
+        MemoryStack.stackPush().use { stack ->
+            val scale = stbtt_ScaleForPixelHeight(fontInfo, 1f)
+
+            val advance = stack.mallocInt(1)
+            val lsb = stack.mallocInt(1)
+            stbtt_GetCodepointHMetrics(fontInfo, codepoint, advance, lsb)
+            val left = stack.mallocInt(1)
+            val bottom = stack.mallocInt(1)
+            val right = stack.mallocInt(1)
+            val top = stack.mallocInt(1)
+            stbtt_GetCodepointBox(fontInfo, codepoint, left, bottom, right, top)
+
+            return GlyphMetrics(
+                this, codepoint,
+                advance.get() * scale,
+                lsb.get() * scale,
+                left.get() * scale,
+                bottom.get() * scale,
+                right.get() * scale,
+                top.get() * scale,
+            )
+        }
+    }
+
 
     /**
      * Gets the glyph info, including the bitmap. Returns null if the specified codepoint isn't present in this font.
@@ -254,5 +325,7 @@ class TTFFont(val style: String, val weight: String, val file: String) {
         stbtt_InitFont(fontInfo, ttf)
         this.ttf = ttf
     }
+
+    data class VMetrics(val ascent: Float, val descent: Float, val lineGap: Float)
 }
 

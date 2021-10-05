@@ -1,6 +1,4 @@
-package dev.thecodewarrior.bitfont.fonteditor.jimgui.utils
-
-import dev.thecodewarrior.bitfont.fonteditor.utils.Vec2i
+package dev.thecodewarrior.bitfont.fonteditor.utils
 
 private val contourCache = mutableMapOf<Set<Vec2i>, List<List<Vec2i>>>()
 
@@ -24,7 +22,7 @@ fun Iterable<Vec2i>.contours(): List<List<Vec2i>> {
             var side = pixels[pixel]?.removeAt(0) ?: continue
             val points = mutableListOf<Vec2i>()
 
-            if (side !in pixels[pixel - side.next.offset] ?: mutableListOf()) {
+            if (side !in (pixels[pixel - side.next.offset] ?: mutableListOf())) {
                 // if the point isn't in the middle of a line its corner needs a point
                 points.add(pixel + side.cornerOffset)
             }

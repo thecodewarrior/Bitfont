@@ -1,7 +1,7 @@
 package dev.thecodewarrior.bitfont.fonteditor.jimgui
 
 /*
-class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
+class GlyphEditorWindow(val document: BitfontDocument) {
     val bitfont: Bitfont = document.bitfont
 
     override val title: String
@@ -794,4 +794,4 @@ class GlyphEditorWindow(val document: BitfontDocument): IMWindow() {
         }
     }
 }
- */
+*/

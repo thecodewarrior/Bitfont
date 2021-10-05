@@ -1,6 +1,6 @@
 package dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.extensions
 
-import dev.thecodewarrior.bitfont.utils.Vec2i
+import dev.thecodewarrior.bitfont.fonteditor.utils.Vec2i
 import kotlin.math.abs
 
 fun Vec2i.lineTo(other: Vec2i): List<Vec2i> {

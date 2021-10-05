@@ -4,6 +4,8 @@ import org.lwjgl.nuklear.NkColor
 import org.lwjgl.nuklear.NkCommandBuffer
 import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.NkRect
+import org.lwjgl.nuklear.NkUserFont
+import org.lwjgl.nuklear.NkUserFontGlyph
 import org.lwjgl.nuklear.Nuklear.*
 import org.lwjgl.system.MemoryStack
 import java.awt.Color
@@ -187,6 +189,19 @@ class DrawList {
         return PolyBuilder(points, this)
     }
 
+    inline fun fillText(
+        x: Number, y: Number, height: Number,
+        text: String, font: NkUserFont,
+        color: Color
+    ): DrawList {
+        drawCommands.add(DrawCommand.FillText(
+            x.toFloat(), y.toFloat(), height.toFloat(),
+            font, text,
+            color
+        ))
+        return this
+    }
+
     /**
      * Apply the transform to an x pos
      */
@@ -215,6 +230,12 @@ class DrawList {
             val nkColor = NkColor.mallocStack(stack)
             nkColor.set(color.red.toByte(), color.green.toByte(), color.blue.toByte(), color.alpha.toByte())
             return nkColor
+        }
+
+        fun nkRect(x: Float, y: Float, width: Float, height: Float, stack: MemoryStack): NkRect {
+            val nkRect = NkRect.mallocStack(stack)
+            nkRect.set(x, y, width, height)
+            return nkRect
         }
 
         data class StrokeLine(
@@ -330,10 +351,17 @@ class DrawList {
             val thickness: Float, val color: Color
         ): DrawCommand() {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
-                nk_stroke_polyline(canvas,
-                    points.toFloatArray(),
+                val nkPoints = FloatArray(points.size)
+                for(i in 0 until points.size step 2) {
+                    nkPoints[i] = drawList.tx(points[i])
+                    nkPoints[i+1] = drawList.ty(points[i+1])
+                }
+                nnk_stroke_polyline(
+                    canvas.address(),
+                    nkPoints,
+                    points.size / 2,
                     thickness,
-                    nkColor(color, stack)
+                    nkColor(color, stack).address()
                 )
             }
         }
@@ -343,10 +371,17 @@ class DrawList {
             val thickness: Float, val color: Color
         ): DrawCommand() {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
-                nk_stroke_polygon(canvas,
-                    points.toFloatArray(),
+                val nkPoints = FloatArray(points.size)
+                for(i in 0 until points.size step 2) {
+                    nkPoints[i] = drawList.tx(points[i])
+                    nkPoints[i+1] = drawList.ty(points[i+1])
+                }
+                nnk_stroke_polygon(
+                    canvas.address(),
+                    nkPoints,
+                    points.size / 2,
                     thickness,
-                    nkColor(color, stack)
+                    nkColor(color, stack).address()
                 )
             }
         }
@@ -408,8 +443,35 @@ class DrawList {
             val color: Color
         ): DrawCommand() {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
-                nk_fill_polygon(canvas,
-                    points.toFloatArray(),
+                val nkPoints = FloatArray(points.size)
+                for(i in 0 until points.size step 2) {
+                    nkPoints[i] = drawList.tx(points[i])
+                    nkPoints[i+1] = drawList.ty(points[i+1])
+                }
+                nnk_fill_polygon(
+                    canvas.address(),
+                    nkPoints,
+                    points.size / 2,
+                    nkColor(color, stack).address()
+                )
+            }
+        }
+
+        data class FillText(
+            val x: Float,
+            val y: Float,
+            val height: Float,
+            val font: NkUserFont,
+            val text: String,
+            val color: Color
+        ): DrawCommand() {
+            override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
+                nk_draw_text(
+                    canvas,
+                    nkRect(drawList.tx(x), drawList.ty(y), 100000f, height, stack),
+                    text,
+                    font,
+                    nkColor(Color(0, 0, 0, 0), stack),
                     nkColor(color, stack)
                 )
             }

@@ -1,21 +1,11 @@
 package dev.thecodewarrior.bitfont.data
 
-import dev.thecodewarrior.bitfont.utils.Vec2i
 import java.util.Arrays
 
 public class BitGrid(public val width: Int, public val height: Int) {
-    public val size: Vec2i = Vec2i(width, height)
     public val data: UByteArray = UByteArray((width*height+7)/8) // (...+7)/8 rounds up
 
     public fun isEmpty(): Boolean = data.all { it == 0.toUByte() }
-
-    public operator fun get(pos: Vec2i): Boolean {
-        return this[pos.x, pos.y]
-    }
-
-    public operator fun set(pos: Vec2i, value: Boolean) {
-        this[pos.x, pos.y] = value
-    }
 
     public operator fun get(x: Int, y: Int): Boolean {
         if(x < 0 || x >= width)
@@ -43,20 +33,18 @@ public class BitGrid(public val width: Int, public val height: Int) {
         }
     }
 
-    public operator fun contains(pos: Vec2i): Boolean {
-        return pos.x in 0 until width && pos.y in 0 until height
+    public fun contains(x: Int, y: Int): Boolean {
+        return x in 0 until width && y in 0 until height
     }
 
     /**
      * Sets an area starting at [pos] to the contents of the passed grid. Out-of-bounds elements will be ignored.
      */
-    public fun draw(grid: BitGrid, pos: Vec2i) {
-        for(x in 0 until grid.width) {
-            for(y in 0 until grid.height) {
-                val src = Vec2i(x, y)
-                val dest = pos + src
-                if(dest in this)
-                    this[dest] = grid[src]
+    public fun draw(grid: BitGrid, posX: Int, posY: Int) {
+        for(srcX in 0 until grid.width) {
+            for(srcY in 0 until grid.height) {
+                if(this.contains(srcX + posX, srcY + posY))
+                    this[srcX + posX, srcY + posY] = grid[srcX, srcY]
             }
         }
     }

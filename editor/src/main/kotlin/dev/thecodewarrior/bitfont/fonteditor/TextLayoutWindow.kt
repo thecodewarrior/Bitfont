@@ -9,7 +9,7 @@ import dev.thecodewarrior.bitfont.typesetting.SimpleTextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextAttribute
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
-import dev.thecodewarrior.bitfont.utils.Vec2i
+import dev.thecodewarrior.bitfont.fonteditor.utils.Vec2i
 import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.NkTextEdit
 import org.lwjgl.nuklear.NkVec2
