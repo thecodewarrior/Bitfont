@@ -8,12 +8,24 @@ object Input {
     private val keyState = KeyTracker()
     private val mouseState = KeyTracker()
     private val modifierState = KeyTracker()
+    private var _scrollX: Float = 0f
+    private var _scrollY: Float = 0f
 
     fun flush() {
         keyState.flush()
         mouseState.flush()
         modifierState.flush()
+        _scrollX = 0f
+        _scrollY = 0f
     }
+
+    fun addScroll(x: Float, y: Float) {
+        _scrollX += x
+        _scrollY += y
+    }
+
+    val scrollX: Float get() = _scrollX
+    val scrollY: Float get() = _scrollY
 
     fun setKey(key: Int, state: Boolean, repeated: Boolean) = keyState.setState(key, state, repeated)
     fun setMouse(button: Int, state: Boolean) = mouseState.setState(button, state, false)

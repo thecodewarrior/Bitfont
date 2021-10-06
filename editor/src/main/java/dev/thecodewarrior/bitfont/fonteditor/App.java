@@ -161,6 +161,8 @@ public class App {
             menu.setFullHeight(height);
             menu.push(ctx);
             for (Window window : windows.toArray(new Window[0])) {
+                // nk_end zeros out the scroll for god knows what reason
+                ctx.input().mouse().scroll_delta().set(Input.INSTANCE.getScrollX(), Input.INSTANCE.getScrollY());
                 window.push(ctx);
             }
 
@@ -291,10 +293,11 @@ public class App {
     private NkContext setupWindow(long win) {
         glfwSetScrollCallback(win, (window, xoffset, yoffset) -> {
             try (MemoryStack stack = stackPush()) {
-                NkVec2 scroll = NkVec2.mallocStack(stack)
-                        .x((float) xoffset)
-                        .y((float) yoffset);
-                nk_input_scroll(ctx, scroll);
+                float factor = 160;
+                float x = (float) xoffset * factor;
+                float y = (float) yoffset * factor;
+                Input.INSTANCE.addScroll(x, y);
+                nk_input_scroll(ctx, NkVec2.mallocStack(stack).set(x, y));
             }
         });
         glfwSetCharCallback(win, (window, codepoint) -> nk_input_unicode(ctx, codepoint));
