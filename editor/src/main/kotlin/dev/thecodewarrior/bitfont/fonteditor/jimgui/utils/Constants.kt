@@ -1,7 +1,7 @@
 package dev.thecodewarrior.bitfont.fonteditor.jimgui.utils
 
 import dev.thecodewarrior.bitfont.fonteditor.jimgui.Main
-import dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.nameslist.NamesList
+import dev.thecodewarrior.bitfont.fonteditor.utils.nameslist.NamesList
 import java.io.InputStream
 
 object Constants {

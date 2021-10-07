@@ -1,6 +1,6 @@
 package dev.thecodewarrior.bitfont.fonteditor
 
-import dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.nameslist.NamesList
+import dev.thecodewarrior.bitfont.fonteditor.utils.nameslist.NamesList
 import org.lwjgl.BufferUtils
 import java.io.FileNotFoundException
 import java.io.InputStream

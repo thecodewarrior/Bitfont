@@ -21,16 +21,29 @@ class DrawList {
     fun push(ctx: NkContext) {
         val canvas = nk_window_get_canvas(ctx)!!
         MemoryStack.stackGet().also { stack ->
+            val oldClip = NkRect.mallocStack(stack).set(canvas.clip())
             drawCommands.forEach {
                 stack.push()
                 it.push(this, canvas, stack)
                 stack.pop()
             }
+            nk_push_scissor(canvas, oldClip)
         }
     }
 
     fun clear() {
         drawCommands.clear()
+    }
+
+    inline fun clip(
+        x: Number, y: Number,
+        w: Number, h: Number,
+    ): DrawList {
+        drawCommands.add(DrawCommand.Clip(
+            x.toFloat(), y.toFloat(),
+            w.toFloat(), h.toFloat(),
+        ))
+        return this
     }
 
     inline fun strokeLine(
@@ -236,6 +249,21 @@ class DrawList {
             val nkRect = NkRect.mallocStack(stack)
             nkRect.set(x, y, width, height)
             return nkRect
+        }
+
+        data class Clip(
+            val x: Float, val y: Float,
+            val w: Float, val h: Float,
+        ): DrawCommand() {
+            override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
+                nk_push_scissor(
+                    canvas,
+                    NkRect.mallocStack(stack).set(
+                        drawList.tx(x), drawList.ty(y),
+                        drawList.td(w), drawList.td(h)
+                    )
+                )
+            }
         }
 
         data class StrokeLine(

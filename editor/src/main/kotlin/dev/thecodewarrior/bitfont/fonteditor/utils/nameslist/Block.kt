@@ -1,4 +1,4 @@
-package dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.nameslist
+package dev.thecodewarrior.bitfont.fonteditor.utils.nameslist
 
 data class Block(val summary: String)
 

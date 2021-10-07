@@ -1,4 +1,4 @@
-package dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.nameslist
+package dev.thecodewarrior.bitfont.fonteditor.utils.nameslist
 
 import dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.extensions.component1
 import dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.extensions.component2

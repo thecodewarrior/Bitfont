@@ -1,4 +1,4 @@
-package dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.nameslist
+package dev.thecodewarrior.bitfont.fonteditor.utils.nameslist
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.io.InputStream

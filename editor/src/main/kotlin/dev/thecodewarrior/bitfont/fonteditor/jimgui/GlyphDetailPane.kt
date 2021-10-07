@@ -2,8 +2,8 @@ package dev.thecodewarrior.bitfont.fonteditor.jimgui
 
 import dev.thecodewarrior.bitfont.fonteditor.jimgui.imgui.ImGui
 import dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.Constants
-import dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.nameslist.ExpandLine
-import dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.nameslist.ExpandLineElement
+import dev.thecodewarrior.bitfont.fonteditor.utils.nameslist.ExpandLine
+import dev.thecodewarrior.bitfont.fonteditor.utils.nameslist.ExpandLineElement
 
 class GlyphDetailPane(val document: BitfontDocument) {
     val width: Float

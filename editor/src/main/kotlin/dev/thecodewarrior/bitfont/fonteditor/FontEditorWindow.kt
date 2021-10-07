@@ -1,21 +1,28 @@
 package dev.thecodewarrior.bitfont.fonteditor
 
+import com.ibm.icu.lang.UCharacter
 import dev.thecodewarrior.bitfont.data.BitGrid
 import dev.thecodewarrior.bitfont.data.Glyph
 import dev.thecodewarrior.bitfont.fonteditor.data.BitfontEditorData
 import dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.HistoryTracker
 import dev.thecodewarrior.bitfont.fonteditor.utils.DrawList
+import dev.thecodewarrior.bitfont.fonteditor.utils.GlobalAllocations
+import dev.thecodewarrior.bitfont.fonteditor.utils.NkEditor
 import dev.thecodewarrior.bitfont.fonteditor.utils.Rect2i
 import dev.thecodewarrior.bitfont.fonteditor.utils.Vec2i
 import dev.thecodewarrior.bitfont.fonteditor.utils.contours
 import dev.thecodewarrior.bitfont.fonteditor.utils.nk_quick_keys
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.nuklear.NkContext
+import org.lwjgl.nuklear.NkPluginFilter
 import org.lwjgl.nuklear.NkRect
+import org.lwjgl.nuklear.NkStyleButton
 import org.lwjgl.nuklear.NkVec2
+import org.lwjgl.nuklear.Nuklear
 import org.lwjgl.nuklear.Nuklear.*
 import org.lwjgl.system.MemoryStack
 import java.awt.Color
+import java.lang.NumberFormatException
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
@@ -25,15 +32,20 @@ import kotlin.math.roundToInt
 class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
     private var codepoint: Int = 0
         set(value) {
+            if(value < 0 || value > 0x10ffff)
+                return
             if(field != value) {
                 if(tool === nudge) nudge.stop()
                 if(glyphData == GlyphEditData(codepoint)) {
                     glyphDataMap.remove(codepoint)
                 }
+                field = value
+                glyphData = glyphDataMap.getOrPut(codepoint) { GlyphEditData(codepoint) }
+                codepointField.text = "%04X".format(codepoint)
+                title = "${data.font.name}: U+%04X - %s".format(codepoint, UCharacter.getName(codepoint))
             }
-            field = value
-            glyphData = glyphDataMap.getOrPut(codepoint) { GlyphEditData(codepoint) }
         }
+
 
     val glyphDataMap = mutableMapOf<Int, GlyphEditData>()
     var glyphData: GlyphEditData = GlyphEditData(0)
@@ -63,6 +75,8 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
     private var isMouseOverCanvas = false
     private var isCanvasFocused = false
 
+    var codepointField: NkEditor = NkEditor(NK_EDIT_FIELD or NK_EDIT_SIG_ENTER)
+
     private val backgroundColor = Color(0x0A0A0A)
     private val gridColor = Color(0x3b3b46)
     private val axisColor = Color(0xf58231)
@@ -78,7 +92,6 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
     }
 
     fun pushControls(ctx: NkContext) {
-
         nk_quick_keys {
             "tab" pressed {
                 if("shift".pressed())
@@ -96,14 +109,64 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
         }
 
         MemoryStack.stackPush().use { stack ->
+            val groupRegion = NkRect.mallocStack(stack)
+            nk_window_get_content_region(ctx, groupRegion)
+
+            val style = NkStyleButton.mallocStack(stack)
+            style.set(ctx.style().button())
+            style.padding(NkVec2.mallocStack(stack).set(0f, 0f))
+
+            nk_layout_row_begin(ctx, NK_STATIC, 20f, 3)
+            nk_layout_row_push(ctx, 20f)
+            if(nk_button_symbol_styled(ctx, style, NK_SYMBOL_TRIANGLE_LEFT)) {
+                codepoint--
+            }
+            nk_layout_row_push(ctx, groupRegion.w() - 40 - 16)
+            run {
+                val widgetBounds = NkRect.mallocStack(stack)
+                nk_widget_bounds(ctx, widgetBounds)
+                if(nk_input_is_mouse_hovering_rect(ctx.input(), widgetBounds)) {
+                    val scroll = ctx.input().mouse().scroll_delta().y()
+                    if(scroll < 0f) {
+                        codepoint++
+                    } else if(scroll > 0f) {
+                        codepoint--
+                    }
+                }
+            }
+            if(codepointField.push(ctx) and NK_EDIT_COMMITED != 0) {
+                nk_edit_unfocus(ctx)
+                codepoint = codepointField.text.toInt(16)
+            }
+            nk_layout_row_push(ctx, 20f)
+            if(nk_button_symbol_styled(ctx, style, NK_SYMBOL_TRIANGLE_RIGHT)) {
+                codepoint++
+            }
+            nk_layout_row_end(ctx)
+
             nk_layout_row_dynamic(ctx, 20f, 1)
-            nk_label(ctx, "Font Name:", NK_TEXT_LEFT)
 
             val metric = stack.ints(0)
 
-            metric.put(0, codepoint)
-            nk_property_int(ctx, "Codepoint:", 0, metric, 100, 1, 1f)
-            codepoint = metric[0]
+            metric.put(0, glyphData.glyph.advance)
+            nk_property_int(ctx, "Advance:", -data.font.ascent * 3, metric, data.font.ascent * 3, 1, 1f)
+            glyphData.glyph.advance = metric[0]
+
+            val maxViewX = max(10, canvasWidth.toInt())
+            if(viewX > maxViewX) viewX = maxViewX
+            metric.put(0, viewX)
+            nk_property_int(ctx, "View X:", 0, metric, maxViewX, 1, 1f)
+            viewX = metric[0]
+
+            val maxViewY = max(10, canvasHeight.toInt())
+            if(viewY > maxViewY) viewY = maxViewY
+            metric.put(0, viewY)
+            nk_property_int(ctx, "View Y:", 0, metric, maxViewY, 1, 1f)
+            viewY = metric[0]
+
+            metric.put(0, zoom)
+            nk_property_int(ctx, "Zoom:", 1, metric, 50, 1, 1f)
+            zoom = metric[0]
         }
     }
 
@@ -201,49 +264,46 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
                 nk_group_end(ctx)
             }
 
-            val groupPadding = ctx.style().window().group_padding()
-            val oldGroupPadding = NkVec2.mallocStack(stack).set(groupPadding)
-            groupPadding.set(0f, 0f)
+            val canvasBounds = NkRect.mallocStack(stack).set(
+                contentRegion.x() + 200 + ctx.style().window().group_padding().x(), contentRegion.y(),
+                contentRegion.w() - 200, contentRegion.h()
+            )
 
-            if(nk_group_begin(ctx, "editor", NK_WINDOW_BORDER or NK_WINDOW_NO_SCROLLBAR)) {
-                val groupRegion = NkRect.mallocStack(stack)
-                nk_window_get_content_region(ctx, groupRegion)
+            val nkPos = ctx.input().mouse().pos()
+            this.mouseX = (nkPos.x() - canvasBounds.x()) / zoom - viewX
+            this.mouseY = (nkPos.y() - canvasBounds.y()) / zoom - viewY
+            this.canvasWidth = canvasBounds.w() / zoom
+            this.canvasHeight = canvasBounds.h() / zoom
+            this.isMouseOverCanvas = nkPos.x() in canvasBounds.x() .. canvasBounds.x() + canvasBounds.w() &&
+                nkPos.y() in canvasBounds.y() .. canvasBounds.y() + canvasBounds.h()
 
-                val nkPos = ctx.input().mouse().pos()
-                this.mouseX = (nkPos.x() - groupRegion.x()) / zoom - viewX
-                this.mouseY = (nkPos.y() - groupRegion.y()) / zoom - viewY
-                this.canvasWidth = groupRegion.w() / zoom
-                this.canvasHeight = groupRegion.h() / zoom
-                this.isMouseOverCanvas = nkPos.x() in groupRegion.x() .. groupRegion.x() + groupRegion.w() &&
-                    nkPos.y() in groupRegion.y() .. groupRegion.y() + groupRegion.h()
-
-                if(Input.isMousePressed(0) || Input.isMousePressed(1)) {
-                    this.isCanvasFocused = this.isMouseOverCanvas
-                }
-
-                this.mousePos = Vec2i(floor(mouseX).toInt(), floor(mouseY).toInt())
-                this.bounds = Rect2i(-viewX, -viewY, ceil(canvasWidth).toInt(), ceil(canvasHeight).toInt())
-
-                updateCanvas(ctx)
-
-                val drawList = DrawList()
-                draw(drawList)
-                tool.draw(drawList)
-                drawList.transformX = groupRegion.x() + viewX * zoom
-                drawList.transformY = groupRegion.y() + viewY * zoom
-                drawList.transformScale = zoom.toFloat()
-                drawList.push(ctx)
-
-                nk_group_end(ctx)
+            if(Input.isMousePressed(0) || Input.isMousePressed(1)) {
+                this.isCanvasFocused = this.isMouseOverCanvas
             }
 
-            ctx.style().window().group_padding().set(oldGroupPadding)
+            this.mousePos = Vec2i(floor(mouseX).toInt(), floor(mouseY).toInt())
+            this.bounds = Rect2i(-viewX, -viewY, ceil(canvasWidth).toInt(), ceil(canvasHeight).toInt())
+
+            updateCanvas(ctx)
+
+            val drawList = DrawList()
+            drawList.clip(-viewX, -viewY, canvasWidth, canvasHeight)
+            draw(drawList)
+            tool.draw(drawList)
+            drawList.transformX = canvasBounds.x() + viewX * zoom
+            drawList.transformY = canvasBounds.y() + viewY * zoom
+            drawList.transformScale = zoom.toFloat()
+            drawList.push(ctx)
 
             nk_layout_row_end(ctx)
         }
     }
 
     override fun free() {
+    }
+
+    companion object {
+        val hexFilter = GlobalAllocations.add(NkPluginFilter.create(Nuklear::nnk_filter_hex))
     }
 
 
