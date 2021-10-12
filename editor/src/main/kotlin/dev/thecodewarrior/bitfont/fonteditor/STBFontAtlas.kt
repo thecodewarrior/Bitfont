@@ -2,6 +2,7 @@ package dev.thecodewarrior.bitfont.fonteditor
 
 import dev.thecodewarrior.bitfont.fonteditor.utils.Freeable
 import dev.thecodewarrior.bitfont.fonteditor.utils.GlobalAllocations
+import dev.thecodewarrior.bitfont.fonteditor.utils.set
 import dev.thecodewarrior.bitfont.utils.RectanglePacker
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import org.lwjgl.nuklear.NkHandle
@@ -12,10 +13,13 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL12
 import org.lwjgl.stb.STBTTFontinfo
 import org.lwjgl.stb.STBTruetype.stbtt_FindGlyphIndex
+import org.lwjgl.stb.STBTruetype.stbtt_FreeBitmap
 import org.lwjgl.stb.STBTruetype.stbtt_GetCodepointBitmapBoxSubpixel
 import org.lwjgl.stb.STBTruetype.stbtt_GetCodepointBox
 import org.lwjgl.stb.STBTruetype.stbtt_GetCodepointHMetrics
+import org.lwjgl.stb.STBTruetype.stbtt_GetCodepointShape
 import org.lwjgl.stb.STBTruetype.stbtt_GetFontVMetrics
+import org.lwjgl.stb.STBTruetype.stbtt_GetFontVMetricsOS2
 import org.lwjgl.stb.STBTruetype.stbtt_InitFont
 import org.lwjgl.stb.STBTruetype.stbtt_MakeCodepointBitmapSubpixelPrefilter
 import org.lwjgl.stb.STBTruetype.stbtt_ScaleForPixelHeight
@@ -23,6 +27,7 @@ import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
+import kotlin.math.min
 
 class FontAtlas(val fonts: FontList, val fontHeight: Float) : Freeable {
     private var textureSize = generateSequence(64) { it * 2 }.first { it > fontHeight }
@@ -198,19 +203,31 @@ data class GlyphInfo(
 }
 
 data class GlyphMetrics(
-    val font: TTFFont, val codepoint: Int,
+    val font: TTFFont, val codepoint: Int, val height: Float, val unitScale: Float,
     val advance: Float, val lsb: Float,
     val left: Float, val bottom: Float, val right: Float, val top: Float,
+    val ascent: Float, val descent: Float, val lineGap: Float,
+    val typoAscent: Float, val typoDescent: Float, val typoLineGap: Float,
+    // these are measured based on `X`, `x`, and `g j p q y` respectively
+    val capHeight: Float, val xHeight: Float, val descender: Float,
 ) {
-    val ascent: Float get() = font.vMetrics.ascent
-    val descent: Float get() = font.vMetrics.descent
-    val lineGap: Float get() = font.vMetrics.lineGap
+    fun withHeight(newHeight: Float): GlyphMetrics {
+        val f = newHeight / height
+        return GlyphMetrics(
+            font, codepoint, newHeight, unitScale * f,
+            advance * f, lsb * f,
+            left * f, bottom * f, right * f, top * f,
+            ascent * f, descent * f, lineGap * f,
+            typoAscent * f, typoDescent * f, typoLineGap * f,
+            capHeight * f, xHeight * f, descender * f
+        )
+    }
 }
 
 class TTFFont(val style: String, val weight: String, val file: String) {
     private var loaded = false
 
-    private val fontInfo: STBTTFontinfo = STBTTFontinfo.create()
+    val fontInfo: STBTTFontinfo = STBTTFontinfo.create()
     private var ttf: ByteBuffer? = null
 
     val vMetrics: VMetrics by lazy {
@@ -220,8 +237,29 @@ class TTFFont(val style: String, val weight: String, val file: String) {
             val descent = stack.mallocInt(1)
             val lineGap = stack.mallocInt(1)
             stbtt_GetFontVMetrics(fontInfo, ascent, descent, lineGap)
+            val typoAscent = stack.mallocInt(1)
+            val typoDescent = stack.mallocInt(1)
+            val typoLineGap = stack.mallocInt(1)
+            stbtt_GetFontVMetricsOS2(fontInfo, typoAscent, typoDescent, typoLineGap)
+
+            val capHeight = stack.mallocInt(1)
+            val xHeight = stack.mallocInt(1)
+            val ndescender = stack.mallocInt(1)
+            var descender = 0
+            stbtt_GetCodepointBox(fontInfo, 'X'.code, null, null, null, capHeight)
+            stbtt_GetCodepointBox(fontInfo, 'x'.code, null, null, null, xHeight)
+            for(character in "JQgjpqy") {
+                ndescender[0] = 0
+                stbtt_GetCodepointBox(fontInfo, character.code, null, ndescender, null, null)
+                descender = min(descender, ndescender[0])
+            }
+
             val scale = stbtt_ScaleForPixelHeight(fontInfo, 1f)
-            VMetrics(ascent.get() * scale, descent.get() * scale, lineGap.get() * scale)
+            VMetrics(
+                ascent[0] * scale, descent[0] * scale, lineGap[0] * scale,
+                typoAscent[0] * scale, typoDescent[0] * scale, typoLineGap[0] * scale,
+                capHeight[0] * scale, xHeight[0] * scale, descender * scale
+            )
         }
     }
 
@@ -246,13 +284,23 @@ class TTFFont(val style: String, val weight: String, val file: String) {
             stbtt_GetCodepointBox(fontInfo, codepoint, left, bottom, right, top)
 
             return GlyphMetrics(
-                this, codepoint,
+                this, codepoint, 1f,
+                scale,
                 advance.get() * scale,
                 lsb.get() * scale,
                 left.get() * scale,
                 bottom.get() * scale,
                 right.get() * scale,
                 top.get() * scale,
+                vMetrics.ascent,
+                vMetrics.descent,
+                vMetrics.lineGap,
+                vMetrics.typoAscent,
+                vMetrics.typoDescent,
+                vMetrics.typoLineGap,
+                vMetrics.capHeight,
+                vMetrics.xHeight,
+                vMetrics.descender
             )
         }
     }
@@ -302,7 +350,7 @@ class TTFFont(val style: String, val weight: String, val file: String) {
                 texture.putInt(stbBitmap[i].toInt() shl 24 or 0x00FFFFFF)
             }
             texture.flip()
-            MemoryUtil.memFree(stbBitmap)
+            stbtt_FreeBitmap(stbBitmap)
 
             return GlyphInfo(
                 this, codepoint,
@@ -326,6 +374,11 @@ class TTFFont(val style: String, val weight: String, val file: String) {
         this.ttf = ttf
     }
 
-    data class VMetrics(val ascent: Float, val descent: Float, val lineGap: Float)
+    data class VMetrics(
+        val ascent: Float, val descent: Float, val lineGap: Float,
+        val typoAscent: Float, val typoDescent: Float, val typoLineGap: Float,
+        // these are measured based on `X`, `x`, and `g j p q y` respectively
+        val capHeight: Float, val xHeight: Float, val descender: Float,
+    )
 }
 

@@ -3,23 +3,25 @@ package dev.thecodewarrior.bitfont.fonteditor.utils
 import org.lwjgl.nuklear.NkColor
 import org.lwjgl.nuklear.NkCommandBuffer
 import org.lwjgl.nuklear.NkContext
+import org.lwjgl.nuklear.NkImage
 import org.lwjgl.nuklear.NkRect
 import org.lwjgl.nuklear.NkUserFont
-import org.lwjgl.nuklear.NkUserFontGlyph
 import org.lwjgl.nuklear.Nuklear.*
 import org.lwjgl.system.MemoryStack
 import java.awt.Color
 
 @Suppress("NOTHING_TO_INLINE")
-class DrawList {
+class DrawList(val drawCommands: MutableList<DrawCommand> = mutableListOf()) {
     var transformX: Float = 0f
     var transformY: Float = 0f
     var transformScale: Float = 1f
 
-    val drawCommands = mutableListOf<DrawCommand>()
-
     fun push(ctx: NkContext) {
         val canvas = nk_window_get_canvas(ctx)!!
+        push(canvas)
+    }
+
+    fun push(canvas: NkCommandBuffer) {
         MemoryStack.stackGet().also { stack ->
             val oldClip = NkRect.mallocStack(stack).set(canvas.clip())
             drawCommands.forEach {
@@ -35,6 +37,22 @@ class DrawList {
         drawCommands.clear()
     }
 
+    fun add(command: DrawCommand): DrawList {
+        drawCommands.add(command)
+        return this
+    }
+
+    inline fun draw(
+        x: Number, y: Number,
+        scale: Number, childList: DrawList
+    ): DrawList {
+        drawCommands.add(DrawCommand.Draw(
+            x.toFloat(), y.toFloat(),
+            scale.toFloat(), childList,
+        ))
+        return this
+    }
+
     inline fun clip(
         x: Number, y: Number,
         w: Number, h: Number,
@@ -42,6 +60,20 @@ class DrawList {
         drawCommands.add(DrawCommand.Clip(
             x.toFloat(), y.toFloat(),
             w.toFloat(), h.toFloat(),
+        ))
+        return this
+    }
+
+    inline fun image(
+        x: Number, y: Number,
+        w: Number, h: Number,
+        nkImage: NkImage,
+        color: Color
+    ): DrawList {
+        drawCommands.add(DrawCommand.Image(
+            x.toFloat(), y.toFloat(),
+            w.toFloat(), h.toFloat(),
+            nkImage, color
         ))
         return this
     }
@@ -218,26 +250,26 @@ class DrawList {
     /**
      * Apply the transform to an x pos
      */
-    private fun tx(x: Float): Float {
+    fun tx(x: Float): Float {
         return transformX + x * transformScale
     }
 
     /**
      * Apply the transform to a y pos
      */
-    private fun ty(y: Float): Float {
+    fun ty(y: Float): Float {
         return transformY + y * transformScale
     }
 
     /**
      * Apply the transform to a delta
      */
-    private fun td(delta: Float): Float {
+    fun td(delta: Float): Float {
         return delta * transformScale
     }
 
-    sealed class DrawCommand {
-        abstract fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack)
+    interface DrawCommand {
+        fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack)
 
         fun nkColor(color: Color, stack: MemoryStack): NkColor {
             val nkColor = NkColor.mallocStack(stack)
@@ -251,10 +283,24 @@ class DrawList {
             return nkRect
         }
 
+        data class Draw(
+            val x: Float, val y: Float,
+            val scale: Float,
+            val childList: DrawList
+        ): DrawCommand {
+            override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
+                val joinedList = DrawList(childList.drawCommands)
+                joinedList.transformX = drawList.tx(childList.transformX + x)
+                joinedList.transformY = drawList.ty(childList.transformY + y)
+                joinedList.transformScale = drawList.td(childList.transformScale * scale)
+                joinedList.push(canvas)
+            }
+        }
+
         data class Clip(
             val x: Float, val y: Float,
             val w: Float, val h: Float,
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 nk_push_scissor(
                     canvas,
@@ -266,11 +312,31 @@ class DrawList {
             }
         }
 
+        data class Image(
+            val x: Float, val y: Float,
+            val w: Float, val h: Float,
+            val image: NkImage,
+            val color: Color
+        ): DrawCommand {
+            override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
+                nk_draw_image(
+                    canvas,
+                    nkRect(
+                        drawList.tx(x), drawList.ty(y),
+                        drawList.td(w), drawList.td(h),
+                        stack
+                    ),
+                    image,
+                    nkColor(color, stack)
+                )
+            }
+        }
+
         data class StrokeLine(
             val x0: Float, val y0: Float,
             val x1: Float, val y1: Float,
             val thickness: Float, val color: Color
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 nk_stroke_line(canvas,
                     drawList.tx(x0), drawList.ty(y0),
@@ -287,7 +353,7 @@ class DrawList {
             val ctrl1x: Float, val ctrl1y: Float,
             val bx: Float, val by: Float,
             val thickness: Float, val color: Color
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 nk_stroke_curve(canvas,
                     drawList.tx(ax), drawList.ty(ay),
@@ -305,7 +371,7 @@ class DrawList {
             val w: Float, val h: Float,
             val rounding: Float,
             val thickness: Float, val color: Color
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 val rect = NkRect.mallocStack(stack)
                 rect.x(drawList.tx(x))
@@ -325,7 +391,7 @@ class DrawList {
             val x: Float, val y: Float,
             val w: Float, val h: Float,
             val thickness: Float, val color: Color
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 val rect = NkRect.mallocStack(stack)
                 rect.x(drawList.tx(x))
@@ -345,7 +411,7 @@ class DrawList {
             val radius: Float,
             val minAngle: Float, val maxAngle: Float,
             val thickness: Float, val color: Color
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 nk_stroke_arc(canvas,
                     drawList.tx(cx), drawList.ty(cy),
@@ -362,7 +428,7 @@ class DrawList {
             val x1: Float, val y1: Float,
             val x2: Float, val y2: Float,
             val thickness: Float, val color: Color
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 nk_stroke_triangle(canvas,
                     drawList.tx(x0), drawList.ty(y0),
@@ -377,7 +443,7 @@ class DrawList {
         data class StrokePolyline(
             val points: MutableList<Float>,
             val thickness: Float, val color: Color
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 val nkPoints = FloatArray(points.size)
                 for(i in 0 until points.size step 2) {
@@ -397,7 +463,7 @@ class DrawList {
         data class StrokePolygon(
             val points: MutableList<Float>,
             val thickness: Float, val color: Color
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 val nkPoints = FloatArray(points.size)
                 for(i in 0 until points.size step 2) {
@@ -419,7 +485,7 @@ class DrawList {
             val w: Float, val h: Float,
             val rounding: Float,
             val color: Color
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 val rect = NkRect.mallocStack(stack)
                 rect.x(drawList.tx(x))
@@ -439,7 +505,7 @@ class DrawList {
             val radius: Float,
             val minAngle: Float, val maxAngle: Float,
             val color: Color
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 nk_fill_arc(canvas,
                     drawList.tx(cx), drawList.ty(cy),
@@ -455,7 +521,7 @@ class DrawList {
             val x1: Float, val y1: Float,
             val x2: Float, val y2: Float,
             val color: Color
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 nk_fill_triangle(canvas,
                     drawList.tx(x0), drawList.ty(y0),
@@ -469,7 +535,7 @@ class DrawList {
         data class FillPolygon(
             val points: MutableList<Float>,
             val color: Color
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 val nkPoints = FloatArray(points.size)
                 for(i in 0 until points.size step 2) {
@@ -492,7 +558,7 @@ class DrawList {
             val font: NkUserFont,
             val text: String,
             val color: Color
-        ): DrawCommand() {
+        ): DrawCommand {
             override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
                 nk_draw_text(
                     canvas,
