@@ -61,13 +61,12 @@ class KeyTracker {
     fun setState(key: Int, state: Boolean, repeated: Boolean) {
         val isDown = key in keysDown
         if (state && !isDown) {
-            if(repeated)
-                this.repeated.add(key)
-            else
-                pressed.add(key)
+            pressed.add(key)
         } else if (!state && isDown) {
             released.add(key)
         }
+        if(repeated)
+            this.repeated.add(key)
         if (state) {
             keysDown.add(key)
         } else {

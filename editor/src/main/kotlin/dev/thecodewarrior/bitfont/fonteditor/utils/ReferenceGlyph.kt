@@ -22,7 +22,7 @@ import java.awt.Color
 
 class ReferenceGlyph(
     val fonts: FontList,
-) {
+) : Freeable {
     var metrics: GlyphMetrics? = null
         private set
     var shape: STBTTVertex.Buffer? = null
@@ -49,14 +49,16 @@ class ReferenceGlyph(
         drawList.add(GlyphStrokeCommand(x, y, scale, thickness, color))
     }
 
-    fun loadGlyph(codepoint: Int, height: Float) {
+    fun loadGlyph(codepoint: Int, getHeight: (GlyphMetrics) -> Float) {
         this.metrics = null
         this.shape = null
         val codepointType = UCharacter.getType(codepoint).toByte()
         if(codepointType == UCharacterCategory.UNASSIGNED || codepointType == UCharacterCategory.PRIVATE_USE)
             return
 
-        val metrics = getMetrics(codepoint)?.withHeight(height) ?: return
+        var metrics = getMetrics(codepoint) ?: return
+        val height = getHeight(metrics)
+        metrics = metrics.withHeight(height)
         val glyph = metrics.font.get(codepoint, height, 2, 2) ?: return
 
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId)
@@ -81,7 +83,7 @@ class ReferenceGlyph(
         return null
     }
 
-    fun free() {
+    override fun free() {
         GL11.glDeleteTextures(textureId)
         this.shape?.free()
     }

@@ -12,3 +12,4 @@ inline fun <T> stackPush(block: (MemoryStack) -> T) {
     }
     MemoryStack.stackPush().use(block)
 }
+

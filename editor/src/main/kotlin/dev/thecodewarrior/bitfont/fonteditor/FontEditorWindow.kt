@@ -13,6 +13,7 @@ import dev.thecodewarrior.bitfont.fonteditor.utils.ReferenceGlyph
 import dev.thecodewarrior.bitfont.fonteditor.utils.Vec2i
 import dev.thecodewarrior.bitfont.fonteditor.utils.contours
 import dev.thecodewarrior.bitfont.fonteditor.utils.nk_quick_keys
+import dev.thecodewarrior.bitfont.fonteditor.widgets.ReferenceGlyphWidget
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.NkPluginFilter
@@ -43,7 +44,7 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
                 glyphData = glyphDataMap.getOrPut(codepoint) { GlyphEditData(codepoint) }
                 codepointField.text = "%04X".format(codepoint)
                 title = "${data.font.name}: U+%04X - %s".format(codepoint, UCharacter.getName(codepoint))
-                referenceGlyph.loadGlyph(codepoint, referenceHeight * zoom)
+                referenceWidget.codepoint = codepoint
             }
         }
 
@@ -62,7 +63,7 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
         set(value) {
             if(field != value) {
                 field = value
-                referenceGlyph.loadGlyph(codepoint, referenceHeight * zoom)
+                referenceWidget.codepoint = codepoint
             }
         }
     /**
@@ -81,16 +82,9 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
     private var mousePos: Vec2i = Vec2i(0, 0)
     private var isMouseOverCanvas = false
     private var isCanvasFocused = false
-    var referenceHeight: Float = 8f
-        set(value) {
-            if(field != value) {
-                field = value
-                referenceGlyph.loadGlyph(codepoint, referenceHeight * zoom)
-            }
-        }
 
     var codepointField: NkEditor = NkEditor(NK_EDIT_FIELD or NK_EDIT_SIG_ENTER)
-    val referenceGlyph = ReferenceGlyph(NuklearFonts.sans)
+    val referenceWidget = ReferenceGlyphWidget()
 
     private val backgroundColor = Color(0x0A0A0A)
     private val gridColor = Color(0x3b3b46)
@@ -100,8 +94,6 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
     private val markingsColor = Color(0x3cb44b)
     private val toolColor = Color(0xff7964)
     private val glyphColor = Color(0xffffff)
-    private val referenceGuideColor = Color(0x703f81)
-    private val referenceColor = Color(0x707070)
 
     init {
         flags = flags or NK_WINDOW_NO_SCROLLBAR or NK_WINDOW_SCALABLE or NK_WINDOW_CLOSABLE
@@ -133,6 +125,12 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
             style.set(ctx.style().button())
             style.padding(NkVec2.mallocStack(stack).set(0f, 0f))
 
+            if(Input.isKeyPressed(GLFW_KEY_TAB, repeat = true)) {
+                if(Input.isModifierDown(GLFW_MOD_SHIFT))
+                    codepoint--
+                else
+                    codepoint++
+            }
             nk_layout_row_begin(ctx, NK_STATIC, 20f, 3)
             nk_layout_row_push(ctx, 20f)
             if(nk_button_symbol_styled(ctx, style, NK_SYMBOL_TRIANGLE_LEFT)) {
@@ -185,11 +183,8 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
             nk_property_int(ctx, "Zoom:", 1, metric, 50, 1, 1f)
             zoom = metric[0]
 
-            val fmetric = stack.floats(0f)
-
-            fmetric.put(0, referenceHeight)
-            nk_property_float(ctx, "Ref:", 1f, fmetric, 20f, 0.1f, 0.1f)
-            referenceHeight = fmetric[0]
+            nk_layout_row_dynamic(ctx, 180f, 1)
+            referenceWidget.push(ctx)
         }
     }
 
@@ -227,10 +222,8 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
     fun draw(drawList: DrawList) {
         drawList.fillRect(-viewX, -viewY, canvasWidth, canvasHeight, 0, backgroundColor)
         drawGrid(drawList)
-        drawReference(drawList)
         drawMarkings(drawList)
         drawGlyph(drawList)
-        referenceGlyph.stroke(drawList, 0f, 0f, 1f / zoom, 1f, referenceColor)
     }
 
     fun drawGlyph(drawList: DrawList) {
@@ -241,14 +234,6 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
                 0, glyphColor
             )
         }
-    }
-
-    fun drawReference(drawList: DrawList) {
-        val metrics = referenceGlyph.metrics ?: return
-        drawList.strokeLine(bounds.minX, -metrics.capHeight / zoom, bounds.maxX, -metrics.capHeight / zoom, 2, referenceGuideColor)
-        drawList.strokeLine(bounds.minX, -metrics.xHeight / zoom, bounds.maxX, -metrics.xHeight / zoom, 2, referenceGuideColor)
-        drawList.strokeLine(bounds.minX, -metrics.descender / zoom, bounds.maxX, -metrics.descender / zoom, 2, referenceGuideColor)
-        referenceGlyph.fill(drawList, 0f, 0f, 1f / zoom, referenceColor)
     }
 
     fun drawGrid(drawList: DrawList) {
@@ -333,7 +318,7 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
     }
 
     override fun free() {
-        referenceGlyph.free()
+        referenceWidget.free()
     }
 
     companion object {

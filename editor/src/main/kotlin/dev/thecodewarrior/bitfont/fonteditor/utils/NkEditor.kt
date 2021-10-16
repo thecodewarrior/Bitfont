@@ -14,7 +14,7 @@ class NkEditor(
     var flags: Int,
     var filter: NkPluginFilter? = null,
     var changeListener: ((editor: NkEditor, old: String, new: String) -> Unit)? = null
-) {
+) : Freeable {
     val textEditor: NkTextEdit = NkTextEdit.malloc()
     private var _state: String = ""
         set(value) {
@@ -51,7 +51,7 @@ class NkEditor(
         return ret
     }
 
-    fun free() {
+    override fun free() {
         textEditor.free()
     }
 }

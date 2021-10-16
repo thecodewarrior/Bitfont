@@ -242,9 +242,9 @@ class TTFFont(val style: String, val weight: String, val file: String) {
             val typoLineGap = stack.mallocInt(1)
             stbtt_GetFontVMetricsOS2(fontInfo, typoAscent, typoDescent, typoLineGap)
 
-            val capHeight = stack.mallocInt(1)
-            val xHeight = stack.mallocInt(1)
-            val ndescender = stack.mallocInt(1)
+            val capHeight = stack.callocInt(1)
+            val xHeight = stack.callocInt(1)
+            val ndescender = stack.callocInt(1)
             var descender = 0
             stbtt_GetCodepointBox(fontInfo, 'X'.code, null, null, null, capHeight)
             stbtt_GetCodepointBox(fontInfo, 'x'.code, null, null, null, xHeight)
@@ -252,6 +252,12 @@ class TTFFont(val style: String, val weight: String, val file: String) {
                 ndescender[0] = 0
                 stbtt_GetCodepointBox(fontInfo, character.code, null, ndescender, null, null)
                 descender = min(descender, ndescender[0])
+            }
+            if(capHeight[0] == 0) {
+                capHeight[0] = ascent[0]
+            }
+            if(descender == 0) {
+                descender = descent[0]
             }
 
             val scale = stbtt_ScaleForPixelHeight(fontInfo, 1f)
