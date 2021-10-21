@@ -66,6 +66,9 @@ public class App {
         return getInstance().win;
     }
 
+    public static final long WINDOW_ID_SENTINEL = 0x3124e471L << 32;
+    public static final long WINDOW_ID_MASK = 0xffffffffL << 32;
+
     private long win;
 
     private int
@@ -101,6 +104,7 @@ public class App {
             .a(1.0f);
     private final MainMenu menu = new MainMenu();
     public final List<Window> windows = new ArrayList<>();
+    public final List<Integer> windowIds = new ArrayList<>();
 
     public App() {
         windows.add(new NuklearFontWindow());
@@ -605,8 +609,13 @@ public class App {
             float fb_scale_x = (float) display_width / (float) width;
             float fb_scale_y = (float) display_height / (float) height;
 
+            windowIds.clear();
             long offset = NULL;
             for (NkDrawCommand cmd = nk__draw_begin(ctx, cmds); cmd != null; cmd = nk__draw_next(cmd, cmds, ctx)) {
+                if((cmd.userdata().ptr() & WINDOW_ID_MASK) == WINDOW_ID_SENTINEL) {
+                    int windowId = (int)(cmd.userdata().ptr() & ~WINDOW_ID_MASK);
+                    if(!windowIds.contains(windowId)) windowIds.add(windowId);
+                }
                 if (cmd.elem_count() == 0) {
                     continue;
                 }

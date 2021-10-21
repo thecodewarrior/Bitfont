@@ -44,6 +44,9 @@ object Input {
 
     val IS_MAC = Platform.get() === Platform.MACOSX
     val PRIMARY_MODIFIER = if(IS_MAC) GLFW_MOD_SUPER else GLFW_MOD_CONTROL
+
+    val UNDO_KEY = if (IS_MAC) "cmd+z" else "ctrl+z"
+    val REDO_KEY = if (IS_MAC) "shift+cmd+z" else "ctrl+y"
 }
 
 class KeyTracker {

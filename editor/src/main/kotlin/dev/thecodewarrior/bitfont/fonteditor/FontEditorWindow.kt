@@ -1,26 +1,20 @@
 package dev.thecodewarrior.bitfont.fonteditor
 
 import com.ibm.icu.lang.UCharacter
-import dev.thecodewarrior.bitfont.data.BitGrid
-import dev.thecodewarrior.bitfont.data.Glyph
 import dev.thecodewarrior.bitfont.fonteditor.data.BitfontEditorData
 import dev.thecodewarrior.bitfont.fonteditor.jimgui.utils.HistoryTracker
 import dev.thecodewarrior.bitfont.fonteditor.utils.DrawList
-import dev.thecodewarrior.bitfont.fonteditor.utils.GlobalAllocations
 import dev.thecodewarrior.bitfont.fonteditor.utils.NkEditor
 import dev.thecodewarrior.bitfont.fonteditor.utils.Rect2i
-import dev.thecodewarrior.bitfont.fonteditor.utils.ReferenceGlyph
 import dev.thecodewarrior.bitfont.fonteditor.utils.Vec2i
 import dev.thecodewarrior.bitfont.fonteditor.utils.contours
 import dev.thecodewarrior.bitfont.fonteditor.utils.nk_quick_keys
 import dev.thecodewarrior.bitfont.fonteditor.widgets.ReferenceGlyphWidget
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.nuklear.NkContext
-import org.lwjgl.nuklear.NkPluginFilter
 import org.lwjgl.nuklear.NkRect
 import org.lwjgl.nuklear.NkStyleButton
 import org.lwjgl.nuklear.NkVec2
-import org.lwjgl.nuklear.Nuklear
 import org.lwjgl.nuklear.Nuklear.*
 import org.lwjgl.system.MemoryStack
 import java.awt.Color
@@ -30,27 +24,26 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
+class FontEditorWindow(val data: BitfontEditorData, val editorData: GlyphEditorData): Window(700f, 500f) {
+    var closed = false
+
     private var codepoint: Int = 0
         set(value) {
             if(value < 0 || value > 0x10ffff)
                 return
             if(field != value) {
                 if(tool === nudge) nudge.stop()
-                if(glyphData == GlyphEditData(codepoint)) {
-                    glyphDataMap.remove(codepoint)
-                }
                 field = value
-                glyphData = glyphDataMap.getOrPut(codepoint) { GlyphEditData(codepoint) }
+                editorData.release(glyphData)
+                brush.mouseReleasedPos = null
+                glyphData = editorData.retain(codepoint)
                 codepointField.text = "%04X".format(codepoint)
                 title = "${data.font.name}: U+%04X - %s".format(codepoint, UCharacter.getName(codepoint))
                 referenceWidget.codepoint = codepoint
             }
         }
 
-
-    val glyphDataMap = mutableMapOf<Int, GlyphEditData>()
-    var glyphData: GlyphEditData = GlyphEditData(0)
+    var glyphData = editorData.retain(0)
     var codepointHistory = HistoryTracker<Int>(100, 65)
 
     val brush = BrushTool()
@@ -98,22 +91,25 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
     init {
         flags = flags or NK_WINDOW_NO_SCROLLBAR or NK_WINDOW_SCALABLE or NK_WINDOW_CLOSABLE
         codepoint = 'A'.code
+        closeOnHide = true
     }
 
     fun pushControls(ctx: NkContext) {
-        nk_quick_keys {
-            "tab" pressed {
-                if("shift".pressed())
-                    codepoint--
-                else
-                    codepoint++
-                codepointHistory.push(codepoint)
-            }
-            "shift+h" pressed {
-                codepointHistory.undo()
-            }
-            "shift+l" pressed {
-                codepointHistory.redo()
+        if(isWindowFocused) {
+            nk_quick_keys {
+                "tab" pressed {
+                    if("shift".pressed())
+                        codepoint--
+                    else
+                        codepoint++
+                    codepointHistory.push(codepoint)
+                }
+                "shift+h" pressed {
+                    codepointHistory.undo()
+                }
+                "shift+l" pressed {
+                    codepointHistory.redo()
+                }
             }
         }
 
@@ -125,12 +121,6 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
             style.set(ctx.style().button())
             style.padding(NkVec2.mallocStack(stack).set(0f, 0f))
 
-            if(Input.isKeyPressed(GLFW_KEY_TAB, repeat = true)) {
-                if(Input.isModifierDown(GLFW_MOD_SHIFT))
-                    codepoint--
-                else
-                    codepoint++
-            }
             nk_layout_row_begin(ctx, NK_STATIC, 20f, 3)
             nk_layout_row_push(ctx, 20f)
             if(nk_button_symbol_styled(ctx, style, NK_SYMBOL_TRIANGLE_LEFT)) {
@@ -189,34 +179,40 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
     }
 
     fun updateCanvas(ctx: NkContext) {
-        nk_quick_keys {
-            if ((if(Input.IS_MAC) "shift+cmd+z" else "ctrl+y").pressed()) {
-                glyphData.redo()
-            } else if ((if(Input.IS_MAC) "cmd+z" else "ctrl+z").pressed()) {
-                glyphData.undo()
-            }
-            val newTool = when {
-                "b".pressed() -> brush.apply { eraser = false }
-                "e".pressed() -> brush.apply { eraser = true }
-                "m".pressed() -> marquee
-                "prim+v".pressed() -> {
-                    nudge.stop()
-                    if (marquee.clipboard.isEmpty()) {
-                        tool
-                    } else {
-                        nudge.moving.addAll(marquee.clipboard)
-                        nudge
-                    }
+        if(isWindowFocused) {
+            nk_quick_keys {
+                if (Input.REDO_KEY.pressed()) {
+                    glyphData.redo()
+                } else if (Input.UNDO_KEY.pressed()) {
+                    glyphData.undo()
                 }
-                else -> tool
-            }
-            if (newTool != tool) {
-                tool.stop()
-                tool = newTool
+                val newTool = when {
+                    "b".pressed() -> brush.apply { eraser = false }
+                    "e".pressed() -> brush.apply { eraser = true }
+                    "m|prim+r".pressed() -> marquee
+                    "prim+v".pressed() -> {
+                        nudge.stop()
+                        if (editorData.clipboard.isEmpty()) {
+                            tool
+                        } else {
+                            nudge.moving.addAll(editorData.clipboard)
+                            nudge
+                        }
+                    }
+                    else -> tool
+                }
+                if (newTool != tool) {
+                    tool.stop()
+                    tool = newTool
+                }
             }
         }
 
         tool.update(ctx)
+    }
+
+    override fun onClose(ctx: NkContext) {
+        closed = true
     }
 
     fun draw(drawList: DrawList) {
@@ -295,8 +291,9 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
             this.isMouseOverCanvas = nkPos.x() in canvasBounds.x() .. canvasBounds.x() + canvasBounds.w() &&
                 nkPos.y() in canvasBounds.y() .. canvasBounds.y() + canvasBounds.h()
 
-            if(Input.isMousePressed(0) || Input.isMousePressed(1)) {
-                this.isCanvasFocused = this.isMouseOverCanvas
+            // immediately lose focus
+            if((Input.isMousePressed(0) || Input.isMousePressed(1)) && !this.isMouseOverCanvas || !this.isWindowFocused) {
+                this.isCanvasFocused = false
             }
 
             this.mousePos = Vec2i(floor(mouseX).toInt(), floor(mouseY).toInt())
@@ -314,17 +311,18 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
             drawList.push(ctx)
 
             nk_layout_row_end(ctx)
+
+            // regain focus at the end of the frame
+            if((Input.isMousePressed(0) || Input.isMousePressed(1)) && this.isMouseOverCanvas && this.isWindowFocused) {
+                this.isCanvasFocused = true
+            }
         }
     }
 
     override fun free() {
+        editorData.release(glyphData)
         referenceWidget.free()
     }
-
-    companion object {
-        val hexFilter = GlobalAllocations.add(NkPluginFilter.create(Nuklear::nnk_filter_hex))
-    }
-
 
     interface EditorTool {
         fun update(ctx: NkContext)
@@ -381,12 +379,12 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
 
                     if (moving.isNotEmpty()) {
                         "prim+c" pressed {
-                            marquee.clipboard.clear()
-                            marquee.clipboard.addAll(moving)
+                            editorData.clipboard.clear()
+                            editorData.clipboard.addAll(moving)
                         }
                         "prim+x" pressed {
-                            marquee.clipboard.clear()
-                            marquee.clipboard.addAll(moving)
+                            editorData.clipboard.clear()
+                            editorData.clipboard.addAll(moving)
                             moving.clear()
                             tool = marquee
                         }
@@ -435,7 +433,6 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
     inner class MarqueeTool: EditorTool {
         val selected = mutableSetOf<Vec2i>()
         val selecting = mutableSetOf<Vec2i>()
-        val clipboard = mutableSetOf<Vec2i>()
         var start: Vec2i? = null
         var downX: Float = 0f
         var downY: Float = 0f
@@ -490,14 +487,14 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
                         selected.clear()
                     }
                     selected.intersect(glyphData.enabledCells).isNotEmpty() and "prim+c" pressed {
-                        clipboard.clear()
-                        clipboard.addAll(selected.intersect(glyphData.enabledCells))
+                        editorData.clipboard.clear()
+                        editorData.clipboard.addAll(selected.intersect(glyphData.enabledCells))
                         selected.clear()
                     }
                     selected.intersect(glyphData.enabledCells).isNotEmpty() and "prim+x" pressed {
-                        clipboard.clear()
-                        clipboard.addAll(selected.intersect(glyphData.enabledCells))
-                        if (glyphData.enabledCells.removeAll(clipboard)) glyphData.pushHistory()
+                        editorData.clipboard.clear()
+                        editorData.clipboard.addAll(selected.intersect(glyphData.enabledCells))
+                        if (glyphData.enabledCells.removeAll(editorData.clipboard)) glyphData.pushHistory()
                         selected.clear()
                     }
                     "left" pressed { offset(Vec2i(-1, 0)) }
@@ -602,104 +599,6 @@ class FontEditorWindow(val data: BitfontEditorData): Window(500f, 300f) {
 
         override fun stop() {
             drawingState = null
-        }
-    }
-
-    inner class GlyphEditData(val codepoint: Int) {
-        val glyph = data.font.glyphs.getOrPut(codepoint) { Glyph(data.font) }
-        val enabledCells = mutableSetOf<Vec2i>()
-
-        val history: HistoryTracker<State>
-
-        var advance: Int
-            get() = glyph.advance
-            set(value) { glyph.advance = value }
-
-        init {
-            updateFromGlyph()
-            history = HistoryTracker(100, State())
-        }
-
-        fun pushHistory() {
-            history.push(State())
-            updateGlyph()
-        }
-
-        fun undo() {
-            history.undo().apply()
-            updateGlyph()
-        }
-
-        fun redo() {
-            history.redo().apply()
-            updateGlyph()
-        }
-
-        inner class State {
-            val cells = enabledCells.toSet()
-
-            fun apply() {
-                enabledCells.clear()
-                enabledCells.addAll(cells)
-            }
-        }
-
-        fun updateGlyph() {
-            if(enabledCells.isEmpty())  {
-                glyph.image = BitGrid(1, 1)
-                glyph.bearingX = 0
-                glyph.bearingY = 0
-                return
-            }
-            var minX = Int.MAX_VALUE
-            var maxX = Int.MIN_VALUE
-            var minY = Int.MAX_VALUE
-            var maxY = Int.MIN_VALUE
-            enabledCells.forEach {
-                minX = min(minX, it.x)
-                maxX = max(maxX, it.x)
-                minY = min(minY, it.y)
-                maxY = max(maxY, it.y)
-            }
-            val grid = BitGrid(maxX - minX + 1, maxY - minY + 1)
-            enabledCells.forEach {
-                grid[it.x - minX, it.y - minY] = true
-            }
-            glyph.image = grid
-            glyph.bearingX = minX
-            glyph.bearingY = minY
-        }
-
-        fun updateFromGlyph() {
-            enabledCells.clear()
-            val grid = glyph.image
-            for(x in 0 until grid.width) {
-                for(y in 0 until grid.height) {
-                    if(grid[x, y]) {
-                        enabledCells.add(Vec2i(x + glyph.bearingX, y + glyph.bearingY))
-                    }
-                }
-            }
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other !is GlyphEditData) return false
-
-            if (codepoint != other.codepoint) return false
-            if (glyph != other.glyph) return false
-            if (enabledCells != other.enabledCells) return false
-            if (history != other.history) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var result = codepoint
-            result = 31 * result + glyph.hashCode()
-            result = 31 * result + enabledCells.hashCode()
-            result = 31 * result + history.hashCode()
-            return result
         }
     }
 }

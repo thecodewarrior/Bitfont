@@ -16,10 +16,10 @@ import org.lwjgl.system.MemoryUtil
 import java.text.ParseException
 
 class FontWindow(val data: BitfontEditorData): Window(250f, 325f) {
-    private val childWindows = mutableListOf<Window>()
     private val typesetterWindow = TypesetterWindow(data)
     private val textLayoutWindow = TextLayoutWindow(data)
-    private val fontEditorWindow = FontEditorWindow(data)
+    private val editorData = GlyphEditorData(data)
+    private val editorWindows = mutableListOf<FontEditorWindow>()
 
     init {
         flags = flags or NK_WINDOW_NO_SCROLLBAR or NK_WINDOW_CLOSABLE
@@ -27,6 +27,14 @@ class FontWindow(val data: BitfontEditorData): Window(250f, 325f) {
     }
 
     override fun pushContents(ctx: NkContext) {
+        editorWindows.removeIf {
+            if(it.closed) {
+                it.free()
+                true
+            } else {
+                false
+            }
+        }
         MemoryStack.stackPush().use { stack ->
             nk_layout_row_dynamic(ctx, 20f, 1)
             nk_label(ctx, "Font Name:", NK_TEXT_LEFT)
@@ -68,7 +76,9 @@ class FontWindow(val data: BitfontEditorData): Window(250f, 325f) {
 
             nk_layout_row_dynamic(ctx, 30f, 2)
             if (nk_button_label(ctx, "Edit")) {
-                fontEditorWindow.open(ctx)
+                val editorWindow = FontEditorWindow(data, editorData)
+                editorWindows.add(editorWindow)
+                editorWindow.open(ctx)
             }
             if (nk_button_label(ctx, "Browse")) {
                 println("browse glyphs")
@@ -85,12 +95,12 @@ class FontWindow(val data: BitfontEditorData): Window(250f, 325f) {
     override fun onClose(ctx: NkContext) {
         typesetterWindow.close(ctx)
         textLayoutWindow.close(ctx)
-        fontEditorWindow.close(ctx)
+        editorWindows.forEach { it.close(ctx) }
     }
 
     override fun free() {
         typesetterWindow.free()
         textLayoutWindow.free()
-        fontEditorWindow.free()
+        editorWindows.forEach { it.free() }
     }
 }
