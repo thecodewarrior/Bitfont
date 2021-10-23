@@ -19,7 +19,7 @@ import kotlin.math.max
 /**
  * An abstract base class for windows that have a font test area (e.g. the typesetter and text layout test windows)
  */
-abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width, height) {
+abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width, height, false) {
     private var testTextureWidth = 32
     private var testTextureHeight = 32
     private val testTextureID = GL11.glGenTextures()
@@ -31,7 +31,7 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
     protected var testAreaScale = 3
 
     init {
-        flags = flags or NK_WINDOW_NO_SCROLLBAR or NK_WINDOW_SCALABLE or NK_WINDOW_CLOSABLE
+        flags = flags or NK_WINDOW_SCALABLE or NK_WINDOW_CLOSABLE
 
         // initialize the texture
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, testTextureID)
@@ -85,8 +85,6 @@ abstract class AbstractFontTestWindow(width: Float, height: Float): Window(width
             nk_layout_widget_bounds(ctx, remainingBounds)
 
             // calculate the bottom-right corner of the window
-            val contentRegion = NkRect.mallocStack(stack)
-            nk_window_get_content_region(ctx, contentRegion)
             remainingBounds.h(contentRegion.h() + contentRegion.y() - remainingBounds.y())
 
             // apply padding

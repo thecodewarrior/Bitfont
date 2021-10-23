@@ -1,13 +1,13 @@
 package dev.thecodewarrior.bitfont.fonteditor
 
+import dev.thecodewarrior.bitfont.fonteditor.utils.DrawList
 import org.lwjgl.nuklear.NkContext
+import org.lwjgl.nuklear.NkRect
 import org.lwjgl.nuklear.Nuklear.*
+import org.lwjgl.system.MemoryStack
+import java.awt.Color
 
-class NuklearFontWindow: Window(260f, 530f) {
-    init {
-        flags = flags or NK_WINDOW_NO_SCROLLBAR
-    }
-
+class NuklearFontWindow: Window(260f, 530f, false) {
     override fun pushContents(ctx: NkContext) {
         nk_layout_row_dynamic(ctx, 20f, 1)
         nk_style_push_font(ctx, NuklearFonts.getSans("Light", 18f).userFont)

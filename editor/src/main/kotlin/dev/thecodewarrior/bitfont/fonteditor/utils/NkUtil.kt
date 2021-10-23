@@ -11,7 +11,27 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.math.max
 
-// I'm using global functions here in an attempt to make the two APIs mesh more naturally
+object NkMagicConstants {
+    val window = WindowMetrics(
+        Padding(top = 36f, left = 6f, bottom = 2f, right = 6f),
+        Padding(top = 40f, left = 6f, bottom = 6f, right = 6f),
+    )
+    val scrollingWindow = WindowMetrics(
+        window.contentPadding.add(bottom = 10f, right = 10f),
+        window.layoutPadding.add(bottom = 10f, right = 10f),
+    )
+
+    data class WindowMetrics(val contentPadding: Padding, val layoutPadding: Padding)
+
+    data class Padding(val top: Float, val left: Float, val bottom: Float, val right: Float) {
+        val horizontal = left + right
+        val vertical = top + bottom
+
+        fun add(top: Float = 0f, left: Float = 0f, bottom: Float = 0f, right: Float = 0f): Padding {
+            return Padding(this.top + top, this.left + left, this.bottom + bottom, this.right + right)
+        }
+    }
+}
 
 /**
  * Creates a menubar
@@ -28,6 +48,8 @@ inline fun nkutil_menu_bar(ctx: NkContext, item_count: Int, crossinline draw: ()
     nk_layout_row_end(ctx)
     nk_menubar_end(ctx)
 }
+
+
 
 /**
  * Creates an expandable menu. Designed for use inside [nkutil_menu_bar]

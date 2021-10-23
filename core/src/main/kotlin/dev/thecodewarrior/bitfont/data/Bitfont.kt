@@ -3,8 +3,8 @@ package dev.thecodewarrior.bitfont.data
 import dev.thecodewarrior.bitfont.data.file.BitfontFile
 import dev.thecodewarrior.bitfont.data.file.BitfontFileFormat
 import dev.thecodewarrior.bitfont.utils.clamp
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap
+import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap
 import java.io.InputStream
 
 public class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xHeight: Int, spacing: Int) {
@@ -39,7 +39,7 @@ public class Bitfont(name: String, ascent: Int, descent: Int, capHeight: Int, xH
             defaultGlyph = createDefaultGlyph()
         }
 
-    public val glyphs: Int2ObjectMap<Glyph> = Int2ObjectOpenHashMap()
+    public val glyphs: Int2ObjectSortedMap<Glyph> = Int2ObjectRBTreeMap()
     public var defaultGlyph: Glyph = createDefaultGlyph()
         private set
 

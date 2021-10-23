@@ -1,25 +1,47 @@
 package dev.thecodewarrior.bitfont.fonteditor
 
 import dev.thecodewarrior.bitfont.fonteditor.utils.Freeable
+import dev.thecodewarrior.bitfont.fonteditor.utils.NkMagicConstants
 import org.lwjgl.nuklear.NkColor
 import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.NkHandle
-import org.lwjgl.nuklear.NkImage
 import org.lwjgl.nuklear.NkRect
-import org.lwjgl.nuklear.Nuklear.*
+import org.lwjgl.nuklear.Nuklear.NK_HIDDEN
+import org.lwjgl.nuklear.Nuklear.NK_SHOWN
+import org.lwjgl.nuklear.Nuklear.NK_WINDOW_BORDER
+import org.lwjgl.nuklear.Nuklear.NK_WINDOW_MINIMIZABLE
+import org.lwjgl.nuklear.Nuklear.NK_WINDOW_MOVABLE
+import org.lwjgl.nuklear.Nuklear.NK_WINDOW_NO_SCROLLBAR
+import org.lwjgl.nuklear.Nuklear.NK_WINDOW_TITLE
+import org.lwjgl.nuklear.Nuklear.nk_begin_titled
+import org.lwjgl.nuklear.Nuklear.nk_end
+import org.lwjgl.nuklear.Nuklear.nk_set_user_data
+import org.lwjgl.nuklear.Nuklear.nk_stroke_line
+import org.lwjgl.nuklear.Nuklear.nk_window_get_canvas
+import org.lwjgl.nuklear.Nuklear.nk_window_get_content_region
+import org.lwjgl.nuklear.Nuklear.nk_window_is_hidden
+import org.lwjgl.nuklear.Nuklear.nk_window_set_focus
+import org.lwjgl.nuklear.Nuklear.nk_window_show
 import org.lwjgl.system.MemoryStack
 import java.util.UUID
-import kotlin.math.abs
 
-abstract class Window(width: Float, height: Float): Freeable {
+abstract class Window(width: Float, height: Float, scroll: Boolean = true): Freeable {
     var uuid = UUID.randomUUID().toString()
         private set
     var title: String = ""
-    var flags: Int = NK_WINDOW_BORDER or NK_WINDOW_MOVABLE or NK_WINDOW_MINIMIZABLE or NK_WINDOW_TITLE
-    var defaultRect: NkRect = NkRect.create().set(100f, 100f, width, height)
+    var flags: Int
+    var defaultRect: NkRect = NkRect.create()
     var closeOnHide: Boolean = false
     var crashed: Boolean = false
     private var wasHidden = false
+
+    init {
+        flags = NK_WINDOW_BORDER or NK_WINDOW_MOVABLE or NK_WINDOW_MINIMIZABLE or NK_WINDOW_TITLE
+        if(!scroll) flags = flags or NK_WINDOW_NO_SCROLLBAR
+
+        val padding = if(scroll) NkMagicConstants.scrollingWindow else NkMagicConstants.window
+        defaultRect.set(100f, 100f, width + padding.layoutPadding.horizontal, height + padding.layoutPadding.vertical)
+    }
 
     val isWindowFocused: Boolean get() = windowDepth == 0
 
@@ -33,6 +55,9 @@ abstract class Window(width: Float, height: Float): Freeable {
                 return App.getInstance().windowIds.size - 1 - index
         }
 
+    val contentRegion = NkRect.create()
+    val layoutRegion = NkRect.create()
+
     open fun push(ctx: NkContext) {
         MemoryStack.stackPush().use { stack ->
             nk_set_user_data(ctx, NkHandle.mallocStack(stack).ptr(App.WINDOW_ID_SENTINEL or windowId.toULong().toLong()))
@@ -43,9 +68,15 @@ abstract class Window(width: Float, height: Float): Freeable {
                     defaultRect,
                     flags
                 )) {
+                nk_window_get_content_region(ctx, contentRegion)
+                val padding = ctx.style().window().padding()
+                layoutRegion.set(
+                    contentRegion.x() + padding.x(),
+                    contentRegion.y() + padding.y(),
+                    contentRegion.w() - 2 * padding.x(),
+                    contentRegion.h() - padding.y()
+                )
                 if (crashed) {
-                    val contentRegion = NkRect.mallocStack(stack)
-                    nk_window_get_content_region(ctx, contentRegion)
                     val canvas = nk_window_get_canvas(ctx)!!
                     val color = NkColor.mallocStack(stack)
                     color.set(255.toByte(), 0, 255.toByte(), 255.toByte())
@@ -70,6 +101,7 @@ abstract class Window(width: Float, height: Float): Freeable {
                     }
                 }
             }
+            ctx.input().mouse().scroll_delta().set(Input.scrollX, Input.scrollY)
             nk_end(ctx)
             val isHidden = nk_window_is_hidden(ctx, uuid)
             if (closeOnHide && isHidden) {

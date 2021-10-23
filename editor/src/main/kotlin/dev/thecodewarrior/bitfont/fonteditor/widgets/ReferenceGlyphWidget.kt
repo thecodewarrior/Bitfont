@@ -11,6 +11,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class ReferenceGlyphWidget(): NkWidget(), Freeable, Dirtyable {
+    var guides = GuideSet()
     val glyph = ReferenceGlyph(NuklearFonts.sans)
     var hardPaddingX: Float by dirtying(0.05f)
     var hardPaddingY: Float by dirtying(0.05f)
@@ -86,26 +87,66 @@ class ReferenceGlyphWidget(): NkWidget(), Freeable, Dirtyable {
 
         if(metrics == null) {
             val paddingX = width * this.paddingX
-            drawList.strokeLine(0f, glyphY, width, glyphY, 2, axisColor)
-            drawList.strokeLine(paddingX, 0, paddingX, height, 2, axisColor)
+            if(guides.baseline && guides.whileBlank)
+                drawList.strokeLine(0f, glyphY, width, glyphY, guides.thickness, axisColor)
+            if(guides.yAxis && guides.whileBlank)
+            drawList.strokeLine(paddingX, 0, paddingX, height, guides.thickness, axisColor)
         } else {
-            drawList.strokeLine(0f, glyphY - metrics.capHeight, width, glyphY - metrics.capHeight, 2, guideColor)
-            drawList.strokeLine(0f, glyphY, glyphX, glyphY, 2, axisColor)
-            drawList.strokeLine(glyphX + metrics.advance, glyphY, width, glyphY, 2, axisColor)
-            drawList.strokeLine(glyphX, 0f, glyphX, height, 2, axisColor)
-            drawList.strokeLine(0f, glyphY - metrics.xHeight, width, glyphY - metrics.xHeight, 2, guideColor)
-            drawList.strokeLine(0f, glyphY - metrics.descender, width, glyphY - metrics.descender, 2, guideColor)
-            drawList.strokeLine(glyphX + 0.5, glyphY, glyphX + metrics.advance, glyphY, 2, markingsColor)
-            drawList.strokeLine(
-                glyphX + metrics.advance, glyphY - 3,
-                glyphX + metrics.advance, glyphY + 3,
-                2, markingsColor
-            )
+            if(guides.capHeight)
+                drawList.strokeLine(0f, glyphY - metrics.capHeight, width, glyphY - metrics.capHeight, guides.thickness, guideColor)
+            if(guides.baseline) {
+                if(guides.advance) {
+                    drawList.strokeLine(0f, glyphY, glyphX, glyphY, guides.thickness, axisColor)
+                    drawList.strokeLine(glyphX + metrics.advance, glyphY, width, glyphY, guides.thickness, axisColor)
+                } else {
+
+                    drawList.strokeLine(0, glyphY, width, glyphY, guides.thickness, axisColor)
+                }
+            }
+            if(guides.xHeight)
+            drawList.strokeLine(0f, glyphY - metrics.xHeight, width, glyphY - metrics.xHeight, guides.thickness, guideColor)
+            if(guides.descender)
+            drawList.strokeLine(0f, glyphY - metrics.descender, width, glyphY - metrics.descender, guides.thickness, guideColor)
+            if(guides.yAxis)
+                drawList.strokeLine(glyphX, 0f, glyphX, height, guides.thickness, axisColor)
+            if(guides.advance) {
+                drawList.strokeLine(
+                    glyphX + 0.5, glyphY,
+                    glyphX + metrics.advance, glyphY,
+                    guides.thickness,
+                    markingsColor
+                )
+                drawList.strokeLine(
+                    glyphX + metrics.advance, glyphY - 3,
+                    glyphX + metrics.advance, glyphY + 3,
+                    2, markingsColor
+                )
+            }
             glyph.fill(drawList, glyphX, glyphY, 1f, glyphColor)
         }
     }
 
     override fun free() {
         glyph.free()
+    }
+
+    data class GuideSet(
+        var thickness: Float = 2f,
+        /**
+         * Whether to still show guides when there's no glyph
+         */
+        var whileBlank: Boolean = true,
+        var baseline: Boolean = false,
+        var yAxis: Boolean = false,
+        var capHeight: Boolean = false,
+        var xHeight: Boolean = false,
+        var descender: Boolean = false,
+        var advance: Boolean = false,
+    ) {
+        constructor(thickness: Float = 2f, all: Boolean = false, whileBlank: Boolean = all): this(
+            thickness,
+            whileBlank,
+            all, all, all, all, all, all
+        )
     }
 }

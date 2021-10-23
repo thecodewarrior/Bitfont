@@ -5,7 +5,6 @@ import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.Nuklear.NK_EDIT_FIELD
 import org.lwjgl.nuklear.Nuklear.NK_TEXT_LEFT
 import org.lwjgl.nuklear.Nuklear.NK_WINDOW_CLOSABLE
-import org.lwjgl.nuklear.Nuklear.NK_WINDOW_NO_SCROLLBAR
 import org.lwjgl.nuklear.Nuklear.nk_button_label
 import org.lwjgl.nuklear.Nuklear.nk_edit_string
 import org.lwjgl.nuklear.Nuklear.nk_label
@@ -15,14 +14,16 @@ import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.text.ParseException
 
-class FontWindow(val data: BitfontEditorData): Window(250f, 325f) {
+class FontWindow(val data: BitfontEditorData): Window(250f, 325f, false) {
     private val typesetterWindow = TypesetterWindow(data)
     private val textLayoutWindow = TextLayoutWindow(data)
     private val editorData = GlyphEditorData(data)
     private val editorWindows = mutableListOf<FontEditorWindow>()
+    private val browserWindow = GlyphBrowserWindow(data)
+    private val unicodeWindow = UnicodeBrowserWindow(data)
 
     init {
-        flags = flags or NK_WINDOW_NO_SCROLLBAR or NK_WINDOW_CLOSABLE
+        flags = flags or NK_WINDOW_CLOSABLE
         closeOnHide = true
     }
 
@@ -81,7 +82,7 @@ class FontWindow(val data: BitfontEditorData): Window(250f, 325f) {
                 editorWindow.open(ctx)
             }
             if (nk_button_label(ctx, "Browse")) {
-                println("browse glyphs")
+                browserWindow.open(ctx)
             }
             if (nk_button_label(ctx, "Typesetter")) {
                 typesetterWindow.open(ctx)
@@ -89,18 +90,25 @@ class FontWindow(val data: BitfontEditorData): Window(250f, 325f) {
             if (nk_button_label(ctx, "Text Layout")) {
                 textLayoutWindow.open(ctx)
             }
+            if (nk_button_label(ctx, "Unicode")) {
+                unicodeWindow.open(ctx)
+            }
         }
     }
 
     override fun onClose(ctx: NkContext) {
+        editorWindows.forEach { it.close(ctx) }
+        browserWindow.close(ctx)
         typesetterWindow.close(ctx)
         textLayoutWindow.close(ctx)
-        editorWindows.forEach { it.close(ctx) }
+        unicodeWindow.close(ctx)
     }
 
     override fun free() {
+        editorWindows.forEach { it.free() }
+        browserWindow.free()
         typesetterWindow.free()
         textLayoutWindow.free()
-        editorWindows.forEach { it.free() }
+        unicodeWindow.free()
     }
 }

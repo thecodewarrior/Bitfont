@@ -1,6 +1,8 @@
 package dev.thecodewarrior.bitfont.fonteditor
 
 import dev.thecodewarrior.bitfont.fonteditor.data.BitfontEditorData
+import dev.thecodewarrior.bitfont.fonteditor.utils.keystrokeSymbol
+import dev.thecodewarrior.bitfont.fonteditor.utils.nk_quick_keys
 import dev.thecodewarrior.bitfont.fonteditor.utils.nkutil_max_text_width
 import dev.thecodewarrior.bitfont.fonteditor.utils.nkutil_menu
 import dev.thecodewarrior.bitfont.fonteditor.utils.nkutil_menu_bar
@@ -42,37 +44,54 @@ class MainMenu: Window(0f, 0f) {
 
     override fun pushContents(ctx: NkContext) {
         nkutil_menu_bar(ctx, 2) {
-            nkutil_menu(ctx, "File", nkutil_text_width(ctx, "File"), nkutil_max_text_width(ctx, "Open", "Save"), 2) {
-                nkutil_menu_item(ctx, "Open") {
-                    println("Open")
-                    stackPush { stack ->
-                        val pathOut = stack.mallocPointer(1)
-                        val result = NativeFileDialog.NFD_OpenDialog("bitfont", null, pathOut)
-                        when(result) {
-                            NFD_OKAY -> {
-                                val path = pathOut.getStringUTF8(0)
-                                NativeFileDialog.nNFD_Free(pathOut.get(0))
-                                println("Selected: $path")
-                                val data = BitfontEditorData.open(Files.newInputStream(Paths.get(path)))
-                                App.getInstance().windows.add(FontWindow(data))
-                            }
-                            NFD_CANCEL -> {
-                                println("Canceled")
-                            }
-                            else -> {}
-                        }
-                    }
-                }
-                nkutil_menu_item(ctx, "Save") {
-                    println("Save")
-                }
+            nkutil_menu(ctx,
+                "File", nkutil_text_width(ctx, "File"),
+                nkutil_max_text_width(ctx,
+                    "Open ${keystrokeSymbol("prim+o")}",
+                    "Save"
+                ),
+                2
+            ) {
+                nkutil_menu_item(ctx, "Open ${keystrokeSymbol("prim+o")}", ::openFile)
+                nkutil_menu_item(ctx, "Save", ::saveFile)
             }
-            nkutil_menu(ctx, "Tools", nkutil_text_width(ctx, "Tools"), nkutil_max_text_width(ctx, "Memory Report"), 1) {
-                nkutil_menu_item(ctx, "Memory Report") {
-                    printMemoryReport()
-                }
+            nkutil_menu(ctx,
+                "Tools", nkutil_text_width(ctx, "Tools"),
+                nkutil_max_text_width(ctx, "Memory Report"), 1
+            ) {
+                nkutil_menu_item(ctx, "Memory Report", ::printMemoryReport)
             }
         }
+
+        nk_quick_keys {
+            "prim+o" pressed {
+                openFile()
+            }
+        }
+    }
+
+    private fun openFile() {
+        stackPush { stack ->
+            val pathOut = stack.mallocPointer(1)
+            when(NativeFileDialog.NFD_OpenDialog("bitfont", Prefs[LAST_PATH_KEY], pathOut)) {
+                NFD_OKAY -> {
+                    val path = pathOut.getStringUTF8(0)
+                    NativeFileDialog.nNFD_Free(pathOut.get(0))
+                    println("Selected: $path")
+                    Prefs[LAST_PATH_KEY] = path
+                    val data = BitfontEditorData.open(Files.newInputStream(Paths.get(path)))
+                    App.getInstance().windows.add(FontWindow(data))
+                }
+                NFD_CANCEL -> {
+                    println("Canceled")
+                }
+                else -> {}
+            }
+        }
+    }
+
+    private fun saveFile() {
+        //todo file saving
     }
 
     private fun printMemoryReport() {
@@ -103,6 +122,10 @@ class MainMenu: Window(0f, 0f) {
     }
 
     override fun free() {
+    }
+
+    companion object {
+        val LAST_PATH_KEY = "dialog.openfile.lastpath"
     }
 }
 

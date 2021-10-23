@@ -68,6 +68,7 @@ public class App {
 
     public static final long WINDOW_ID_SENTINEL = 0x3124e471L << 32;
     public static final long WINDOW_ID_MASK = 0xffffffffL << 32;
+    public static final float FONT_SIZE = 18;
 
     private long win;
 
@@ -154,7 +155,7 @@ public class App {
 
         NkContext ctx = setupWindow(win);
 
-        nk_style_set_font(ctx, NuklearFonts.getSans("Medium", 18).getUserFont());
+        nk_style_set_font(ctx, NuklearFonts.getSans("Medium", FONT_SIZE).getUserFont());
 
         glfwShowWindow(win);
         while (!glfwWindowShouldClose(win)) {
@@ -169,6 +170,7 @@ public class App {
                 ctx.input().mouse().scroll_delta().set(Input.INSTANCE.getScrollX(), Input.INSTANCE.getScrollY());
                 window.push(ctx);
             }
+            ctx.input().mouse().scroll_delta().set(Input.INSTANCE.getScrollX(), Input.INSTANCE.getScrollY());
 
             try (MemoryStack stack = stackPush()) {
                 IntBuffer width = stack.mallocInt(1);

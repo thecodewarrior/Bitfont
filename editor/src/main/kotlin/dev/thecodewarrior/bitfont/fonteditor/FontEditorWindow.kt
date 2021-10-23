@@ -24,7 +24,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-class FontEditorWindow(val data: BitfontEditorData, val editorData: GlyphEditorData): Window(700f, 500f) {
+class FontEditorWindow(val data: BitfontEditorData, val editorData: GlyphEditorData): Window(700f, 500f, false) {
     var closed = false
 
     private var codepoint: Int = 0
@@ -89,9 +89,10 @@ class FontEditorWindow(val data: BitfontEditorData, val editorData: GlyphEditorD
     private val glyphColor = Color(0xffffff)
 
     init {
-        flags = flags or NK_WINDOW_NO_SCROLLBAR or NK_WINDOW_SCALABLE or NK_WINDOW_CLOSABLE
+        flags = flags or NK_WINDOW_SCALABLE or NK_WINDOW_CLOSABLE
         codepoint = 'A'.code
         closeOnHide = true
+        referenceWidget.guides = ReferenceGlyphWidget.GuideSet(thickness = 2f, all = true, whileBlank = false)
     }
 
     fun pushControls(ctx: NkContext) {
@@ -258,19 +259,9 @@ class FontEditorWindow(val data: BitfontEditorData, val editorData: GlyphEditorD
 
     override fun pushContents(ctx: NkContext) {
         MemoryStack.stackPush().use { stack ->
-            val contentRegion = NkRect.mallocStack(stack)
-            nk_window_get_content_region(ctx, contentRegion)
-            val padding = ctx.style().window().padding()
-            contentRegion.set(
-                contentRegion.x() + padding.x(),
-                contentRegion.y() + padding.y(),
-                contentRegion.w() - 2 * padding.x(),
-                contentRegion.h() - padding.y()
-            )
-
-            nk_layout_row(ctx, NK_STATIC, contentRegion.h(), floatArrayOf(
+            nk_layout_row(ctx, NK_STATIC, layoutRegion.h(), floatArrayOf(
                 200f,
-                contentRegion.w() - 200f
+                layoutRegion.w() - 200f
             ))
 
             if(nk_group_begin(ctx, "controls", NK_WINDOW_BORDER)) {
@@ -279,8 +270,8 @@ class FontEditorWindow(val data: BitfontEditorData, val editorData: GlyphEditorD
             }
 
             val canvasBounds = NkRect.mallocStack(stack).set(
-                contentRegion.x() + 200 + ctx.style().window().group_padding().x(), contentRegion.y(),
-                contentRegion.w() - 200, contentRegion.h()
+                layoutRegion.x() + 200 + ctx.style().window().group_padding().x(), layoutRegion.y(),
+                layoutRegion.w() - 200, layoutRegion.h()
             )
 
             val nkPos = ctx.input().mouse().pos()
