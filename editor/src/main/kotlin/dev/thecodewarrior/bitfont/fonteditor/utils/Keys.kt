@@ -23,7 +23,8 @@ object NkQuickKeys {
     inline infix fun String?.down(callback: () -> Unit) = this === mutex || this.down().also { if(it) callback() }
     inline infix fun String?.released(callback: () -> Unit) = this === mutex || this.released().also { if(it) callback() }
 
-    fun String?.pressed()  = this != null && checkKeys(this) { Input.isKeyPressed(it, false) }
+    fun String?.pressed(repeat: Boolean = false) = this != null && checkKeys(this) { Input.isKeyPressed(it, repeat) }
+    fun String?.repeated() = this != null && checkKeys(this) { Input.isKeyRepeated(it) }
     fun String?.down()     = this != null && checkKeys(this) { Input.isKeyDown(it) }
     fun String?.released() = this != null && checkKeys(this) { Input.isKeyReleased(it) }
 

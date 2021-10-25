@@ -53,9 +53,10 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs = freeCompilerArgs + listOf(
-                "-Xjvm-default=enable",
-                "-Xuse-experimental=kotlin.Experimental",
-                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes"
+            "-Xjvm-default=enable",
+            "-Xopt-in=kotlin.Experimental",
+            "-Xopt-in=kotlin.ExperimentalUnsignedTypes",
+            "-Xopt-in=kotlin.contracts.ExperimentalContracts"
         )
     }
 }

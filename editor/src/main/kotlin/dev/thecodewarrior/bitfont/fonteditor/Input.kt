@@ -33,6 +33,7 @@ object Input {
 
     fun isKeyDown(key: Int) = keyState.isDown(key)
     fun isKeyPressed(key: Int) = isKeyPressed(key, true)
+    fun isKeyRepeated(key: Int) = keyState.isRepeated(key)
     fun isKeyPressed(key: Int, repeat: Boolean) = keyState.isPressed(key) || (repeat && keyState.isRepeated(key))
     fun isKeyReleased(key: Int) = keyState.isReleased(key)
 

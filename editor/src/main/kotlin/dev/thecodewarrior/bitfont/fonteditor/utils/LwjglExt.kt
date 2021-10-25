@@ -5,7 +5,6 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
-@UseExperimental(ExperimentalContracts::class)
 inline fun <T> stackPush(block: (MemoryStack) -> T) {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)

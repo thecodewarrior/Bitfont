@@ -2,27 +2,14 @@ package dev.thecodewarrior.bitfont.fonteditor
 
 import dev.thecodewarrior.bitfont.fonteditor.utils.Freeable
 import dev.thecodewarrior.bitfont.fonteditor.utils.NkMagicConstants
+import dev.thecodewarrior.bitfont.fonteditor.utils.set
 import org.lwjgl.nuklear.NkColor
 import org.lwjgl.nuklear.NkContext
 import org.lwjgl.nuklear.NkHandle
 import org.lwjgl.nuklear.NkRect
-import org.lwjgl.nuklear.Nuklear.NK_HIDDEN
-import org.lwjgl.nuklear.Nuklear.NK_SHOWN
-import org.lwjgl.nuklear.Nuklear.NK_WINDOW_BORDER
-import org.lwjgl.nuklear.Nuklear.NK_WINDOW_MINIMIZABLE
-import org.lwjgl.nuklear.Nuklear.NK_WINDOW_MOVABLE
-import org.lwjgl.nuklear.Nuklear.NK_WINDOW_NO_SCROLLBAR
-import org.lwjgl.nuklear.Nuklear.NK_WINDOW_TITLE
-import org.lwjgl.nuklear.Nuklear.nk_begin_titled
-import org.lwjgl.nuklear.Nuklear.nk_end
-import org.lwjgl.nuklear.Nuklear.nk_set_user_data
-import org.lwjgl.nuklear.Nuklear.nk_stroke_line
-import org.lwjgl.nuklear.Nuklear.nk_window_get_canvas
-import org.lwjgl.nuklear.Nuklear.nk_window_get_content_region
-import org.lwjgl.nuklear.Nuklear.nk_window_is_hidden
-import org.lwjgl.nuklear.Nuklear.nk_window_set_focus
-import org.lwjgl.nuklear.Nuklear.nk_window_show
+import org.lwjgl.nuklear.Nuklear.*
 import org.lwjgl.system.MemoryStack
+import java.awt.Color
 import java.util.UUID
 
 abstract class Window(width: Float, height: Float, scroll: Boolean = true): Freeable {
@@ -68,6 +55,7 @@ abstract class Window(width: Float, height: Float, scroll: Boolean = true): Free
                     defaultRect,
                     flags
                 )) {
+                nk_set_user_data(ctx, NkHandle.mallocStack(stack).ptr(0))
                 nk_window_get_content_region(ctx, contentRegion)
                 val padding = ctx.style().window().padding()
                 layoutRegion.set(
@@ -110,7 +98,6 @@ abstract class Window(width: Float, height: Float, scroll: Boolean = true): Free
                 onHide(ctx)
             }
             wasHidden = isHidden
-            nk_set_user_data(ctx, NkHandle.mallocStack(stack).ptr(0))
         }
     }
 
