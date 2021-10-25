@@ -131,7 +131,7 @@ class ReferenceGlyphWidget(): NkWidget(), Freeable, Dirtyable {
     }
 
     data class GuideSet(
-        var thickness: Float = 2f,
+        var thickness: Float = 1f,
         /**
          * Whether to still show guides when there's no glyph
          */
@@ -143,7 +143,7 @@ class ReferenceGlyphWidget(): NkWidget(), Freeable, Dirtyable {
         var descender: Boolean = false,
         var advance: Boolean = false,
     ) {
-        constructor(thickness: Float = 2f, all: Boolean = false, whileBlank: Boolean = all): this(
+        constructor(thickness: Float = 1f, all: Boolean = false, whileBlank: Boolean = all): this(
             thickness,
             whileBlank,
             all, all, all, all, all, all

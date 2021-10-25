@@ -234,25 +234,27 @@ class FontEditorWindow(val data: BitfontEditorData, val editorData: GlyphEditorD
     }
 
     fun drawGrid(drawList: DrawList) {
+        val thickness = if(zoom < 20) 1 else 2
         val verticalGuides = listOf<Int>()
         val horizontalGuides = listOf(-data.font.ascent, data.font.descent)
 
         for(x in bounds.minX .. bounds.maxX) {
             if(x == 0) continue
-            drawList.strokeLine(x, bounds.minY, x, bounds.maxY, 2, if(x in verticalGuides) guidesColor else gridColor)
+            drawList.strokeLine(x, bounds.minY, x, bounds.maxY, thickness, if(x in verticalGuides) guidesColor else gridColor)
         }
         for(y in bounds.minY .. bounds.maxY) {
             if(y == 0) continue
-            drawList.strokeLine(bounds.minX, y, bounds.maxX, y, 2, if(y in horizontalGuides) guidesColor else gridColor)
+            drawList.strokeLine(bounds.minX, y, bounds.maxX, y, thickness, if(y in horizontalGuides) guidesColor else gridColor)
         }
 
-        drawList.strokeLine(0, bounds.minY, 0, bounds.maxY, 2, axisColor)
-        drawList.strokeLine(bounds.minX, 0, bounds.maxX, 0, 2, axisColor)
+        drawList.strokeLine(0, bounds.minY, 0, bounds.maxY, thickness, axisColor)
+        drawList.strokeLine(bounds.minX, 0, bounds.maxX, 0, thickness, axisColor)
     }
 
     fun drawMarkings(drawList: DrawList) {
-        drawList.strokeLine(0, 0, glyphData.glyph.advance, 0, 2, markingsColor)
-        drawList.strokeLine(glyphData.glyph.advance, -0.25, glyphData.glyph.advance, 0.25 + px, 2, markingsColor)
+        val thickness = if(zoom < 20) 1 else 2
+        drawList.strokeLine(0, 0, glyphData.glyph.advance, 0, thickness, markingsColor)
+        drawList.strokeLine(glyphData.glyph.advance, -0.25, glyphData.glyph.advance, 0.25 + px, thickness, markingsColor)
     }
 
     // ========= implementation stuff =========

@@ -9,6 +9,8 @@ import org.lwjgl.nuklear.NkUserFont
 import org.lwjgl.nuklear.Nuklear.*
 import org.lwjgl.system.MemoryStack
 import java.awt.Color
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 @Suppress("NOTHING_TO_INLINE")
 class DrawList(val drawCommands: MutableList<DrawCommand> = mutableListOf()) {
@@ -83,11 +85,19 @@ class DrawList(val drawCommands: MutableList<DrawCommand> = mutableListOf()) {
         x1: Number, y1: Number,
         thickness: Number, color: Color
     ): DrawList {
-        drawCommands.add(DrawCommand.StrokeLine(
-            x0.toFloat(), y0.toFloat(),
-            x1.toFloat(), y1.toFloat(),
-            thickness.toFloat(), color
-        ))
+        if(thickness.toFloat() == 1f) {
+            drawCommands.add(DrawCommand.PixelStroke(
+                x0.toFloat(), y0.toFloat(),
+                x1.toFloat(), y1.toFloat(),
+                color
+            ))
+        } else {
+            drawCommands.add(DrawCommand.StrokeLine(
+                x0.toFloat(), y0.toFloat(),
+                x1.toFloat(), y1.toFloat(),
+                thickness.toFloat(), color
+            ))
+        }
         return this
     }
 
@@ -114,12 +124,20 @@ class DrawList(val drawCommands: MutableList<DrawCommand> = mutableListOf()) {
         rounding: Number,
         thickness: Number, color: Color
     ): DrawList {
-        drawCommands.add(DrawCommand.StrokeRect(
-            x.toFloat(), y.toFloat(),
-            w.toFloat(), h.toFloat(),
-            rounding.toFloat(),
-            thickness.toFloat(), color
-        ))
+        if(rounding.toFloat() == 0f && thickness.toFloat() == 1f) {
+            drawCommands.add(DrawCommand.PixelStrokeRect(
+                x.toFloat(), y.toFloat(),
+                w.toFloat(), h.toFloat(),
+                color
+            ))
+        } else {
+            drawCommands.add(DrawCommand.StrokeRect(
+                x.toFloat(), y.toFloat(),
+                w.toFloat(), h.toFloat(),
+                rounding.toFloat(),
+                thickness.toFloat(), color
+            ))
+        }
         return this
     }
 
@@ -329,6 +347,87 @@ class DrawList(val drawCommands: MutableList<DrawCommand> = mutableListOf()) {
                     image,
                     nkColor(color, stack)
                 )
+            }
+        }
+
+        data class PixelStroke(
+            val x0: Float, val y0: Float,
+            val x1: Float, val y1: Float,
+            val color: Color
+        ): DrawCommand {
+            override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
+                val tx0 = drawList.tx(x0) + 1
+                val ty0 = drawList.ty(y0)
+                val tx1 = drawList.tx(x1) + 1
+                val ty1 = drawList.ty(y1)
+
+                val dx = tx1 - tx0
+                val dy = ty1 - ty0
+                val length = sqrt(dx * dx + dy * dy)
+                val normalX = -abs(dy / length)
+                val normalY = abs(dx / length)
+
+                val points = floatArrayOf(
+                    tx0, ty0,
+                    tx1, ty1,
+                    tx1 + normalX, ty1 + normalY,
+                    tx0 + normalX, ty0 + normalY
+                )
+//                points.reverse()
+                nnk_fill_polygon(
+                    canvas.address(),
+                    points,
+                    4,
+                    nkColor(color, stack).address()
+                )
+            }
+        }
+
+        data class PixelStrokeRect(
+            val x: Float, val y: Float,
+            val w: Float, val h: Float,
+            val color: Color
+        ): DrawCommand {
+            override fun push(drawList: DrawList, canvas: NkCommandBuffer, stack: MemoryStack) {
+                val tx = drawList.tx(x)
+                val ty = drawList.ty(y)
+                val tw = drawList.td(w)
+                val th = drawList.td(h)
+
+                val polygons = listOf(
+                    floatArrayOf( // left (including corners)
+                        tx, ty - 1,
+                        tx, ty + 1 + th,
+                        tx - 1, ty + 1 + th,
+                        tx - 1, ty - 1
+                    ),
+                    floatArrayOf( // right (including corners)
+                        tx + tw + 1, ty - 1,
+                        tx + tw + 1, ty + 1 + th,
+                        tx + tw, ty + 1 + th,
+                        tx + tw, ty - 1
+                    ),
+                    floatArrayOf( // top
+                        tx, ty - 1,
+                        tx + tw, ty - 1,
+                        tx + tw, ty,
+                        tx, ty
+                    ),
+                    floatArrayOf( // bottom
+                        tx, ty + th,
+                        tx + tw, ty + th,
+                        tx + tw, ty + th + 1,
+                        tx, ty + th + 1
+                    ),
+                )
+                for(polygon in polygons) {
+                    nnk_fill_polygon(
+                        canvas.address(),
+                        polygon,
+                        4,
+                        nkColor(color, stack).address()
+                    )
+                }
             }
         }
 
