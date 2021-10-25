@@ -27,6 +27,7 @@ import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
+import java.util.concurrent.CompletableFuture
 import kotlin.math.min
 
 class FontAtlas(val fonts: FontList, val fontHeight: Float) : Freeable {
@@ -224,14 +225,17 @@ data class GlyphMetrics(
     }
 }
 
-class TTFFont(val style: String, val weight: String, val file: String) {
+class TTFFont(val file: String) {
     private var loaded = false
 
     val fontInfo: STBTTFontinfo = STBTTFontinfo.create()
-    private var ttf: ByteBuffer? = null
+    val ttf: ByteBuffer = Constants.readResourceBuffer(file)
+
+    init {
+        stbtt_InitFont(fontInfo, ttf)
+    }
 
     val vMetrics: VMetrics by lazy {
-        load()
         MemoryStack.stackPush().use { stack ->
             val ascent = stack.mallocInt(1)
             val descent = stack.mallocInt(1)
@@ -273,7 +277,6 @@ class TTFFont(val style: String, val weight: String, val file: String) {
      * Gets the glyph info, not including the bitmap. Returns null if the specified codepoint isn't present in this font.
      */
     fun getMetrics(codepoint: Int): GlyphMetrics? {
-        load()
         if (stbtt_FindGlyphIndex(fontInfo, codepoint) == 0)
             return null
 
@@ -316,7 +319,6 @@ class TTFFont(val style: String, val weight: String, val file: String) {
      * Gets the glyph info, including the bitmap. Returns null if the specified codepoint isn't present in this font.
      */
     fun get(codepoint: Int, height: Float, oversamplingX: Int, oversamplingY: Int): GlyphInfo? {
-        load()
         if (stbtt_FindGlyphIndex(fontInfo, codepoint) == 0)
             return null
 
@@ -369,15 +371,6 @@ class TTFFont(val style: String, val weight: String, val file: String) {
                 texture
             )
         }
-    }
-
-    fun load() {
-        if (loaded)
-            return
-        loaded = true
-        val ttf = Constants.readResourceBuffer(file)
-        stbtt_InitFont(fontInfo, ttf)
-        this.ttf = ttf
     }
 
     data class VMetrics(

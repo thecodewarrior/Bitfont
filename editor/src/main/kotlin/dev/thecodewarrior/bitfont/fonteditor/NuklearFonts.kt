@@ -1,6 +1,7 @@
 package dev.thecodewarrior.bitfont.fonteditor
 
 import java.io.InputStream
+import java.util.concurrent.CompletableFuture
 
 object NuklearFonts {
     val noto: FontList = FontList.read("reference/Noto/", Constants.resource("reference/Noto/fonts.txt"))
@@ -32,16 +33,22 @@ object NuklearFonts {
     }
 }
 
-data class FontList(val entries: List<TTFFont>): List<TTFFont> by entries {
+class FontList private constructor(private val entries: List<FontEntry>): Iterable<TTFFont> {
     fun filter(style: String? = null, weight: String? = null): FontList = FontList(entries.filter {
         (style == null || it.style == style) && (weight == null || it.weight == weight)
     })
 
-    inline fun filter(block: (TTFFont) -> Boolean): FontList = FontList(entries.filter { block(it) })
-
     operator fun plus(other: FontList): FontList {
         return FontList(entries + other.entries)
     }
+
+    override fun iterator(): Iterator<TTFFont> = object : Iterator<TTFFont> {
+        val entryIterator = entries.iterator()
+        override fun hasNext(): Boolean = entryIterator.hasNext()
+        override fun next(): TTFFont = entryIterator.next().font.get()
+    }
+
+    private data class FontEntry(val style: String, val weight: String, val font: CompletableFuture<TTFFont>)
 
     companion object {
         fun read(base: String, stream: InputStream): FontList {
@@ -50,7 +57,9 @@ data class FontList(val entries: List<TTFFont>): List<TTFFont> by entries {
                     null
                 } else {
                     val (style, sort, weight, file) = line.trim().split(":")
-                    TTFFont(style.trim(), weight.trim(), base + file.trim())
+                    FontEntry(style.trim(), weight.trim(), CompletableFuture.supplyAsync {
+                        TTFFont(base + file.trim())
+                    })
                 }
             }.toList())
         }
