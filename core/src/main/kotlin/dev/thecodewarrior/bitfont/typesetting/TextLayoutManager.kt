@@ -109,9 +109,6 @@ public class TextLayoutManager(font: Bitfont, vararg containers: TextContainer) 
         )
     }
 
-    /**
-     * This is replaced with a thread-local iterator and configured with the current text before running any layout.
-     */
     private val breakIterator: BreakIterator = BreakIterator.getLineInstance()
 
     /**
