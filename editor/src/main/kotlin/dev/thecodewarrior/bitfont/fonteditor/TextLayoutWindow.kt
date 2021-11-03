@@ -36,9 +36,11 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
     private var splitColumns = false
     private var exclusionZones = false
     private var embeds = false
+    private var leading = false
     private var alignment = TextLayoutManager.Alignment.LEFT
     private var truncation = false
     private var maxLines = 0
+    private var globalLeading = 0
 
     private var containers = mutableListOf<Pair<TextContainer, Vec2i>>()
 
@@ -96,6 +98,12 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
             intBuf.put(0, maxLines)
             nk_property_int(ctx, "Max lines [$maxLinesOnOff]:", 0, intBuf, 100, 1, 1f)
             maxLines = intBuf[0]
+
+            leading = checkbox("Leading (<++...-->)", leading)
+
+            intBuf.put(0, globalLeading)
+            nk_property_int(ctx, "Global Leading:", -10, intBuf, 10, 1, 1f)
+            globalLeading = intBuf[0]
         }
     }
 
@@ -113,6 +121,21 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
             while(index >= 0) {
                 testAttributedText.setAttribute(index, index+1, TextAttribute.textEmbed, testEmbed)
                 index = testText.indexOf('*', index+1)
+            }
+        }
+        if(leading) {
+            var start = 0
+            var next = testText.indexOfAny(charArrayOf('<', '>'), start)
+            var lead = 0
+            while(next > 0) {
+                testAttributedText.setAttribute(start, next, TextAttribute.leading, lead)
+                if(testText[next] == '<') lead++ else lead--
+
+                start = next + 1
+                next = testText.indexOfAny(charArrayOf('<', '>'), start)
+            }
+            if(start < testText.length) {
+                testAttributedText.setAttribute(start, testText.length, TextAttribute.leading, lead)
             }
         }
 
@@ -134,6 +157,7 @@ class TextLayoutWindow(val data: BitfontEditorData): AbstractFontTestWindow(700f
             layoutManager.options.truncationString = AttributedString("...")
         if(maxLines != 0)
             containers.forEach { (it, _) -> it.maxLines = maxLines }
+        layoutManager.options.leading = globalLeading
 
         layoutManager.attributedString = testAttributedText
         layoutManager.layoutText()
